@@ -1,0 +1,15 @@
+{
+  "name": "二十四山八煞黄泉速查盘",
+  "short_name": "八煞黄泉盘",
+  "description": "二十四山罗盘：输入坐向即标八煞黄泉，支持向上黄泉等规则扩展",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f4f6f8",
+  "theme_color": "#1e3a5f",
+  "lang": "zh-CN",
+  "icons": [
+    {"src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+  ]
+}

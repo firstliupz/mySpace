@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1e3a5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="八煞黄泉盘">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>二十四山 · 八煞黄泉速查盘</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --border:#e3e6ea; --ink:#1f2733; --muted:#8a93a0;
+    --blue:#2563eb; --green:#16a34a; --red:#dc2626; --orange:#e8850a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--ink); -webkit-text-size-adjust:100%;
+    font-family:"PingFang SC","Microsoft YaHei","Source Han Sans SC",sans-serif; font-size:14px;}
+  header{background:var(--card); border-bottom:1px solid var(--border); padding:14px 26px;
+    display:flex; align-items:baseline; gap:16px; flex-wrap:wrap;}
+  header h1{font-size:19px; font-weight:700;}
+  header .sub{color:var(--muted); font-size:12.5px;}
+  main{display:flex; gap:20px; padding:20px 26px; align-items:flex-start; flex-wrap:wrap;}
+  .compass-card{background:var(--card); border:1px solid var(--border); border-radius:14px;
+    padding:14px; flex:1 1 560px; max-width:820px; box-shadow:0 1px 4px rgba(20,30,50,.05);}
+  #compass{width:100%; height:auto; display:block; user-select:none;}
+  .legend{display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:6px;
+    font-size:12.5px; color:#5b6472;}
+  .legend .chip{display:inline-flex; align-items:center; gap:5px;}
+  .legend .sw{width:12px; height:12px; border-radius:3px; display:inline-block;}
+  .panel{width:392px; flex:0 0 392px; display:flex; flex-direction:column; gap:14px;}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px;
+    box-shadow:0 1px 4px rgba(20,30,50,.05);}
+  .card h2{font-size:14px; margin-bottom:10px; display:flex; align-items:center; gap:6px;}
+  .card h2::before{content:""; width:4px; height:14px; background:var(--blue); border-radius:2px; display:inline-block;}
+  .row{display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;}
+  select{padding:6px 8px; border:1px solid var(--border); border-radius:8px; background:#fff;
+    font-size:13.5px; color:var(--ink); min-width:150px;}
+  label.inline{font-size:13px; color:#4a5361;}
+  .quick{display:flex; flex-wrap:wrap; gap:6px;}
+  .quick button{padding:4px 10px; font-size:12.5px; border:1px solid var(--border); background:#f7f9fb;
+    border-radius:999px; cursor:pointer; color:#3c4552;}
+  .quick button:hover{background:#e9f0fb; border-color:#bcd0f5;}
+  .rule-item{display:flex; align-items:flex-start; gap:8px; padding:6px 0; font-size:13.5px;}
+  .rule-item input{margin-top:2px;}
+  .rule-item .rname{font-weight:600;}
+  .rule-item .rtype{margin-left:6px; font-size:11px; color:#fff; background:#98a3b3; padding:1px 7px;
+    border-radius:999px; vertical-align:1px;}
+  .rule-item small{display:block; color:var(--muted); font-size:12px; margin-top:2px; line-height:1.5;}
+  .sum{font-size:13.5px; line-height:1.7; padding:8px 10px; background:#f4f7fb; border-radius:8px; margin-bottom:10px;}
+  .sum b{font-size:15px;}
+  .rule-card{border:1px solid var(--border); border-radius:10px; padding:9px 11px; margin-bottom:9px;}
+  .rule-head{display:flex; align-items:center; gap:7px; font-weight:600; font-size:13.5px; margin-bottom:5px;}
+  .rule-head .dot{width:10px; height:10px; border-radius:50%; flex:0 0 10px;}
+  .rule-head .rtype{margin-left:auto; font-size:11px; color:#8a93a0; font-weight:400;}
+  .verdict{display:inline-block; font-size:12px; font-weight:700; padding:1px 9px; border-radius:6px; margin-bottom:4px;}
+  .verdict.bad{color:#b91c1c; background:#fdecec; border:1px solid #f5c6c6;}
+  .verdict.ok{color:#15803d; background:#ecf8ef; border:1px solid #c4e7cd;}
+  .rule-body{font-size:13px; line-height:1.65; color:#3c4552;}
+  .rule-body .muted{color:var(--muted);}
+  blockquote{font-family:"KaiTi","STKaiti",serif; font-size:15px; line-height:1.9; color:#433825;
+    background:#fdf9ef; border-left:4px solid #d9c48a; border-radius:0 8px 8px 0; padding:8px 14px; margin:8px 0;}
+  blockquote .src{display:block; font-family:inherit; font-size:12px; color:#9a8a63; margin-top:2px; text-align:right;}
+  table.map{width:100%; border-collapse:collapse; font-size:12.5px; margin-top:6px;}
+  table.map th, table.map td{border:1px solid var(--border); padding:4px 6px; text-align:center;}
+  table.map th{background:#f4f6f8; font-weight:600;}
+  table.map td.hit{color:#b91c1c; font-weight:700; background:#fdf3f3;}
+  details{font-size:12.5px; color:#4a5361;}
+  details summary{cursor:pointer; font-weight:600; color:#3c4552;}
+  details pre{background:#f5f7fa; border:1px solid var(--border); border-radius:8px; padding:10px;
+    overflow:auto; font-size:11.5px; line-height:1.6; margin-top:8px;}
+  footer{padding:10px 26px 24px; color:var(--muted); font-size:12px; line-height:1.7;}
+  .note-add{font-size:12px; color:#9a6700; background:#fff8e6; border:1px solid #f0dfae;
+    border-radius:8px; padding:6px 10px; line-height:1.6; margin-top:8px;}
+  /* SVG 交互 */
+  .hit{fill:rgba(0,0,0,0); cursor:pointer;}
+  .hit:hover{fill:rgba(31,41,55,.07);}
+  .sector-sha{animation:shaPulse 2.2s ease-in-out infinite;}
+  @keyframes shaPulse{0%,100%{opacity:.6;} 50%{opacity:1;}}
+
+  /* ===== iPhone / 移动端适配 ===== */
+  @media (max-width: 720px){
+    body{-webkit-text-size-adjust:100%;}
+    header{padding:10px 14px; gap:8px;}
+    header h1{font-size:17px;}
+    header .sub{font-size:11px; width:100%;}
+    main{flex-direction:column; padding:12px; gap:12px; align-items:stretch;}
+    .compass-card{padding:8px; max-width:none; border-radius:12px;}
+    .panel{width:auto; flex:1 1 auto;}
+    .row{gap:8px;}
+    .row select{font-size:16px; flex:1 1 auto; min-width:0; padding:8px 10px;}  /* iOS:16px 以上防焦点缩放 */
+    .row label.inline{white-space:nowrap; font-size:13.5px;}
+    .quick button{padding:8px 14px; font-size:13.5px;}
+    .card h2{font-size:13.5px;}
+    .rule-item{font-size:14px; padding:8px 0;}
+    .rule-item input{width:18px; height:18px; flex:0 0 18px;}
+    .rule-body, .sum{font-size:13px;}
+    blockquote{font-size:14px;}
+    footer{padding:10px 14px calc(18px + env(safe-area-inset-bottom));}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>二十四山 · 八煞黄泉速查盘</h1>
+  <span class="sub">360° 分金 · 三山一宫 · 坐向输入即标煞位 —— 规则可扩展架构</span>
+</header>
+
+<main>
+  <section class="compass-card">
+    <svg id="compass" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="legend">
+      <span class="chip"><span class="sw" style="background:rgba(37,99,235,.75)"></span>坐山</span>
+      <span class="chip"><span class="sw" style="background:rgba(22,163,74,.8)"></span>朝向</span>
+      <span class="chip"><span class="sw" style="background:rgba(220,38,38,.85)"></span>八煞黄泉（坐山论）</span>
+      <span class="chip"><span class="sw" style="background:rgba(232,133,10,.85)"></span>向上黄泉（向论水忌，可选）</span>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="card">
+      <h2>坐向设定</h2>
+      <div class="row">
+        <label class="inline">坐山</label>
+        <select id="selSit"></select>
+      </div>
+      <div class="row">
+        <label class="inline">朝向</label>
+        <select id="selFace"></select>
+      </div>
+      <div class="row" style="margin-bottom:2px;">
+        <label class="inline">按八宫速选（取中针）：</label>
+      </div>
+      <div class="quick" id="quickPalaces"></div>
+      <div class="note-add" id="addNote"></div>
+    </div>
+
+    <div class="card">
+      <h2>神煞规则（可扩展）</h2>
+      <div id="ruleToggles"></div>
+    </div>
+
+    <div class="card">
+      <h2>判读结果</h2>
+      <div id="results"></div>
+    </div>
+
+    <div class="card">
+      <h2>口诀原文与对照</h2>
+      <blockquote>坎龙坤兔震山猴，巽鸡乾马兑蛇头，<br>艮虎离猪为煞曜，宅墓逢之一旦休。
+        <span class="src">—— 八煞黄泉诀（龙上八煞，堪舆通行口诀）</span>
+      </blockquote>
+      <blockquote>庚丁坤上是黄泉，乙丙须防巽水先，<br>甲癸向上忧见艮，辛壬水路怕当乾。
+        <span class="src">—— 向上黄泉诀（通行口诀）</span>
+      </blockquote>
+      <table class="map" id="mapTable"></table>
+    </div>
+
+    <div class="card">
+      <h2>拓展预留说明</h2>
+      <details>
+        <summary>如何新增一条规则（如三吉六秀）</summary>
+        <p style="margin-top:8px; line-height:1.7;">所有规则通过统一注册表 <code>Rules.register()</code> 挂载，与绘图解耦。
+        新增规则只需：① 定义 id／口诀／映射；② 在 <code>evaluate(ctx)</code> 中依据坐向上下文返回
+        「标记哪些山、标注文字、断语」；③ 页面自动生成开关、自动在罗盘上标色打点。</p>
+        <pre>Rules.register({
+  id: 'sanjiliuxiu', name: '三吉六秀', type: '坐山',
+  color: '#7c3aed', labelR: 440,
+  verse: '……',
+  evaluate(ctx){                 // ctx.sit / ctx.face / ctx.sitPalace …
+    return [{ mountains:['艮','丙','辛'],
+      label:'三吉', sub:'贵方',
+      note:'……' }];
+  }
+});</pre>
+        <p style="margin-top:8px; line-height:1.7; font-size:12px; color:#8a93a0;">
+        返回数组中每项：<code>mountains</code> 为要标色的二十四山，<code>label/sub</code> 为盘面外圈标签，
+        <code>note</code> 进入右侧判读结果。亦可在控制台经 <code>window.FengShuiRules</code> 动态试验。</p>
+      </details>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  盘式说明：外圈刻度为周天 360°（每山 15°，磁北为 0° 朝上）；中带八卦宫（三山一宫）；内带二十四山并叠印神煞标记；
+  中央为宅体示意——绿墙一侧为<b>前（向方）</b>：门廊、台阶、双开门；蓝墙一侧为<b>后（坐方）</b>：加厚实墙、高窗；
+  「前／后」圆形徽标随坐向转动但文字始终正立。本页为典籍口诀之速查与可视化，非堪舆实操建议。
+</footer>
+
+<script>
+/* ================= 基础数据 ================= */
+const CX = 500, CY = 500;
+// 顺时针排列，索引 i 的山，中心方位角 = i*15（0°=北，90°=东）
+const MOUNTAINS = ['子','癸','丑','艮','寅','甲','卯','乙','辰','巽','巳',
+                   '丙','午','丁','未','坤','申','庚','酉','辛','戌','乾','亥','壬'];
+const PALACE_OF = {'子':'坎','癸':'坎','壬':'坎','丑':'艮','艮':'艮','寅':'艮',
+  '甲':'震','卯':'震','乙':'震','辰':'巽','巽':'巽','巳':'巽',
+  '丙':'离','午':'离','丁':'离','未':'坤','坤':'坤','申':'坤',
+  '庚':'兑','酉':'兑','辛':'兑','戌':'乾','乾':'乾','亥':'乾'};
+const PALACE_MEMBERS = {'坎':['壬','子','癸'],'艮':['丑','艮','寅'],'震':['甲','卯','乙'],
+  '巽':['辰','巽','巳'],'离':['丙','午','丁'],'坤':['未','坤','申'],
+  '兑':['庚','酉','辛'],'乾':['戌','乾','亥']};
+const TRIGRAMS = {'坎':'☵','艮':'☶','震':'☳','巽':'☴','离':'☲','坤':'☷','兑':'☱','乾':'☰'};
+const PALACE_COLOR = {'坎':'#e7f0fa','艮':'#faf1e2','震':'#ecf6e8','巽':'#f1edfa',
+  '离':'#fdeceb','坤':'#fdf7e2','兑':'#e8f5f3','乾':'#eef1f5'};
+const ZODIAC = {'辰':'龙','卯':'兔','申':'猴','酉':'鸡','午':'马','巳':'蛇','寅':'虎','亥':'猪'};
+const idxOf = m => MOUNTAINS.indexOf(m);
+const opposite = i => (i + 12) % 24;
+
+function fmtDeg(x){ x = ((x % 360) + 360) % 360; return Math.round(x * 10) / 10; }
+function degRange(i){
+  const c = i * 15, lo = fmtDeg(c - 7.5), hi = fmtDeg(c + 7.5);
+  return lo > hi ? `${lo}°～${hi}°（跨0°）` : `${lo}°～${hi}°`;
+}
+function point(a, r){
+  const t = a * Math.PI / 180;
+  return [CX + r * Math.sin(t), CY - r * Math.cos(t)];
+}
+function sectorPath(a1, a2, r1, r2){
+  const [x1,y1] = point(a1, r1), [x2,y2] = point(a1, r2);
+  const [x3,y3] = point(a2, r2), [x4,y4] = point(a2, r1);
+  const large = (a2 - a1) > 180 ? 1 : 0;
+  return `M${x1},${y1} L${x2},${y2} A${r2},${r2} 0 ${large} 1 ${x3},${y3} L${x4},${y4} A${r1},${r1} 0 ${large} 0 ${x1},${y1} Z`;
+}
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent){
+  const n = document.createElementNS(NS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+function txt(parent, x, y, str, attrs){
+  const t = el('text', Object.assign({x, y, 'text-anchor':'middle', 'dominant-baseline':'middle',
+    'font-family':'"PingFang SC","Microsoft YaHei",sans-serif'}, attrs||{}), parent);
+  t.textContent = str; return t;
+}
+
+/* ================= 规则注册表（扩展点） =================
+   每条规则：id / name / type / color / labelR / verse / evaluate(ctx)
+   evaluate 返回 [{mountains:[...], label, sub, note}]，页面自动标色、打点、出断语。 */
+const Rules = {
+  list: [], byId: {},
+  register(r){ this.list.push(r); this.byId[r.id] = r; }
+};
+
+Rules.register({
+  id: 'basha', name: '八煞黄泉（龙上八煞）', type: '坐山论', color: '#dc2626', labelR: 442,
+  verse: '坎龙坤兔震山猴，巽鸡乾马兑蛇头，艮虎离猪为煞曜，宅墓逢之一旦休。',
+  mapping: {'坎':'辰','坤':'卯','震':'申','巽':'酉','乾':'午','兑':'巳','艮':'寅','离':'亥'},
+  phrase:   {'坎':'坎龙','坤':'坤兔','震':'震山猴','巽':'巽鸡','乾':'乾马','兑':'兑蛇头','艮':'艮虎','离':'离猪'},
+  evaluate(ctx){
+    const m = this.mapping[ctx.sitPalace];
+    return [{ mountains:[m],
+      label: '八煞黄泉', sub: `${m}山（${ZODIAC[m]}）`,
+      note: `坐${ctx.sitPalace}宫，煞在<b>${m}山</b>（${degRange(idxOf(m))}）。` +
+            `口诀对应『${this.phrase[ctx.sitPalace]}』。` +
+            `忌${m}方开门、来去水、放水、动土，及砂水冲射。` }];
+  }
+});
+
+Rules.register({
+  id: 'xiangshang', name: '向上黄泉（向方水忌）', type: '朝向论', color: '#e8850a', labelR: 468,
+  verse: '庚丁坤上是黄泉，乙丙须防巽水先，甲癸向上忧见艮，辛壬水路怕当乾。',
+  mapping: {'庚':'坤','丁':'坤','乙':'巽','丙':'巽','甲':'艮','癸':'艮','辛':'乾','壬':'乾'},
+  evaluate(ctx){
+    const faceM = MOUNTAINS[ctx.face];
+    const m = this.mapping[faceM];
+    if (!m) return [{ none: true,
+      note: `立${faceM}山向，不在诀中八向（庚丁乙丙甲癸辛壬）之列，不犯向上黄泉。` }];
+    return [{ mountains:[m],
+      label: '向上黄泉', sub: `${m}方忌水`,
+      note: `立<b>${faceM}</b>山向，<b>${m}方</b>（${degRange(idxOf(m))}）忌见来去水。` +
+            `诸书断法略异（杀人黄泉／救贫黄泉之辨），此处按通行断法标注。` }];
+  }
+});
+
+Rules.register({
+  id: 'sanjiliuxiu', name: '三吉六秀（预留）', type: '坐山论', stub: true, color: '#7c3aed',
+  labelR: 442, verse: '（待补原文）',
+  evaluate(){ return []; }
+});
+window.FengShuiRules = Rules;   // 控制台可动态试验新规则
+
+/* ================= 状态 ================= */
+const state = { sit: 0, rules: { basha: true, xiangshang: false, sanjiliuxiu: false } };
+
+/* ================= 静态盘面 ================= */
+const svg = document.getElementById('compass');
+let gBase, gMarkers, gHouse, gHit;
+
+function buildStatic(){
+  gBase = el('g', {}, svg);
+  gMarkers = el('g', {}, svg);
+  gHouse = el('g', {}, svg);
+  gHit = el('g', {}, svg);
+
+  el('defs', {}, svg).innerHTML =
+    `<marker id="arrG" markerWidth="10" markerHeight="10" refX="7.5" refY="5" orient="auto">
+       <path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>`;
+
+  // 盘底
+  el('circle', {cx:CX, cy:CY, r:390, fill:'#fffef8', stroke:'#b9b3a4', 'stroke-width':2}, gBase);
+  el('circle', {cx:CX, cy:CY, r:250, fill:'#ffffff', stroke:'#ddd6c6', 'stroke-width':1.5}, gBase);
+
+  // 二十四山（三山一宫，同宫同色）
+  MOUNTAINS.forEach((m, i) => {
+    el('path', {d: sectorPath(i*15-7.5, i*15+7.5, 250, 322),
+      fill: PALACE_COLOR[PALACE_OF[m]], stroke:'#ffffff', 'stroke-width':1}, gBase);
+  });
+  // 宫界粗线（贯穿二十四山带与八卦带）
+  for (const p in PALACE_MEMBERS){
+    const first = idxOf(PALACE_MEMBERS[p][0]);
+    const a = first * 15 - 7.5;
+    const [x1,y1] = point(a, 250), [x2,y2] = point(a, 366);
+    el('line', {x1,y1,x2,y2, stroke:'#a7adba', 'stroke-width':1.8}, gBase);
+  }
+  // 山名
+  MOUNTAINS.forEach((m, i) => {
+    const [x,y] = point(i*15, 286);
+    txt(gBase, x, y, m, {'font-size':17, 'font-weight':600, fill:'#2b3442'});
+  });
+
+  // 八卦带（三山一宫）
+  const palOrder = ['坎','艮','震','巽','离','坤','兑','乾'];
+  palOrder.forEach((p, k) => {
+    const a1 = k*45 - 22.5, a2 = k*45 + 22.5;
+    el('path', {d: sectorPath(a1, a2, 322, 366), fill: k%2 ? '#f6f6f1' : '#fdfcf9',
+      stroke:'#ffffff', 'stroke-width':1}, gBase);
+    const [sx,sy] = point(k*45, 355);
+    txt(gBase, sx, sy, TRIGRAMS[p], {'font-size':16, fill:'#7a8494'});
+    const [cx2,cy2] = point(k*45, 336);
+    txt(gBase, cx2, cy2, p, {'font-size':20, 'font-weight':700, fill:'#3c4552'});
+  });
+
+  // 度盘：5°细刻、15°主刻、30°数字
+  for (let d = 0; d < 360; d += 5){
+    const major = d % 15 === 0;
+    const [x1,y1] = point(d, major ? 376 : 381), [x2,y2] = point(d, 390);
+    el('line', {x1,y1,x2,y2, stroke: major ? '#6b7480' : '#a7adba',
+      'stroke-width': major ? 1.3 : .6}, gBase);
+  }
+  for (let d = 0; d < 360; d += 30){
+    const [x,y] = point(d, 370);
+    txt(gBase, x, y, d + '°', {'font-size':10.5, fill:'#8a93a0'});
+  }
+
+  // 中央宅体（默认门朝正南，随朝向整体旋转；蓝边=坐方，绿边=向方）
+  const gWrap = el('g', {transform:`translate(${CX},${CY})`}, gHouse);
+  gHouse = el('g', {id:'houseRot'}, gWrap);
+  el('rect', {x:-92, y:-64, width:184, height:128, rx:8, fill:'#ffffff',
+    stroke:'#475569', 'stroke-width':2.5}, gHouse);
+  [[-92,-64,0,-42],[92,-64,0,-42],[-92,64,0,42],[92,64,0,42]].forEach(([a,b,c,d]) =>
+    el('line', {x1:a, y1:b, x2:c, y2:d, stroke:'#aab2bf', 'stroke-width':1.4}, gHouse));
+  el('line', {x1:0, y1:-42, x2:0, y2:42, stroke:'#aab2bf', 'stroke-width':1.4}, gHouse); // 屋脊
+  el('rect', {x:-72, y:-14, width:20, height:20, fill:'#dbeafe', stroke:'#64748b'}, gHouse);
+  el('rect', {x:52,  y:-14, width:20, height:20, fill:'#dbeafe', stroke:'#64748b'}, gHouse);
+  /* —— 前（向方）：门廊 + 台阶 + 双开门，绿色前墙 —— */
+  el('rect', {x:-17, y:46, width:34, height:17, rx:2, fill:'#b45309'}, gHouse);              // 双开门
+  el('line', {x1:0, y1:46, x2:0, y2:63, stroke:'#f7e3cd', 'stroke-width':1.5}, gHouse);     // 门缝
+  el('line', {x1:-92, y1:64, x2:92, y2:64, stroke:'#16a34a', 'stroke-width':5}, gHouse);    // 前墙（绿）
+  el('rect', {x:-46, y:64, width:92, height:20, rx:3, fill:'#e9f8ee',
+    stroke:'#16a34a', 'stroke-width':2}, gHouse);                                          // 门廊
+  el('rect', {x:-27, y:84, width:54, height:6, fill:'#ccd6de'}, gHouse);                    // 台阶一
+  el('rect', {x:-21, y:90, width:42, height:5, fill:'#dde4ea'}, gHouse);                    // 台阶二
+  /* —— 后（坐方）：加厚实墙 + 两扇高窗，蓝色后墙 —— */
+  el('line', {x1:-92, y1:-64, x2:92, y2:-64, stroke:'#2563eb', 'stroke-width':6}, gHouse);  // 后墙加厚（蓝）
+  el('rect', {x:-58, y:-56, width:16, height:10, fill:'#cfd8e3', stroke:'#64748b'}, gHouse); // 后高窗
+  el('rect', {x:42,  y:-56, width:16, height:10, fill:'#cfd8e3', stroke:'#64748b'}, gHouse);
+  /* —— 前后指示线（随宅体旋转） —— */
+  el('line', {x1:0, y1:-78, x2:0, y2:-116, stroke:'#2563eb', 'stroke-width':3, opacity:.75}, gHouse);
+  el('line', {x1:0, y1:104, x2:0, y2:146, stroke:'#16a34a', 'stroke-width':4,
+    'marker-end':'url(#arrG)', opacity:.9}, gHouse);
+
+  // 点击热区（点选山位 → 设为坐山）
+  MOUNTAINS.forEach((m, i) => {
+    const p = el('path', {d: sectorPath(i*15-7.5, i*15+7.5, 250, 390),
+      class:'hit', 'data-idx':i}, gHit);
+    const title = el('title', {}, p);
+    title.textContent = `点选为坐山：${m}山（${PALACE_OF[m]}宫 · ${degRange(i)}）`;
+    p.addEventListener('click', () => { state.sit = i; render(); });
+  });
+}
+
+/* ================= 动态标记 ================= */
+function radialLabel(a, r, lines, color, fs){
+  const [x,y] = point(a, r);
+  const lh = (fs || 13) + 2;
+  const t = el('text', {x, y, fill: color, 'text-anchor':'middle', 'font-weight':700,
+    'font-size': fs || 13,
+    'font-family':'"PingFang SC","Microsoft YaHei",sans-serif'}, gMarkers);
+  lines.forEach((ln, i) => {
+    const ts = el('tspan', {x, y: y + (i - (lines.length-1)/2) * lh}, t);
+    ts.textContent = ln;
+  });
+}
+
+function renderMarkers(){
+  gMarkers.innerHTML = '';
+  const sit = state.sit, face = opposite(sit);
+  const sitM = MOUNTAINS[sit], faceM = MOUNTAINS[face];
+
+  // 坐山 / 朝向 扇面
+  el('path', {d: sectorPath(sit*15-7.5, sit*15+7.5, 250, 366),
+    fill:'rgba(37,99,235,.14)', stroke:'#2563eb', 'stroke-width':2}, gMarkers);
+  el('path', {d: sectorPath(face*15-7.5, face*15+7.5, 250, 366),
+    fill:'rgba(22,163,74,.13)', stroke:'#16a34a', 'stroke-width':2}, gMarkers);
+  radialLabel(sit*15, 410, [`坐 · ${sitM}山`], '#2563eb', 13.5);
+  radialLabel(face*15, 410, [`向 · ${faceM}山`], '#16a34a', 13.5);
+
+  // 前／后 徽标（位置随坐向，文字始终保持正立）
+  const axisBadge = (a, ch, color, sub) => {
+    const [x,y] = point(a, 172);
+    el('circle', {cx:x, cy:y, r:16, fill:color, opacity:.94}, gMarkers);
+    txt(gMarkers, x, y, ch, {'font-size':15, 'font-weight':700, fill:'#ffffff'});
+    const [tx,ty] = point(a, 196);
+    txt(gMarkers, tx, ty, sub, {'font-size':11, 'font-weight':600, fill:color});
+  };
+  axisBadge(sit*15,  '后', '#2563eb', '坐方');
+  axisBadge(face*15, '前', '#16a34a', '向方');
+
+  // 宅体旋转：门指向朝向
+  document.getElementById('houseRot')
+    .setAttribute('transform', `rotate(${face*15 - 180})`);
+
+  // 神煞规则标记
+  for (const r of Rules.list){
+    if (r.stub || !state.rules[r.id]) continue;
+    const ctx = { sit, face, sitPalace: PALACE_OF[sitM], facePalace: PALACE_OF[faceM] };
+    for (const e of r.evaluate(ctx)){
+      if (!e.mountains) continue;
+      for (const m of e.mountains){
+        const i = idxOf(m), a = i * 15;
+        el('path', {d: sectorPath(a-7.5, a+7.5, 250, 390), class:'sector-sha',
+          fill: r.color, 'fill-opacity':.16, stroke:r.color, 'stroke-width':2.2}, gMarkers);
+        const [lx1,ly1] = point(a, 246), [lx2,ly2] = point(a, 388);
+        el('line', {x1:lx1, y1:ly1, x2:lx2, y2:ly2, stroke:r.color,
+          'stroke-width':2.4, 'stroke-dasharray':'7 5', opacity:.85}, gMarkers);
+        const [dx1,dy1] = point(a, 392), [dx2,dy2] = point(a, r.labelR - 22);
+        el('line', {x1:dx1, y1:dy1, x2:dx2, y2:dy2, stroke:r.color,
+          'stroke-width':1.4, 'stroke-dasharray':'2 4'}, gMarkers);
+        radialLabel(a, r.labelR, [e.label, e.sub], r.color, r.id === 'basha' ? 14 : 12.5);
+      }
+    }
+  }
+}
+
+/* ================= 面板 ================= */
+function buildPanel(){
+  const selSit = document.getElementById('selSit');
+  const selFace = document.getElementById('selFace');
+  MOUNTAINS.forEach((m, i) => {
+    selSit.add(new Option(`${m}山（${PALACE_OF[m]}宫 · ${degRange(i)}）`, i));
+    selFace.add(new Option(`${m}山（${PALACE_OF[m]}宫 · ${degRange(i)}）`, i));
+  });
+  selSit.onchange = e => { state.sit = +e.target.value; render(); };
+  selFace.onchange = e => { state.sit = opposite(+e.target.value); render(); };
+
+  const quick = document.getElementById('quickPalaces');
+  const center = {'坎':'子','艮':'艮','震':'卯','巽':'巽','离':'午','坤':'坤','兑':'酉','乾':'乾'};
+  for (const p in center){
+    const b = document.createElement('button');
+    b.textContent = `坐${p}`;
+    b.onclick = () => { state.sit = idxOf(center[p]); render(); };
+    quick.appendChild(b);
+  }
+
+  const rt = document.getElementById('ruleToggles');
+  Rules.list.forEach(r => {
+    const lab = document.createElement('label');
+    lab.className = 'rule-item';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = !!state.rules[r.id];
+    cb.disabled = !!r.stub;
+    cb.onchange = () => { state.rules[r.id] = cb.checked; render(); };
+    lab.appendChild(cb);
+    const span = document.createElement('span');
+    const desc = r.stub ? '预留接口，规则原文待定后补入即可启用。'
+      : (r.id === 'basha' ? '坐宫论煞：如坐坎宫（壬子癸）辰方为煞，余类推。'
+                          : '向方水忌：如立庚向／丁向，坤方忌来去水，余类推。');
+    span.innerHTML = `<span class="rname">${r.name}</span><span class="rtype">${r.type}</span><small>${desc}</small>`;
+    lab.appendChild(span);
+    rt.appendChild(lab);
+  });
+
+  document.getElementById('addNote').innerHTML =
+    '补注：您提供的规则为七宫，口诀全文尚有『离猪』一句——坐离宫（丙午丁）亥山为煞，' +
+    '本盘已按口诀全文一并标出；如不取离宫一条，可在代码 <code>Rules</code> 注册表中删除 <code>&#39;离&#39;:&#39;亥&#39;</code> 一项。';
+
+  const rows = [['坎','辰','龙','坎龙'],['坤','卯','兔','坤兔'],['震','申','猴','震山猴'],
+    ['巽','酉','鸡','巽鸡'],['乾','午','马','乾马'],['兑','巳','蛇','兑蛇头'],
+    ['艮','寅','虎','艮虎'],['离','亥','猪','离猪']];
+  const tb = document.getElementById('mapTable');
+  tb.innerHTML = '<tr><th>坐山（宫）</th><th>三山</th><th>煞山</th><th>属相</th><th>口诀</th></tr>' +
+    rows.map(r => `<tr><td>${r[0]}宫</td><td>${PALACE_MEMBERS[r[0]].join('')}</td>` +
+      `<td class="hit">${r[1]}山</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('');
+}
+
+function renderResults(){
+  const sit = state.sit, face = opposite(sit);
+  const sitM = MOUNTAINS[sit], faceM = MOUNTAINS[face];
+  const ctx = { sit, face, sitPalace: PALACE_OF[sitM], facePalace: PALACE_OF[faceM] };
+  let html = `<div class="sum">坐 <b>${sitM}山</b>（${PALACE_OF[sitM]}宫 · ${degRange(sit)}）　→　` +
+    `向 <b>${faceM}山</b>（${PALACE_OF[faceM]}宫 · ${degRange(face)}）</div>`;
+
+  for (const r of Rules.list){
+    let body;
+    if (r.stub){ body = '<span class="muted">预留规则，未启用。</span>'; }
+    else if (!state.rules[r.id]){ body = '<span class="muted">未启用（可在上方勾选）。</span>'; }
+    else {
+      const es = r.evaluate(ctx);
+      const hits = es.filter(e => e.mountains && e.mountains.length);
+      body = hits.length
+        ? hits.map(e => `<div class="verdict bad">犯 · ${e.label}</div><div>${e.note}</div>`).join('')
+        : es.map(e => `<div class="verdict ok">不犯</div><div>${e.note}</div>`).join('');
+    }
+    html += `<div class="rule-card"><div class="rule-head">` +
+      `<span class="dot" style="background:${r.color}"></span>${r.name}` +
+      `<span class="rtype">${r.type}</span></div><div class="rule-body">${body}</div></div>`;
+  }
+  document.getElementById('results').innerHTML = html;
+}
+
+function render(){
+  document.getElementById('selSit').value = state.sit;
+  document.getElementById('selFace').value = opposite(state.sit);
+  renderMarkers();
+  renderResults();
+}
+
+buildStatic();
+buildPanel();
+render();
+
+/* ===== PWA：注册 Service Worker 实现离线可用 ===== */
+if ('serviceWorker' in navigator &&
+    (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
