@@ -1,4 +1,4 @@
-const CACHE = 'fs24-pwa-v1';
+const CACHE = 'fs24-pwa-v9';
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -17,15 +17,15 @@ self.addEventListener('activate', event => {
   );
 });
 
+// 网络优先：HTML/资源每次先取线上最新版，失败时回退缓存（离线可用），保证更新即时生效
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request).then(resp => {
-      if (resp) return resp;
-      return fetch(event.request).then(netResp => {
-        const c = netResp.clone();
-        caches.open(CACHE).then(cache => cache.put(event.request, c));
-        return netResp;
-      }).catch(() => caches.match('./'));
-    })
+    fetch(event.request).then(netResp => {
+      const c = netResp.clone();
+      caches.open(CACHE).then(cache => cache.put(event.request, c));
+      return netResp;
+    }).catch(() =>
+      caches.match(event.request).then(resp => resp || caches.match('./'))
+    )
   );
 });

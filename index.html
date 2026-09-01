@@ -22,14 +22,10 @@
     display:flex; align-items:baseline; gap:16px; flex-wrap:wrap;}
   header h1{font-size:19px; font-weight:700;}
   header .sub{color:var(--muted); font-size:12.5px;}
-  main{display:flex; gap:20px; padding:20px 26px; align-items:flex-start; flex-wrap:wrap;}
+  main{display:flex; flex-direction:column; align-items:stretch; gap:18px; padding:20px 26px;}
   .compass-card{background:var(--card); border:1px solid var(--border); border-radius:14px;
-    padding:14px; flex:1 1 560px; max-width:820px; box-shadow:0 1px 4px rgba(20,30,50,.05);}
+    padding:14px; align-self:center; width:100%; max-width:560px; box-shadow:0 1px 4px rgba(20,30,50,.05);}
   #compass{width:100%; height:auto; display:block; user-select:none;}
-  .legend{display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:6px;
-    font-size:12.5px; color:#5b6472;}
-  .legend .chip{display:inline-flex; align-items:center; gap:5px;}
-  .legend .sw{width:12px; height:12px; border-radius:3px; display:inline-block;}
   .panel{width:392px; flex:0 0 392px; display:flex; flex-direction:column; gap:14px;}
   .card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px;
     box-shadow:0 1px 4px rgba(20,30,50,.05);}
@@ -89,10 +85,33 @@
   .btn-back{padding:5px 13px; font-size:13px; color:var(--blue); background:#eef3fd;
     border:1px solid #c6d6f6; border-radius:999px; cursor:pointer; white-space:nowrap;}
   .btn-back:hover{background:#dfeafc;}
+  /* 首页：朝向度数输入 + 实时获取 */
+  .deg-input{width:104px; min-width:0; flex:0 0 auto; padding:6px 8px; font-size:16px;
+    border:1px solid var(--border); border-radius:8px; color:var(--ink); background:#fff;
+    -webkit-appearance:none; appearance:none;}
+  .deg-input::-webkit-inner-spin-button, .deg-input::-webkit-outer-spin-button{-webkit-appearance:none; margin:0;}
+  .row .at-btn{padding:6px 14px; font-size:13px;}
+  /* 实时朝向测量覆盖层 */
+  .compass-overlay{position:fixed; inset:0; background:rgba(15,23,42,.45); display:flex;
+    align-items:center; justify-content:center; z-index:99; padding:24px;}
+  .compass-overlay.hidden{display:none;}
+  .compass-panel{background:#fff; border-radius:16px; padding:26px 24px 20px;
+    width:min(340px,100%); text-align:center; box-shadow:0 18px 50px rgba(0,0,0,.25);}
+  .compass-panel h3{margin:0 0 4px; font-size:16px; color:#111827;}
+  .cp-hint{font-size:12.5px; color:#6b7280; margin:0 0 12px; line-height:1.6;}
+  .cp-big{font-size:46px; font-weight:800; color:#1d4fd8; font-variant-numeric:tabular-nums;
+    letter-spacing:1px; line-height:1.1;}
+  .cp-sub{font-size:13px; color:#4a5361; margin:8px 0 18px; min-height:18px;}
+  .cp-actions{display:flex; gap:12px; justify-content:center;}
+  .cp-actions button{padding:8px 24px; font-size:14px; border-radius:999px; cursor:pointer;
+    border:1px solid #c9d2dd; background:#eef2f6; color:#3c4552;}
+  .cp-ok{background:#1d4fd8; border-color:#1d4fd8; color:#fff !important; font-weight:700;}
+  .cp-ok:hover{background:#1740b5;}
   #sitSummary{color:#3c4552; font-weight:600;}
-  .options-card{flex:1 1 100%; max-width:none;}
-  .options-flex{display:flex; flex-direction:column; gap:8px;}
-  .annual-test{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:1px 0 1px 26px;
+  .options-card{width:100%; max-width:820px; align-self:center;}
+  .options-flex{display:flex; flex-direction:column; gap:10px;}
+  .opt-row{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:6px 14px;}
+  .annual-test{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:0;
     padding:8px 10px; background:#f4f6f8; border:1px solid var(--border); border-radius:8px; font-size:13px;}
   .annual-test .at-label{color:#5b6472; font-weight:600;}
   .annual-test .at-input{padding:4px 8px; border:1px solid var(--border); border-radius:7px;
@@ -107,6 +126,18 @@
   .hit:hover{fill:rgba(31,41,55,.07);}
   .sector-sha{animation:shaPulse 2.2s ease-in-out infinite;}
   @keyframes shaPulse{0%,100%{opacity:.6;} 50%{opacity:1;}}
+
+  /* 分金判读提示条 */
+  .fenjin-bar{display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:6px 10px; border-radius:10px; font-size:11.5px; font-weight:600; margin-bottom:8px;}
+  .fenjin-bar.guijia{color:#991b1b; background:#fee2e2; border:1px solid #fecaca;}
+  .fenjin-bar.dakong {color:#991b1b; background:#fee2e2; border:1px solid #fecaca;}
+  .fenjin-bar.xiaokong{color:#9a3412; background:#ffedd5; border:1px solid #fed7aa;}
+  .fenjin-bar.guxu   {color:#854d0e; background:#fef9c3; border:1px solid #fde047;}
+  .fenjin-bar.wangxiang{color:#166534; background:#dcfce7; border:1px solid #86efac;}
+  .fenjin-bar .fj-deg{font-variant-numeric:tabular-nums; font-weight:800;}
+  .fenjin-bar .fj-name{font-weight:800;}
+  .fenjin-bar .fj-desc{color:inherit; opacity:.85; font-size:10.5px;}
 
   /* ===== iPhone / 移动端适配 ===== */
   @media (max-width: 720px){
@@ -132,6 +163,7 @@
     .home-title{font-size:20px;}
     .home-card{padding:14px;}
     .options-flex{gap:6px 16px;}
+    .opt-row{grid-template-columns:repeat(2, minmax(0,1fr)); gap:4px 10px;}
     .btn-primary{letter-spacing:6px; text-indent:6px; padding:14px;}
     .btn-back{padding:6px 14px;}
   }
@@ -150,19 +182,21 @@
         <line x1="50" y1="3" x2="50" y2="9"/><line x1="50" y1="91" x2="50" y2="97"/>
         <line x1="3" y1="50" x2="9" y2="50"/><line x1="91" y1="50" x2="97" y2="50"/>
       </g>
-      <!-- 外层：后天八卦（坎在北·下，离在南·上，震东·左，兑西·右） -->
+      <!-- 外层：后天八卦（上南下北、左东右西；洛书数：坎一坤二震三巽四中五乾六兑七艮八离九）
+           离上·坎下·震左·兑右｜巽左上·坤右上·乾右下·艮左下 -->
       <g font-size="7" fill="#5b6573" text-anchor="middle" font-weight="700">
         <text x="50" y="14">离</text><text x="50" y="88">坎</text>
         <text x="9" y="53">震</text><text x="91" y="53">兑</text>
-        <text x="21" y="24">艮</text><text x="79" y="24">乾</text>
-        <text x="21" y="78">坤</text><text x="79" y="78">巽</text>
+        <text x="21" y="24">巽</text><text x="79" y="24">坤</text>
+        <text x="21" y="78">艮</text><text x="79" y="78">乾</text>
       </g>
-      <!-- 内层：先天八卦（乾南·上，坤北·下，离东·左，坎西·右） -->
+      <!-- 内层：先天八卦（上南下北、左东右西；序数：乾一兑二离三震四巽五坎六艮七坤八）
+           乾上·坤下·离左·坎右｜兑左上·震左下·巽右上·艮右下 -->
       <g font-size="5.4" fill="#9aa0ad" text-anchor="middle" font-weight="600">
         <text x="50" y="28">乾</text><text x="50" y="73">坤</text>
         <text x="28" y="53">离</text><text x="72" y="53">坎</text>
-        <text x="34" y="34">震</text><text x="34" y="66">巽</text>
-        <text x="66" y="34">艮</text><text x="66" y="66">兑</text>
+        <text x="34" y="34">兑</text><text x="34" y="66">震</text>
+        <text x="66" y="34">巽</text><text x="66" y="66">艮</text>
       </g>
       <circle cx="50" cy="50" r="10" fill="#eef3fd" stroke="#2563eb" stroke-width="1"/>
       <rect x="44" y="45" width="12" height="10" rx="2" fill="#fff" stroke="#475569" stroke-width=".9"/>
@@ -177,6 +211,11 @@
       <div class="row">
         <label class="inline">朝向</label>
         <select id="selFace"></select>
+      </div>
+      <div class="row">
+        <label class="inline">朝向度数</label>
+        <input type="number" id="inpFaceDeg" class="deg-input" min="0" max="360" step="1" placeholder="0–360°" title="手工输入 0-360°（0=正北），或点「实时获取」用手机指南针测量">
+        <button type="button" id="btnCompass" class="at-btn">实时获取</button>
       </div>
       <div class="row" style="margin-bottom:2px;">
         <label class="inline">按八宫速选（取中针）：</label>
@@ -195,27 +234,17 @@
     <span class="sub" id="sitSummary"></span>
   </header>
   <main>
+    <section class="compass-card">
+      <div id="fenjinBar" class="fenjin-bar" style="display:none;"></div>
+      <svg id="compass" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg"></svg>
+    </section>
+
     <div class="card options-card">
       <h2>选项</h2>
+      <!-- 统一「时间输入」模块：嵌入选项卡内、标题正下方第一位，驱动戊己都天、五黄三煞、九宫飞星等所有与时间相关的因素 -->
+      <div class="annual-test" id="timeInputBox" style="margin-bottom:10px;"></div>
       <div class="options-flex" id="ruleToggles"></div>
     </div>
-
-    <section class="compass-card">
-      <svg id="compass" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg"></svg>
-      <div class="legend">
-        <span class="chip"><span class="sw" style="background:rgba(37,99,235,.75)"></span>坐山（盘底）</span>
-        <span class="chip"><span class="sw" style="background:rgba(22,163,74,.8)"></span>朝向（盘顶）</span>
-        <span class="chip"><span class="sw" style="background:rgba(220,38,38,.85)"></span>八煞（坐山论）</span>
-        <span class="chip"><span class="sw" style="background:rgba(232,133,10,.85)"></span>黄泉（向论水忌）</span>
-        <span class="chip"><span class="sw" style="background:linear-gradient(90deg,#15803d 50%,#b91c1c 50%)"></span>大游年（坐宫起星，绿蓝吉·红紫凶）</span>
-        <span class="chip"><span class="sw" style="background:linear-gradient(90deg,#9333ea 50%,#db2777 50%)"></span>戊己都天（流年论·内环）</span>
-        <span class="chip"><span class="sw" style="background:linear-gradient(90deg,#be123c 33%,#d97706 33%,#f59e0b 66%)"></span>五黄三煞（流年论·内环）</span>
-        <span class="chip"><span class="sw" style="background:#334155"></span>坐山水法（实线环箭·来→去）</span>
-        <span class="chip"><span class="sw" style="background:#be185d"></span>向上水法（虚线环箭·来→去）</span>
-        <span class="chip"><span class="sw" style="background:#16a34a"></span>三吉（整宫·亮绿）</span>
-        <span class="chip"><span class="sw" style="background:#4ade80"></span>六秀（单山·亮绿）</span>
-      </div>
-    </section>
 
     <!-- ===== 以下三个模块暂隐藏（需要时删除本注释对即恢复；JS 已做空值保护，无需改代码） =====
     <aside class="panel">
@@ -274,11 +303,25 @@
     中带八卦宫（三山一宫），卦符按<b>环形方向</b>摆放（字顶朝外）——开启「大游年」时，卦名隐去，宫位环带内以<b>环状排版</b>标注该宫星曜「星＋五行」与应期；
     内带二十四山；八煞、黄泉、长生来水标记直接标印于<b>环内山名外侧</b>，不出盘外；
     宅体与二十四山带之间设<b>双层内环</b>——外圈（214～250）标「戊己都天」、内圈（190～214）标「五黄三煞」（随当年干支与月建变动，纯本地离线推算）；
-    <b>中心为年九宫飞星盘</b>（屏幕固定取向·南在顶）：年五黄落于年支本位宫（如午年→离/正南），余星按洛书顺飞，并据星曜<b>吉凶着色</b>；
+    <b>中心为年九宫飞星盘</b>（屏幕固定取向·南在顶，不随盘面旋转）：年五黄按"2022年中宫起、洛书九宫逐年顺飞"定位（如2026丙午年落正南离宫），余星按洛书顺飞，并据星曜<b>吉凶着色</b>；
     <b>坐山水法 / 向上水法</b>（最外环，可分别开关）：坐山水法用<b>实线</b>、向上水法用<b>虚线</b>——按吉论，来水取<b>长生</b>（生方·宜来）、去水取<b>墓库</b>（水口·宜去），于最外环以「来→去」环状箭头示水流向；山名带同步高亮来去吉方（长生、帝旺、墓、绝）。
     <b>三吉六秀</b>（亮绿色环，可开关）：来龙按「坐山所属纳甲分组」查表得三吉整宫与六秀单山（例：坎龙组坎癸申辰→三吉巽艮震、六秀辛丙庚；乾龙组乾甲→三吉兑震艮、六秀丁庚丙）。八组二十四山全覆盖。
     本页为典籍口诀之速查与可视化，非堪舆实操建议。
   </footer>
+</div>
+
+<!-- 实时朝向测量面板（手机指南针） -->
+<div class="compass-overlay hidden" id="compassOverlay">
+  <div class="compass-panel">
+    <h3>实时朝向测量</h3>
+    <p class="cp-hint" id="cpHint">请将手机屏幕朝上放平，机身指向测量方向</p>
+    <div class="cp-big" id="cpDeg">--°</div>
+    <div class="cp-sub" id="cpSub">等待传感器数据…</div>
+    <div class="cp-actions">
+      <button type="button" id="cpCancel" class="at-btn">取消</button>
+      <button type="button" id="cpConfirm" class="at-btn cp-ok">确认</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -296,6 +339,18 @@ const PALACE_MEMBERS = {'坎':['壬','子','癸'],'艮':['丑','艮','寅'],'震
   '兑':['庚','酉','辛'],'乾':['戌','乾','亥']};
 const TRIGRAMS = {'坎':'☵','艮':'☶','震':'☳','巽':'☴','离':'☲','坤':'☷','兑':'☱','乾':'☰'};
 const ZODIAC = {'辰':'龙','卯':'兔','申':'猴','酉':'鸡','午':'马','巳':'蛇','寅':'虎','亥':'猪'};
+
+/* ===== 一百二十分金（地盘正针分金） =====
+   每山 15° 再五等分，每分金 3°；天干用甲丙戊庚壬循环配本山地支。
+   甲壬为孤虚，戊己为龟甲空亡，丙庚为旺相珠宝线。 */
+const FENJIN_GAN = ['甲','丙','戊','庚','壬'];
+const FENJIN_INFO = {
+  '甲': { type:'guxu',    name:'孤',      level:'凶',   cls:'guxu' },
+  '丙': { type:'wangxiang', name:'旺相',  level:'吉',   cls:'wangxiang' },
+  '戊': { type:'guijia',  name:'龟甲空亡', level:'大凶', cls:'guijia' },
+  '庚': { type:'wangxiang', name:'旺相',  level:'吉',   cls:'wangxiang' },
+  '壬': { type:'guxu',    name:'虚',      level:'凶',   cls:'guxu' }
+};
 
 /* ===== 大游年 =====
    盘面顺时针宫序：坎艮震巽离坤兑乾；坐宫自身为伏位，自顺时针下一宫起依次配口诀七字。
@@ -326,7 +381,7 @@ function degRange(i){
 }
 /* 视角偏转角：站在太极点背坐山、面朝向 —— 坐山恒置盘底(180°)、朝向恒置盘顶(0°)。
    随坐山变化，render() 时更新；所有 point() 自动叠加，盘体转位而文字保持正立。 */
-let ROT = 180;   // 默认坐子山：子(0°)置底、午(180°)置顶，与首页子山午向一致
+let ROT = 180;   // 默认坐子山：朝向 180°（正南）置顶、坐山 0°（正北）置底；render() 时按 state.faceDeg 以 1° 精度更新
 function point(a, r){
   const t = (a + ROT) * Math.PI / 180;
   return [CX + r * Math.sin(t), CY - r * Math.cos(t)];
@@ -401,9 +456,9 @@ function wujiDoutian(yearStem){               // 戊都天 / 己都天 / 夹都�
 /* ===== 五黄三煞（流年神煞，纯本地离线推算） =====
    年三煞：依年支三合局之"所克方"定三煞方位
            （申子辰→南、寅午戌→北、亥卯未→西、巳酉丑→东）。
-   年五黄：依年支分组，五黄所落宫
-           （子午卯酉→坤、辰戌丑未→巽、寅申巳亥→艮）。
-   月五黄：以节气（太阳视黄经）定月建，套用同一分组推落宫。
+   年五黄：以2022年（壬寅）五黄入中宫为基准，按洛书九宫数字逐年顺飞一宫
+           （中5→乾6→兑7→艮8→离9→坎1→坤2→震3→巽4→中5……）。
+   月五黄：以节气（太阳视黄经）定月建，月建寅月起中宫，逐月顺飞（与年五黄同序）。
    年/月建均以节气为界，非农历初一。 */
 function solarMonthBranch(ms){
   const jd = ms / 86400000 + 2440587.5;
@@ -415,21 +470,37 @@ const SANSHA_DIR = {  // 年支 → 三煞方
   '申':'南','子':'南','辰':'南', '寅':'北','午':'北','戌':'北',
   '亥':'西','卯':'西','未':'西', '巳':'东','酉':'东','丑':'东'
 };
-const SAN_SHA = {     // 三煞方 → 所占三山 + 标签中心角
-  '南':{m:['巳','午','未'], labelAt:11*15}, '北':{m:['亥','子','丑'], labelAt:0},
-  '西':{m:['申','酉','戌'], labelAt:17*15}, '东':{m:['寅','卯','辰'], labelAt:5*15}
+const SAN_SHA = {     // 三煞方 → 所占三山 + 标签中心角（须取三山「中心山」：南=午、北=子、西=酉、东=卯）
+  '南':{m:['巳','午','未'], labelAt:12*15}, '北':{m:['亥','子','丑'], labelAt:0},
+  '西':{m:['申','酉','戌'], labelAt:18*15}, '东':{m:['寅','卯','辰'], labelAt:6*15}
 };
-/* 年五黄 / 月五黄：依「年支（或月建）后天本位宫」定落宫（洛书数落宫）。
-   例：午→离(正南)、子→坎(正北)、卯→震(正东)、酉→兑(正西)、申→坤(西南)、亥→乾(西北)……
-   此即用户校正之规则：丙午(午)年五黄在正南(离宫)。 */
-function wuhuangFromBranch(b){
-  return PALACE_OF[b];
+
+// 洛书数字 1-9 对应宫位（顺飞序：坎1 坤2 震3 巽4 中5 乾6 兑7 艮8 离9）
+const NINE_PALACE_SEQ = ['坎','坤','震','巽','中','乾','兑','艮','离'];
+
+/* 年五黄：2022年（壬寅）入中宫，之后逐年按洛书数字顺移一宫。
+   2023癸卯→乾/西北，2024甲辰→兑/正西，2025乙巳→艮/东北，2026丙午→离/正南，
+   2027丁未→坎/正北，2028戊申→坤/西南，2029己酉→震/正东，2030庚戌→巽/东南，
+   2031辛亥→中宫，此后9年一轮。 */
+function yearWuhuang(year){
+  const offset = ((year - 2022) % 9 + 9) % 9;   // 2022年偏移0=中宫
+  return NINE_PALACE_SEQ[(4 + offset) % 9];     // 中宫在 NINE_PALACE_SEQ 中的索引为4
 }
-const PALACE_CENTER = {  // 五黄宫 → 所占三山 + 标签中心角（八卦八宫全覆盖）
-  '坎':{m:['壬','子','癸'], labelAt:0},      '艮':{m:['丑','艮','寅'], labelAt:3*15},
-  '震':{m:['甲','卯','乙'], labelAt:5*15},   '巽':{m:['辰','巽','巳'], labelAt:9*15},
-  '离':{m:['丙','午','丁'], labelAt:11*15},  '坤':{m:['未','坤','申'], labelAt:15*15},
-  '兑':{m:['庚','酉','辛'], labelAt:17*15},  '乾':{m:['戌','乾','亥'], labelAt:21*15}
+
+/* 月五黄：以月建为基准，寅月起中宫，其余月建按洛书数字顺移（同九宫顺飞）。
+   月建顺序：寅0 卯1 辰2 巳3 午4 未5 申6 酉7 戌8 亥9 子10 丑11；
+   寅月→中5，卯月→乾6，辰月→兑7，巳月→艮8，午月→离9，未月→坎1…… */
+const MONTH_LUOSHU_BASE = {'寅':4,'卯':5,'辰':6,'巳':7,'午':8,'未':0,'申':1,'酉':2,'戌':3,'亥':4,'子':5,'丑':6};
+function monthWuhuangFromBranch(b){
+  return NINE_PALACE_SEQ[MONTH_LUOSHU_BASE[b]];
+}
+
+const PALACE_CENTER = {  // 五黄宫 → 所占三山 + 标签中心角（须取宫的「中心山」角度，否则整宫环会偏 15°）
+  // 中心山：坎=子(0)、艮=艮(3)、震=卯(6)、巽=巽(9)、离=午(12)、坤=坤(15)、兑=酉(18)、乾=乾(21)
+  '坎':{m:['壬','子','癸'], labelAt:0*15},   '艮':{m:['丑','艮','寅'], labelAt:3*15},
+  '震':{m:['甲','卯','乙'], labelAt:6*15},   '巽':{m:['辰','巽','巳'], labelAt:9*15},
+  '离':{m:['丙','午','丁'], labelAt:12*15},  '坤':{m:['未','坤','申'], labelAt:15*15},
+  '兑':{m:['庚','酉','辛'], labelAt:18*15},  '乾':{m:['戌','乾','亥'], labelAt:21*15}
 };
 
 /* ===== 长生水法（双山三合） =====
@@ -445,10 +516,10 @@ const JU_LONGSEQ = {
 };
 
 /* ===== 年九宫飞星（中心区显示） =====
-   年五黄落于年支本位宫（见 wuhuangFromBranch）；其余八星依洛书顺飞顺序排布，
-   形成一个以「五黄本位」为锚的九宫飞星盘，并据星曜吉凶着色。 */
-function buildNineStar(branch){            // 返回 palace -> 星数(1-9)
-  const five = PALACE_OF[branch];          // 五黄落宫（年支本位）
+   以「年五黄所落宫」为锚；其余八星依洛书顺飞顺序排布，
+   形成一个九宫飞星盘，并据星曜吉凶着色。 */
+function buildNineStar(fivePalace){        // 返回 palace -> 星数(1-9)
+  const five = fivePalace;                 // 五黄落宫（由 yearWuhuang(year) 给出，含中宫）
   const flyingSeq = ['中','乾','兑','艮','离','坎','坤','震','巽'];  // 洛书顺飞顺序
   const base = flyingSeq.indexOf(five);
   const map = {};
@@ -462,6 +533,50 @@ const STAR_NAME = {1:'一白',2:'二黑',3:'三碧',4:'四绿',5:'五黄',6:'六
 const STAR_NATURE = {1:'吉',6:'吉',8:'吉',9:'吉',4:'平',2:'凶',3:'凶',5:'凶',7:'凶'};
 const STAR_BG = {吉:'#dcfce7',平:'#cffafe',凶:'#fde2e2'};
 const STAR_FG = {吉:'#15803d',平:'#0e7490',凶:'#b91c1c'};
+
+/* ===== 元运 + 玄空飞星（运盘 / 山盘 / 向盘） =====
+   ① 元运：三元九运，每运 20 年，上元一运起于 1864 年 → 2024–2043 为九运（九紫入中）。
+   ② 运盘：运星入中，依洛书轨迹【顺飞】九宫。
+   ③ 山盘：取「坐山所在宫」的运星入中，依【坐山三元龙阴阳】定顺逆（阳顺阴逆）飞布。
+   ④ 向盘：取「朝向所在宫」的运星入中，依【朝向三元龙阴阳】定顺逆（阳顺阴逆）飞布。
+   故「时间」经元运影响运盘，「坐山朝向」经三元龙阴阳影响山盘与向盘。 */
+const YUAN_START = 1864;                                  // 上元一运起算年
+const LUOSHU_SEQ = ['中','乾','兑','艮','离','坎','坤','震','巽'];   // 洛书顺飞轨迹
+const MTN_YINYANG = {                                     // 二十四山阴阳（三元龙）：阳顺阴逆
+  '乾':'阳','坤':'阳','艮':'阳','巽':'阳','甲':'阳','庚':'阳','丙':'阳','壬':'阳',
+  '寅':'阳','申':'阳','巳':'阳','亥':'阳',
+  '子':'阴','午':'阴','卯':'阴','酉':'阴','辰':'阴','戌':'阴','丑':'阴','未':'阴',
+  '乙':'阴','辛':'阴','丁':'阴','癸':'阴'
+};
+const YUAN_NAME = {1:'一运',2:'二运',3:'三运',4:'四运',5:'五运',6:'六运',7:'七运',8:'八运',9:'九运'};
+
+function yuanOf(year){                        // 公历年 → 元运（1–9）
+  return Math.floor((year - YUAN_START) / 20) % 9 + 1;
+}
+function yuanRange(yun, year){                // 元运 → [起, 讫] 公历年（三元九运 180 年一循环，需按所在轮次推算）
+  const cycle = Math.floor(((year != null ? year : YUAN_START) - YUAN_START) / 180);
+  const start = YUAN_START + cycle * 180 + (yun - 1) * 20;
+  return [start, start + 19];
+}
+function feiPan(x, forward){                  // x 入中飞布九宫；forward=true 顺飞，false 逆飞
+  const map = {};
+  LUOSHU_SEQ.forEach((pal, k) => {            // 逆飞即沿洛书轨迹倒行：中→巽→震→坤→坎→离→艮→兑→乾
+    const step = forward ? k : -((9 - k) % 9);
+    map[pal] = ((x - 1 + step) % 9 + 9) % 9 + 1;
+  });
+  return map;
+}
+function buildZhaiPan(year, sitM, faceM){     // 玄空宅命盘：运盘 + 山盘 + 向盘
+  const yun = yuanOf(year);
+  const yunPan = feiPan(yun, true);                                   // 运星入中，顺飞
+  const sitPalace = PALACE_OF[sitM], facePalace = PALACE_OF[faceM];
+  const shanStar = yunPan[sitPalace];                                 // 坐山宫运星 → 山星入中之数
+  const xiangStar = yunPan[facePalace];                               // 朝向宫运星 → 向星入中之数
+  const shanPan = feiPan(shanStar, MTN_YINYANG[sitM] === '阳');       // 阳顺阴逆
+  const xiangPan = feiPan(xiangStar, MTN_YINYANG[faceM] === '阳');
+  return { yun, yunPan, shanPan, xiangPan, shanStar, xiangStar, sitPalace, facePalace,
+           sitYang: MTN_YINYANG[sitM], faceYang: MTN_YINYANG[faceM] };
+}
 const Rules = {
   list: [], byId: {},
   register(r){ this.list.push(r); this.byId[r.id] = r; }
@@ -550,7 +665,7 @@ Rules.register({
 
 Rules.register({
   id: 'wuhuangsansha', name: '五黄三煞（流年内环）', type: '流年论', color: '#be123c', labelR: 442,
-  verse: '年家三煞：申子辰煞南、寅午戌煞北、亥卯未煞西、巳酉丑煞东；年五黄：子午卯酉落坤、辰戌丑未落巽、寅申巳亥落艮；月五黄以节气定月建同推。',
+  verse: '年家三煞：申子辰煞南、寅午戌煞北、亥卯未煞西、巳酉丑煞东；年五黄：2022年中宫起，洛书九宫逐年顺飞（中→乾→兑→艮→离→坎→坤→震→巽→中）；月五黄：寅月起中宫，逐月顺飞。',
   evaluate(){
     const G = ganzhiYearOf(state.testMs);     // 同戊己都天：以「流年测试基准」换算，便于手工核验
     const yBranch = G.branch;
@@ -559,19 +674,34 @@ Rules.register({
     // 年三煞
     const dir = SANSHA_DIR[yBranch], ss = SAN_SHA[dir];
     out.push({ mountains: ss.m, band:[190, 214], labelAt: ss.labelAt, label: '三煞',
-      color: '#be123c', op: .16, fs: 14,
+      perMountain: true,                       // 三山各标一次「三煞」，而非只在中心标一次
+      color: '#be123c', op: .16, fs: 12.5,
       note: `流年<b>${G.gz}</b>（${G.year}），年支<b>${yBranch}</b>，三煞在<b>${dir}方</b>` +
             `（${ss.m.join('')}山），年家大煞，忌此方修造、动土、开门放水。` });
     // 年五黄
-    const yw = wuhuangFromBranch(yBranch), yp = PALACE_CENTER[yw];
-    out.push({ mountains: yp.m, band:[190, 214], labelAt: yp.labelAt, label: '年黄',
-      color: '#d97706', op: .2, fs: 14,
-      note: `年五黄（廉贞）落<b>${yw}宫</b>（${yp.m.join('')}山），年家最凶方之一，全年忌此方动土。` });
+    const yw = yearWuhuang(G.year);
+    if (yw === '中'){
+      out.push({ center: true, label: '年五黄',
+        color: '#d97706', op: .14, fs: 14, sw: 3.0,
+        note: '年五黄（廉贞）入<b>中宫</b>，年家最凶，全年忌中宫动土。' });
+    } else {
+      const yp = PALACE_CENTER[yw];
+      out.push({ mountains: yp.m, band:[190, 214], range:[yp.labelAt-22.5, yp.labelAt+22.5], labelAt: yp.labelAt, label: '年五黄',
+        color: '#d97706', op: .14, fs: 14, sw: 3.0,
+        note: `年五黄（廉贞）落<b>${yw}宫</b>（${yp.m.join('')}山），年家最凶方之一，全年忌此方动土。` });
+    }
     // 月五黄
-    const mw = wuhuangFromBranch(mBranch), mp = PALACE_CENTER[mw];
-    out.push({ mountains: mp.m, band:[190, 214], labelAt: mp.labelAt, label: '月黄',
-      color: '#f59e0b', op: .2, fs: 13,
-      note: `月建<b>${mBranch}月</b>，月五黄落<b>${mw}宫</b>（${mp.m.join('')}山），随月流转，当月忌此方动土。` });
+    const mw = monthWuhuangFromBranch(mBranch);
+    if (mw === '中'){
+      out.push({ center: true, label: '月五黄',
+        color: '#f59e0b', op: .14, fs: 13, sw: 3.0,
+        note: `月建<b>${mBranch}月</b>，月五黄入<b>中宫</b>，当月忌中宫动土。` });
+    } else {
+      const mp = PALACE_CENTER[mw];
+      out.push({ mountains: mp.m, band:[190, 214], range:[mp.labelAt-22.5, mp.labelAt+22.5], labelAt: mp.labelAt, label: '月五黄',
+        color: '#f59e0b', op: .14, fs: 13, sw: 3.0,
+        note: `月建<b>${mBranch}月</b>，月五黄落<b>${mw}宫</b>（${mp.m.join('')}山），随月流转，当月忌此方动土。` });
+    }
     return out;
   }
 });
@@ -670,8 +800,61 @@ Rules.register({
 });
 window.FengShuiRules = Rules;   // 控制台可动态试验新规则
 
+/* ================= 一百二十分金判断 ================= */
+function normalizeDeg(x){ return ((x % 360) + 360) % 360; }
+function fenjinOf(deg){
+  const d = normalizeDeg(deg);
+  const rd = Math.round(d * 100) / 100;               // 取整到 0.01° 消除浮点误差
+  // 大空亡：八卦宫界（每 45°的整数倍）
+  if (rd % 45 === 0) return { kind:'dakong', level:'大凶', name:'大空亡（出卦）', shan:null, gan:null, start:d, end:d,
+    desc:'压在八卦宫界上' };
+  // 小空亡：山与山分界（每 15° + 7.5° 偏移，即两山正中间）
+  const skR = (rd - 7.5) % 15;
+  const skRR = skR < 0 ? skR + 15 : skR;
+  if (Math.min(skRR, 15 - skRR) < 0.01) return { kind:'xiaokong', level:'凶', name:'小空亡（骑缝/出线）', shan:null, gan:null, start:d, end:d,
+    desc:'压在山与山分界线上' };
+  const shanIdx = Math.floor((d + 7.5) / 15) % 24;
+  const shan = MOUNTAINS[shanIdx];
+  const shanStart = normalizeDeg(shanIdx * 15 - 7.5);
+  let offset = normalizeDeg(d - shanStart);
+  if (offset >= 15) offset -= 15;                 // 浮点保险
+  const fjIdx = Math.min(4, Math.floor(offset / 3));
+  const gan = FENJIN_GAN[fjIdx];
+  const info = FENJIN_INFO[gan];
+  const start = normalizeDeg(shanStart + fjIdx * 3);
+  const end   = normalizeDeg(start + 3);
+  return { kind:info.type, level:info.level, name:`${gan}${shan} · ${info.name}`, shan, gan, start, end,
+    desc:`${shan}山 ${fmtDeg(start)}°–${fmtDeg(end)}° · ${info.name}` };
+}
+function fenjinLineStatus(deg){
+  const d = normalizeDeg(deg);
+  // 使用 0.01° 容差处理浮点/输入取整，避免 135.0001 被误判为普通分金
+  const roundD = Math.round(d * 100) / 100;
+  if (roundD % 45 === 0) return { kind:'dakong', label:'大空亡线', level:'大凶' };
+  const skR = (roundD - 7.5) % 15;
+  const skRR = skR < 0 ? skR + 15 : skR;
+  if (Math.min(skRR, 15 - skRR) < 0.01) return { kind:'xiaokong', label:'小空亡线', level:'凶' };
+  return null;
+}
+function buildFenjinTable(){
+  const rows = [];
+  for (let i = 0; i < 24; i++){
+    const shan = MOUNTAINS[i];
+    const shanStart = normalizeDeg(i * 15 - 7.5);
+    for (let j = 0; j < 5; j++){
+      const gan = FENJIN_GAN[j];
+      const info = FENJIN_INFO[gan];
+      const start = normalizeDeg(shanStart + j * 3);
+      const end = normalizeDeg(start + 3);
+      rows.push({ shan, gan, name:gan + shan, start, end, kind:info.type, level:info.level, label:info.name });
+    }
+  }
+  return rows;
+}
+
 /* ================= 状态 ================= */
-const state = { sit: 0, rules: {}, testMs: Date.now() };  // testMs：流年类规则（戊己都天等）的测试基准，默认当前时刻
+const state = { sit: 0, faceDeg: 180, rules: {}, testMs: Date.now(), nineMode: 'zhai' };
+  // sit：坐山索引(24山)；faceDeg：精确朝向度数(0-360，0=正北顺时针，1°精度，驱动盘面整盘旋转)；testMs：流年类规则（戊己都天等）的测试基准，默认当前时刻；nineMode：中央九宫视图 'zhai'（元运宅命盘，含运/山/向三盘）｜'year'（流年年星盘）
 Rules.list.forEach(r => state.rules[r.id] = true);   // 默认全选，可按需关闭
 state.rules['changsheng_face'] = false;              // 向上水法默认不勾选
 
@@ -706,8 +889,14 @@ function buildStatic(){
   // 二十四山（三山一宫）—— 纯白素底，颜色只留给规则标记
   MOUNTAINS.forEach((m, i) => {
     el('path', {d: sectorPath(i*15-7.5, i*15+7.5, 250, 322),
-      fill:'#ffffff', stroke:'#ffffff', 'stroke-width':1}, gBase);
+      fill:'#ffffff', stroke:'none'}, gBase);
   });
+  // 二十四山间隔线（每山 15°，浅灰可见，避免白色边界与底色融合）
+  for (let i = 0; i < 24; i++){
+    const a = i * 15 - 7.5;
+    const [x1,y1] = point(a, 250), [x2,y2] = point(a, 322);
+    el('line', {x1,y1,x2,y2, stroke:'#d1d5db', 'stroke-width':1}, gBase);
+  }
   // 宫界粗线（贯穿二十四山带与八卦带）
   for (const p in PALACE_MEMBERS){
     const first = idxOf(PALACE_MEMBERS[p][0]);
@@ -715,7 +904,7 @@ function buildStatic(){
     const [x1,y1] = point(a, 250), [x2,y2] = point(a, 366);
     el('line', {x1,y1,x2,y2, stroke:'#a7adba', 'stroke-width':1.8}, gBase);
   }
-  // 山名
+  // 山名（随盘整体旋转，文字本身保持水平不变）
   MOUNTAINS.forEach((m, i) => {
     const [x,y] = point(i*15, 286);
     txt(gBase, x, y, m, {'font-size':20, 'font-weight':600, fill:'#2b3442'});
@@ -759,8 +948,24 @@ function buildStatic(){
       class:'hit', 'data-idx':i}, gHit);
     const title = el('title', {}, p);
     title.textContent = `点选为坐山：${m}山（${PALACE_OF[m]}宫 · ${degRange(i)}）`;
-    p.addEventListener('click', () => { state.sit = i; render(); });
+    p.addEventListener('click', () => { state.sit = i; state.faceDeg = opposite(i) * 15; render(); });
   });
+}
+
+/* 在盘面上标出当前分金线：普通分金画细线；空亡线画加粗红线并加提示点 */
+function drawFenjinLine(deg, color, label){
+  const d = normalizeDeg(deg);
+  const line = fenjinLineStatus(d);
+  const [x1,y1] = point(0, 190), [x2,y2] = point(0, 450);   // 朝向线始终对应盘顶 0°（经 ROT 旋转后指向实际度数）
+  if (line){
+    el('line', {x1,y1,x2,y2, stroke:'#dc2626', 'stroke-width': line.kind==='dakong'?4:2.5,
+      'stroke-dasharray': line.kind==='dakong'?'0':'6 4'}, gMarkers);
+    const [tx,ty] = point(0, 462);
+    txt(gMarkers, tx, ty, `${label}·${line.label}`, {fill:'#dc2626', 'font-size':13, 'font-weight':800,
+      'text-anchor':'middle', 'font-family':'"PingFang SC","Microsoft YaHei",sans-serif'});
+  } else {
+    el('line', {x1,y1,x2,y2, stroke:color, 'stroke-width':1.4, opacity:.55}, gMarkers);
+  }
 }
 
 /* ================= 动态标记 ================= */
@@ -815,38 +1020,101 @@ function ringArc(aFrom, aTo, r, color, dashed, arrowId){
     'marker-end': `url(#${arrowId})`}, gMarkers);
 }
 
-/* 中心区：年九宫飞星盘（屏幕固定取向，南在顶），标注星数 1-9 与吉凶；五黄居年支本位宫 */
+/* 中心区：年九宫飞星盘（屏幕固定取向·南在顶，不随盘面旋转——圆环随朝向度数旋转，九宫盘保持水平可读），标注星数 1-9 与吉凶；五黄按年顺飞定位 */
 function drawNinePalace(){
   const G = ganzhiYearOf(state.testMs);
-  const starOf = buildNineStar(G.branch), five = PALACE_OF[G.branch];
-  const layout = [['巽','离','坤'],['震','中','兑'],['艮','坎','乾']];   // 上南下北、左东右西
-  const cell = 60, gap = 7, total = cell*3 + gap*2, x0 = CX - total/2, y0 = CY - total/2;
+  const layout = [['巽','离','坤'],['震','中','兑'],['艮','坎','乾']];   // 上南下北、左东右西（屏幕固定）
+  const cell = 80, gap = 6, total = cell*3 + gap*2, x0 = CX - total/2, y0 = CY - total/2;
+  // 九宫格直接绘于 gMarkers（不包旋转组）：随盘旋转的是圆环部分，中央九宫盘保持屏幕固定取向
+  const zhai = (state.nineMode !== 'year');                             // 宅命盘（运/山/向三盘）｜年星盘
+  const sitM = MOUNTAINS[state.sit], faceM = MOUNTAINS[opposite(state.sit)];
+  const P = zhai ? buildZhaiPan(G.year, sitM, faceM) : null;
+  const five = zhai ? null : yearWuhuang(G.year);
+  const starOf = zhai ? null : buildNineStar(five);
+
+  // 标题
+  if (zhai){
+    const [ys, ye] = yuanRange(P.yun, G.year);
+    txt(gMarkers, CX, y0-24, `${YUAN_NAME[P.yun]}（${ys}–${ye}）· ${sitM}山${faceM}向 · 玄空宅命盘`,
+      {'font-size':12.5, 'font-weight':700, fill:'#374151', 'text-anchor':'middle'});
+  } else {
+    txt(gMarkers, CX, y0-24, `年九宫飞星 · ${G.gz}年（${G.year}）· 五黄在${five}宫`,
+      {'font-size':12.5, 'font-weight':700, fill:'#374151', 'text-anchor':'middle'});
+  }
+
+  // 视图切换（宅命盘 / 年星盘）
+  [['zhai','宅命盘'],['year','年星盘']].forEach(([id, name], i) => {
+    const active = (state.nineMode === id);
+    const t = txt(gMarkers, CX - 54 + i*108, y0-7, name,
+      {'font-size':12, 'font-weight': active ? 700 : 400,
+       fill: active ? '#2563eb' : '#9aa0ad', 'text-anchor':'middle'});
+    t.style.cursor = 'pointer';
+    t.onclick = () => { state.nineMode = id; render(); };
+  });
+
+  // 九宫
   layout.forEach((row, ri) => row.forEach((pal, ci) => {
     const x = x0 + ci*(cell+gap), y = y0 + ri*(cell+gap);
-    const s = starOf[pal], isFive = (pal === five), nat = STAR_NATURE[s];
-    el('rect', {x, y, width:cell, height:cell, rx:8,
-      fill: isFive ? '#fecaca' : STAR_BG[nat],
-      stroke: isFive ? '#dc2626' : '#e5e7eb', 'stroke-width': isFive ? 3 : 1.2}, gMarkers);
-    txt(gMarkers, x+cell/2, y+cell/2-14, pal, {'font-size':11.5, 'font-weight':600, fill:'#6b7280'});
-    txt(gMarkers, x+cell/2, y+cell/2+5, s, {'font-size':25, 'font-weight':800, fill:STAR_FG[nat]});
-    txt(gMarkers, x+cell/2, y+cell/2+23, STAR_NAME[s], {'font-size':10.5, fill:STAR_FG[nat]});
+    const isSit  = zhai && pal === P.sitPalace;
+    const isFace = zhai && pal === P.facePalace;
+
+    if (zhai){
+      let fill = (pal === '中') ? '#f8fafc' : '#ffffff', stroke = '#e5e7eb', sw = 1.2;
+      if (isSit)  { fill = '#eff6ff'; stroke = '#378add'; sw = 2.4; }
+      if (isFace) { fill = '#f0fdf4'; stroke = '#22c55e'; sw = 2.4; }
+      el('rect', {x, y, width:cell, height:cell, rx:8, fill, stroke, 'stroke-width':sw}, gMarkers);
+      txt(gMarkers, x+9, y+17, pal === '中' ? '中宫' : pal,
+        {'font-size':12.5, 'font-weight':600, fill:'#6b7280'});
+      if (isSit)  txt(gMarkers, x+cell-9, y+17, `坐·${sitM}`,
+        {'font-size':11.5, 'font-weight':700, fill:'#2563eb', 'text-anchor':'end'});
+      if (isFace) txt(gMarkers, x+cell-9, y+17, `向·${faceM}`,
+        {'font-size':11.5, 'font-weight':700, fill:'#16a34a', 'text-anchor':'end'});
+      [['运', P.yunPan[pal],   '#6b7280'],
+       ['山', P.shanPan[pal],  '#2563eb'],
+       ['向', P.xiangPan[pal], '#16a34a']].forEach(([lab, s, col], k) => {
+        const ry = y + 42 + k*17;
+        txt(gMarkers, x+cell/2-5, ry, lab, {'font-size':11, fill:col, 'text-anchor':'end'});
+        txt(gMarkers, x+cell/2+5, ry, String(s),
+          {'font-size':16.5, 'font-weight':700, fill:col, 'text-anchor':'start'});
+      });
+    } else {
+      const s = starOf[pal], isFive = (pal === five), nat = STAR_NATURE[s];
+      el('rect', {x, y, width:cell, height:cell, rx:8,
+        fill: isFive ? '#fecaca' : STAR_BG[nat],
+        stroke: isFive ? '#dc2626' : '#e5e7eb', 'stroke-width': isFive ? 3 : 1.2}, gMarkers);
+      txt(gMarkers, x+cell/2, y+20, pal,
+        {'font-size':12, 'font-weight':600, fill:'#6b7280', 'text-anchor':'middle'});
+      txt(gMarkers, x+cell/2, y+52, s,
+        {'font-size':28, 'font-weight':800, fill:STAR_FG[nat], 'text-anchor':'middle'});
+      txt(gMarkers, x+cell/2, y+71, STAR_NAME[s],
+        {'font-size':11, fill:STAR_FG[nat], 'text-anchor':'middle'});
+    }
   }));
-  txt(gMarkers, CX, y0-12, `年九宫飞星 · ${G.gz}年（${G.year}）· 五黄在${five}宫`,
-    {'font-size':12.5, 'font-weight':700, fill:'#374151'});
+
+  // 宅命盘：入中之数与顺逆（每宫已自带「运/山/向」标签，故不再另设配色图例）
+  if (zhai){
+    txt(gMarkers, CX, y0+total+17,
+      `运星${P.yun}入中顺飞　山星${P.shanStar}入中（${sitM}·${P.sitYang}·${P.sitYang==='阳'?'顺':'逆'}飞）　向星${P.xiangStar}入中（${faceM}·${P.faceYang}·${P.faceYang==='阳'?'顺':'逆'}飞）`,
+      {'font-size':11, fill:'#6b7280', 'text-anchor':'middle'});
+  }
 }
 
 function renderMarkers(){
   gMarkers.innerHTML = '';
   const sit = state.sit, face = opposite(sit);
   const sitM = MOUNTAINS[sit], faceM = MOUNTAINS[face];
+  const fd = ((state.faceDeg % 360) + 360) % 360;   // 精确朝向度数（1°精度）
+  const sd = (fd + 180) % 360;                      // 精确坐山度数（坐向恒差 180°）
 
-  // 坐山 / 朝向 扇面
-  el('path', {d: sectorPath(sit*15-7.5, sit*15+7.5, 250, 366),
+  // 坐山 / 朝向 扇面（中心对齐精确度数，扇宽 ±7.5° 一个山格）
+  el('path', {d: sectorPath(sd-7.5, sd+7.5, 250, 366),
     fill:'rgba(37,99,235,.14)', stroke:'#2563eb', 'stroke-width':2}, gMarkers);
-  el('path', {d: sectorPath(face*15-7.5, face*15+7.5, 250, 366),
+  el('path', {d: sectorPath(fd-7.5, fd+7.5, 250, 366),
     fill:'rgba(22,163,74,.13)', stroke:'#16a34a', 'stroke-width':2}, gMarkers);
-  radialLabel(sit*15, 455, [`坐 · ${sitM}山`], '#2563eb', 15.5);
-  radialLabel(face*15, 455, [`向 · ${faceM}山`], '#16a34a', 15.5);
+  radialLabel(sd, 455, [`坐 · ${sitM}山`], '#2563eb', 15.5);
+  radialLabel(fd, 455, [`向 · ${faceM}山`], '#16a34a', 15.5);
+
+  // 一百二十分金：盘面不画标记线，仅顶部 #fenjinBar 提示条显示判定结果
 
   // （中间区域的前／后／坐方／向方 徽标已按需求移除）
 
@@ -900,6 +1168,15 @@ function renderMarkers(){
         continue;
       }
       if (!e.mountains) continue;
+      if (e.center){                                    // 年五黄入中宫：在罗盘中心标注
+        const rc = 28, color = e.color;
+        el('circle', {cx: CX, cy: CY, r: rc, fill: color, 'fill-opacity': e.op || .14,
+          stroke: color, 'stroke-width': e.sw || 3.0}, gMarkers);
+        const t = el('text', {x: CX, y: CY, 'text-anchor': 'middle', 'dominant-baseline': 'central',
+          fill: color, 'font-size': (e.fs || 14) + 'px', 'font-weight': 'bold'}, gMarkers);
+        t.textContent = e.label;
+        continue;
+      }
       if (e.range && e.labelAt !== undefined && e.tag){ // 整宫扇面 + 宫内简标（大游年式：星曜直接画进宫位环带）
         el('path', {d: sectorPath(e.range[0], e.range[1], 250, 366),
           fill: color, 'fill-opacity': .13, stroke: color, 'stroke-width':1.6}, gMarkers);
@@ -907,7 +1184,7 @@ function renderMarkers(){
         arcText(e.labelAt, 326, e.yq, color, 12);                 // 应期，环状排版
         continue;
       }
-      if (e.range && e.labelAt !== undefined){       // 整宫扇面 + 宫位外标签（备用模式）
+      if (e.range && e.labelAt !== undefined && !e.band){ // 整宫扇面 + 宫位外标签（备用模式；带 band 的项交给下方 e.band 分支以落到正确内环）
         el('path', {d: sectorPath(e.range[0], e.range[1], 250, 366),
           fill: color, 'fill-opacity': .13, stroke: color, 'stroke-width':1.6}, gMarkers);
         const [lx1,ly1] = point(e.labelAt, 369), [lx2,ly2] = point(e.labelAt, r.labelR - 24);
@@ -918,13 +1195,20 @@ function renderMarkers(){
       }
       if (e.band){                                      // 内环标记（戊己都天 / 五黄三煞：画于宅体与二十四山带之间的内环）
         const midR = (e.band[0] + e.band[1]) / 2, op = e.op || .22, fs2 = e.fs || 15;
+        if (e.range){                                   // 整宫单环（年五黄/月五黄：一宫跨三山，一个连续环表示，不分段、不三等份）
+          el('path', {d: sectorPath(e.range[0], e.range[1], e.band[0], e.band[1]), class:'sector-sha',
+            fill: color, 'fill-opacity': op, stroke: color, 'stroke-width': e.sw || 3.0}, gMarkers);
+          if (e.labelAt !== undefined) arcText(e.labelAt, midR, e.label, color, fs2);
+          continue;
+        }
         for (const m of e.mountains){
           const i = idxOf(m), a = i * 15;
           el('path', {d: sectorPath(a-7.5, a+7.5, e.band[0], e.band[1]), class:'sector-sha',
             fill: color, 'fill-opacity':op, stroke: color, 'stroke-width': e.sw || 2}, gMarkers);
         }
-        // 标签：给定 labelAt 则单标于该宫/方中心（三煞/五黄式）；否则逐山标（戊己都天式）
-        if (e.labelAt !== undefined) arcText(e.labelAt, midR, e.label, color, fs2);
+        // 标签：perMountain 则逐山各标一次（三煞：三山都要标出）；否则给定 labelAt 单标于中心（五黄式）；再否则逐山标（戊己都天式）
+        if (e.perMountain) for (const m of e.mountains){ const a = idxOf(m) * 15; arcText(a, midR, e.label, color, fs2); }
+        else if (e.labelAt !== undefined) arcText(e.labelAt, midR, e.label, color, fs2);
         else for (const m of e.mountains){ const a = idxOf(m) * 15; arcText(a, midR, e.label, color, fs2); }
         continue;
       }
@@ -957,95 +1241,186 @@ function buildPanel(){
     selSit.add(new Option(`${m}山（${PALACE_OF[m]}宫 · ${degRange(i)}）`, i));
     selFace.add(new Option(`${m}山（${PALACE_OF[m]}宫 · ${degRange(i)}）`, i));
   });
-  selSit.onchange = e => { state.sit = +e.target.value; render(); };
-  selFace.onchange = e => { state.sit = opposite(+e.target.value); render(); };
+  selSit.onchange = e => {
+    state.sit = +e.target.value;
+    state.faceDeg = opposite(state.sit) * 15;    // 坐山变 → 朝向度数同步（24山中心角）
+    render();
+  };
+  selFace.onchange = e => {
+    state.sit = opposite(+e.target.value);
+    state.faceDeg = +e.target.value * 15;        // 朝向下拉变 → 度数同步
+    render();
+  };
+
+  /* ---- 朝向度数输入 与 实时获取（手机指南针） ---- */
+  const inpFaceDeg = document.getElementById('inpFaceDeg');
+  // 度数 → 24山索引（每山 15°，0°=正北子山；359.9° 归 0 子山）
+  const degToIdx = d => Math.round((((d % 360) + 360) % 360) / 15) % 24;
+  // 度数生效：更新朝向下拉 + 坐山状态（供「确认」与手工输入共用）；度数本身 1° 精度保留
+  const applyFaceDeg = deg => {
+    const idx = degToIdx(deg);
+    selFace.value = idx;
+    state.sit = opposite(idx);
+    state.faceDeg = ((deg % 360) + 360) % 360;   // 精确度数驱动盘面旋转
+    render();
+  };
+  inpFaceDeg.addEventListener('change', () => {
+    const v = parseFloat(inpFaceDeg.value);
+    if (isNaN(v)) return;
+    applyFaceDeg(v);
+  });
+
+  // 实时测量覆盖层
+  const overlay = document.getElementById('compassOverlay');
+  const cpDegEl = document.getElementById('cpDeg');
+  const cpSubEl = document.getElementById('cpSub');
+  const cpHintEl = document.getElementById('cpHint');
+  const cp = { running:false, got:false, samples:[], timer:null };
+  const cpAvg = () => {                       // 向量平均，处理 359°↔1° 跨越
+    let x = 0, y = 0;
+    for (const h of cp.samples){ x += Math.cos(h * Math.PI / 180); y += Math.sin(h * Math.PI / 180); }
+    return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  };
+  const cpDir = d => ['北','东北','东','东南','南','西南','西','西北'][Math.round(((d % 360) + 360) % 360 / 45) % 8];
+  const cpHeading = e => {
+    if (typeof e.webkitCompassHeading === 'number') return e.webkitCompassHeading;  // iOS：磁北航向 0-360
+    if (typeof e.alpha === 'number'){                                              // Android：alpha 反算
+      let h = (360 - e.alpha) % 360;
+      if (window.screen && screen.orientation && screen.orientation.angle) h = (h + screen.orientation.angle) % 360;
+      return h;
+    }
+    return null;
+  };
+  const cpOnOrientation = e => {
+    const h = cpHeading(e);
+    if (h === null) return;
+    cp.got = true;
+    cp.samples.push(h);
+    if (cp.samples.length > 8) cp.samples.shift();
+    const avg = cpAvg();
+    const idx = degToIdx(avg);
+    cpDegEl.textContent = Math.round(avg) + '°';
+    cpSubEl.textContent = `${MOUNTAINS[idx]}山（${PALACE_OF[MOUNTAINS[idx]]}宫）· ${cpDir(avg)} · ${degRange(idx)}`;
+  };
+  const cpStop = () => {
+    cp.running = false; cp.got = false; cp.samples = [];
+    if (cp.timer){ clearTimeout(cp.timer); cp.timer = null; }
+    window.removeEventListener('deviceorientation', cpOnOrientation);
+    overlay.classList.add('hidden');
+  };
+  document.getElementById('btnCompass').addEventListener('click', async () => {
+    // iOS 13+ 必须在用户手势中请求权限
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+      try{
+        const p = await DeviceOrientationEvent.requestPermission();
+        if (p !== 'granted'){
+          overlay.classList.remove('hidden');
+          cpDegEl.textContent = '--°';
+          cpSubEl.textContent = '未授权指南针权限（请在设置中允许）';
+          return;
+        }
+      }catch(err){
+        overlay.classList.remove('hidden');
+        cpDegEl.textContent = '--°';
+        cpSubEl.textContent = '无法请求指南针权限，请重试';
+        return;
+      }
+    } else if (!('ondeviceorientation' in window)){
+      overlay.classList.remove('hidden');
+      cpDegEl.textContent = '--°';
+      cpSubEl.textContent = '当前浏览器不支持指南针';
+      return;
+    }
+    cp.running = true; cp.got = false; cp.samples = [];
+    cpDegEl.textContent = '--°';
+    cpSubEl.textContent = '等待传感器数据…';
+    overlay.classList.remove('hidden');
+    window.addEventListener('deviceorientation', cpOnOrientation);
+    cp.timer = setTimeout(() => {                // 8 秒无数据：桌面浏览器 / 无指南针设备
+      if (cp.running && !cp.got) cpSubEl.textContent = '未收到传感器数据（桌面浏览器或无指南针的设备）';
+    }, 8000);
+  });
+  document.getElementById('cpConfirm').addEventListener('click', () => {
+    if (!cp.got || !cp.samples.length){ cpSubEl.textContent = '尚未读到稳定度数，请稍候'; return; }
+    const deg = cpAvg();
+    cpStop();
+    applyFaceDeg(deg);                          // 回填输入框 + 同步下拉与坐山
+  });
+  document.getElementById('cpCancel').addEventListener('click', cpStop);
+  overlay.addEventListener('click', e => { if (e.target === overlay) cpStop(); });
 
   const quick = document.getElementById('quickPalaces');
   const center = {'坎':'子','艮':'艮','震':'卯','巽':'巽','离':'午','坤':'坤','兑':'酉','乾':'乾'};
   for (const p in center){
     const b = document.createElement('button');
     b.textContent = `坐${p}`;
-    b.onclick = () => { state.sit = idxOf(center[p]); render(); };
+    b.onclick = () => { state.sit = idxOf(center[p]); state.faceDeg = opposite(state.sit) * 15; render(); };
     quick.appendChild(b);
   }
 
   const rt = document.getElementById('ruleToggles');
   // 选项只保留规则短名（不含备注/类型徽标），保持简洁
   const SHORT = {'basha':'八煞','xiangshang':'黄泉','dayounian':'大游年','wujidoutian':'戊己都天','wuhuangsansha':'五黄三煞','changsheng_sit':'坐山水法','changsheng_face':'向上水法','sanjiliuxiu':'三吉六秀'};
-  let annualTestAdded = false;
-  // 选项排序：非流年规则在上，与时间相关（戊己都天、五黄三煞）置底
-  const OPT_ORDER = ['basha','xiangshang','dayounian','changsheng_sit','changsheng_face','sanjiliuxiu','wujidoutian','wuhuangsansha'];
+  // 选项分三排：① 八煞·黄泉·大游年 ② 坐山水法·向上水法·三吉六秀 ③ 戊己都天·五黄三煞（「时间输入」模块位于选项标题下方、三排之前）
+  const ROW_GROUPS = [
+    ['basha','xiangshang','dayounian'],
+    ['changsheng_sit','changsheng_face','sanjiliuxiu'],
+    ['wujidoutian','wuhuangsansha']
+  ];
   const ruleById = Object.fromEntries(Rules.list.map(r => [r.id, r]));
-  OPT_ORDER.forEach(id => {
-    const r = ruleById[id];
-    if (!r) return;
-    const lab = document.createElement('label');
-    lab.className = 'rule-item';
-    const cb = document.createElement('input');
-    cb.type = 'checkbox';
-    cb.checked = !!state.rules[r.id];
-    cb.disabled = !!r.stub;
-    cb.onchange = () => { state.rules[r.id] = cb.checked; render(); };
-    lab.appendChild(cb);
-    const span = document.createElement('span');
-    span.innerHTML = `<span class="rname">${SHORT[r.id] || r.name}</span>`;
-    lab.appendChild(span);
-    rt.appendChild(lab);
-    // 首个流年类规则后，附共享「流年测试基准」框（驱动戊己都天、五黄三煞等流年规则，便于手工核验）
-    if (r.type === '流年论' && !annualTestAdded){
-      annualTestAdded = true;
-      const tw = document.createElement('div');
-      tw.className = 'annual-test';
-      tw.innerHTML = `<span class="at-label">流年测试基准</span>` +
-        `<input type="date" id="testDate" class="at-input" title="手工输入公历年月日，校验流年神煞（戊己都天/五黄三煞）">` +
-        `<button id="testToday" class="at-btn" type="button">今天</button>` +
-        `<span id="testResult" class="at-res"></span>`;
-      rt.appendChild(tw);
-    }
-    // 五黄三煞：专设测试框，独立核验三煞方 / 年五黄 / 月五黄 准确性（与流年测试基准共享基准 state.testMs）
-    if (r.id === 'wuhuangsansha'){
-      const twWH = document.createElement('div');
-      twWH.className = 'annual-test';
-      twWH.innerHTML = `<span class="at-label">五黄三煞测试</span>` +
-        `<input type="date" id="testDateWH" class="at-input" title="手工输入公历年月日，校验五黄三煞">` +
-        `<button id="testTodayWH" class="at-btn" type="button">今天</button>` +
-        `<span id="testResultWH" class="at-res" style="width:100%"></span>`;
-      rt.appendChild(twWH);
-    }
+  ROW_GROUPS.forEach((group, gi) => {
+    const row = document.createElement('div');
+    row.className = 'opt-row';
+    group.forEach(id => {
+      const r = ruleById[id];
+      if (!r) return;
+      const lab = document.createElement('label');
+      lab.className = 'rule-item';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!state.rules[r.id];
+      cb.disabled = !!r.stub;
+      cb.onchange = () => { state.rules[r.id] = cb.checked; render(); };
+      lab.appendChild(cb);
+      const span = document.createElement('span');
+      span.innerHTML = `<span class="rname">${SHORT[r.id] || r.name}</span>`;
+      lab.appendChild(span);
+      row.appendChild(lab);
+    });
+    rt.appendChild(row);
   });
 
-  // 流年测试：手工输入公历年月日 → 实时换算干支年、戊己都天、五黄三煞，便于核对准确性（流年类规则共用基准 state.testMs）
+  // 统一「时间输入」模块：嵌入选项卡内、标题正下方第一位（驱动戊己都天、五黄三煞、九宫飞星等所有与时间相关的因素，共享 state.testMs）
+  const tw = document.getElementById('timeInputBox');
+  tw.innerHTML = `<span class="at-label">时间输入</span>` +
+    `<input type="date" id="testDate" class="at-input" title="手工输入公历年月日，统一驱动戊己都天、五黄三煞、九宫飞星等所有与时间相关的因素">` +
+    `<button id="testToday" class="at-btn" type="button">今天</button>` +
+    `<span id="testResult" class="at-res" style="width:100%"></span>`;
+
+  // 统一时间输入：手工输入公历年月日 → 实时换算干支年、戊己都天、三煞/五黄、元运，驱动所有与时间相关的因素（共用基准 state.testMs）
   const testDateEl = document.getElementById('testDate');
   const testResultEl = document.getElementById('testResult');
-  const testDateWHEl = document.getElementById('testDateWH');
-  const testResultWHEl = document.getElementById('testResultWH');
   const fmtDateInput = ms => { const d = new Date(ms);
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
-  function updateTestResult(){          // 综合读数：戊己都天 + 三煞/五黄
+  function updateTestResult(){          // 综合读数：干支 / 月建 / 戊己都天 / 三煞 / 年·月五黄 / 元运
     const G = ganzhiYearOf(state.testMs);
     const dd = wujiDoutian(G.stem);
     const mBranch = solarMonthBranch(state.testMs);
-    const dir = SANSHA_DIR[G.branch];
-    const yw = wuhuangFromBranch(G.branch), mw = wuhuangFromBranch(mBranch);
-    testResultEl.textContent =
-      `→ ${G.gz}年（${G.year}）　戊都${dd.wu} 己都${dd.ji} 夹都${dd.jia}` +
-      `　│　三煞${dir} 年黄${yw} 月黄${mw}`;
-  }
-  function updateTestWH(){              // 五黄三煞专项读数：三煞方/年五黄/月建/月五黄，逐条列出便于核对
-    const G = ganzhiYearOf(state.testMs);
     const dir = SANSHA_DIR[G.branch], ss = SAN_SHA[dir];
-    const yw = wuhuangFromBranch(G.branch), yp = PALACE_CENTER[yw];
-    const mBranch = solarMonthBranch(state.testMs);
-    const mw = wuhuangFromBranch(mBranch), mp = PALACE_CENTER[mw];
-    testResultWHEl.innerHTML =
-      `→ <b>${G.gz}年（${G.year}）</b>　年三煞：<b>${dir}方</b>（${ss.m.join('')}山）` +
-      `　年五黄：<b>${yw}宫</b>（${yp.m.join('')}山）` +
-      `　月建：<b>${mBranch}月</b>　月五黄：<b>${mw}宫</b>（${mp.m.join('')}山）`;
+    const yw = yearWuhuang(G.year);
+    const ypText = yw === '中' ? '中宫' : `${PALACE_CENTER[yw].m.join('')}山`;
+    const mw = monthWuhuangFromBranch(mBranch);
+    const mpText = mw === '中' ? '中宫' : `${PALACE_CENTER[mw].m.join('')}山`;
+    const yun = yuanOf(G.year), [ys, ye] = yuanRange(yun, G.year);
+    testResultEl.innerHTML =
+      `→ <b>${G.gz}年（${G.year}）</b>　月建<b>${mBranch}月</b>` +
+      `　│　戊都${dd.wu} 己都${dd.ji} 夹都${dd.jia}` +
+      `　│　三煞<b>${dir}方</b>（${ss.m.join('')}山）　年五黄<b>${yw}宫</b>（${ypText}）　月五黄<b>${mw}宫</b>（${mpText}）` +
+      `　│　${YUAN_NAME[yun]}（${ys}–${ye}）`;
   }
-  function refreshAll(){                // 同步两个测试框 + 两处读数 + 重绘盘面
-    const v = fmtDateInput(state.testMs);
-    testDateEl.value = v; testDateWHEl.value = v;
-    updateTestResult(); updateTestWH();
+  function refreshAll(){                // 同步时间输入框 + 综合读数 + 重绘盘面
+    testDateEl.value = fmtDateInput(state.testMs);
+    updateTestResult();
     if (gMarkers) renderMarkers();     // 初始 buildPanel 阶段 gMarkers 尚未创建，跳过；运行期 change 时正常重绘
   }
   function setDate(ms){ state.testMs = ms; refreshAll(); }
@@ -1056,9 +1431,8 @@ function buildPanel(){
       setDate(new Date(y, m-1, d, 12, 0, 0).getTime());   // 取正午，避开跨日界
     });
   }
-  bindDateInput(testDateEl); bindDateInput(testDateWHEl);
+  bindDateInput(testDateEl);
   document.getElementById('testToday').addEventListener('click', () => setDate(Date.now()));
-  document.getElementById('testTodayWH').addEventListener('click', () => setDate(Date.now()));
   refreshAll();
 
   const rows = [['坎','辰','龙','坎龙'],['坤','卯','兔','坤兔'],['震','申','猴','震山猴'],
@@ -1072,7 +1446,24 @@ function buildPanel(){
   }
 }
 
+function updateFenjinBar(){
+  const bar = document.getElementById('fenjinBar');
+  if (!bar) return;
+  const fd = normalizeDeg(state.faceDeg);
+  const fj = fenjinOf(fd);
+  const line = fenjinLineStatus(fd);
+  const cls = line ? line.kind : fj.kind;
+  const title = line ? line.label : fj.name;
+  const level = line ? line.level : fj.level;
+  bar.className = 'fenjin-bar ' + cls;
+  bar.style.display = 'flex';
+  bar.innerHTML = `<span class="fj-deg">朝向 ${Math.round(fd)}°</span>` +
+    `<span class="fj-name">${title} · ${level}</span>` +
+    `<span class="fj-desc">${fj.desc}</span>`;
+}
+
 function renderResults(){
+  updateFenjinBar();
   const resEl = document.getElementById('results');
   if (!resEl) return;   // 「判读结果」卡隐藏时跳过（取消 HTML 注释即恢复，无需改代码）
   const sit = state.sit, face = opposite(sit);
@@ -1104,8 +1495,10 @@ function render(){
   document.getElementById('selFace').value = opposite(state.sit);
   const sitM = MOUNTAINS[state.sit], faceM = MOUNTAINS[opposite(state.sit)];
   document.getElementById('sitSummary').textContent =
-    `当前：坐 ${sitM}山（${PALACE_OF[sitM]}宫） · 向 ${faceM}山（${PALACE_OF[faceM]}宫）`;
-  ROT = ((180 - state.sit * 15) % 360 + 360) % 360;   // 坐山置盘底、朝向置盘顶
+    `当前：坐 ${sitM}山（${PALACE_OF[sitM]}宫） · 向 ${faceM}山（${PALACE_OF[faceM]}宫） · 朝向 ${Math.round(state.faceDeg)}°`;
+  const degEl = document.getElementById('inpFaceDeg');
+  if (degEl && document.activeElement !== degEl) degEl.value = Math.round(state.faceDeg);
+  ROT = ((360 - state.faceDeg) % 360 + 360) % 360;   // 1°级精确旋转：朝向度数恒置盘顶(0°)、坐向置盘底(180°)
   svg.innerHTML = '';        // 视角已变，整盘重建（文字保持正立）
   buildStatic();
   renderMarkers();
