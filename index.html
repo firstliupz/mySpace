@@ -164,8 +164,11 @@
     header{padding:10px 14px; gap:8px;}
     header h1{font-size:17px;}
     header .sub{font-size:11px; width:100%;}
-    main{flex-direction:column; padding:12px; gap:12px; align-items:stretch;}
-    .compass-card{padding:8px; max-width:none; border-radius:12px;}
+    main{flex-direction:column; padding:8px 10px; gap:10px; align-items:stretch;}
+    /* 盘面最大化：卡片左右破格至屏幕边缘、内边距压到最小，直径随屏宽吃满 */
+    .compass-card{padding:3px; margin-left:-10px; margin-right:-10px;
+      width:auto; max-width:none; align-self:stretch;
+      border-left:none; border-right:none; border-radius:0;}
     .panel{width:auto; flex:1 1 auto;}
     .row{gap:8px;}
     .row select{font-size:16px; flex:1 1 auto; min-width:0; padding:8px 10px;}  /* iOS:16px 以上防焦点缩放 */
@@ -267,7 +270,8 @@
   </header>
   <main>
     <section class="compass-card">
-      <svg id="compass" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg"></svg>
+      <!-- viewBox 收紧至实际内容边界（含盘顶/盘底「X向」「坐·X山」标签的字形外扩），等效放大约 5.5% -->
+      <svg id="compass" viewBox="22 22 956 956" xmlns="http://www.w3.org/2000/svg"></svg>
     </section>
 
     <!-- 分金判读独立模块：位于盘面模块之下、选项卡之上；固定占位，内容变化不影响盘面尺寸 -->
@@ -941,7 +945,7 @@ function buildStatic(){
   // 山名（随盘整体旋转，文字本身保持水平不变）
   MOUNTAINS.forEach((m, i) => {
     const [x,y] = point(i*15, 286);
-    txt(gBase, x, y, m, {'font-size':20, 'font-weight':600, fill:'#2b3442'});
+    txt(gBase, x, y, m, {'font-size':22, 'font-weight':600, fill:'#2b3442'});
   });
 
   // 八卦带（三山一宫）；大游年开启时卦名让位——宫位环带内直接画星曜简标（见 renderMarkers）
@@ -958,7 +962,7 @@ function buildStatic(){
     tg.setAttribute('transform', `rotate(${k*45 + ROT} ${sx} ${sy})`);
     if (!dynOn){                                        // 大游年关闭时才显示卦名（如「艮」）
       const [cx2,cy2] = point(k*45, 334);
-      txt(gBase, cx2, cy2, p, {'font-size':24, 'font-weight':700, fill:'#3c4552'});
+      txt(gBase, cx2, cy2, p, {'font-size':26, 'font-weight':700, fill:'#3c4552'});
     }
   });
 
@@ -1145,8 +1149,8 @@ function renderMarkers(){
     fill:'rgba(37,99,235,.14)', stroke:'#2563eb', 'stroke-width':2}, gMarkers);
   el('path', {d: sectorPath(fd-7.5, fd+7.5, 250, 366),
     fill:'rgba(22,163,74,.13)', stroke:'#16a34a', 'stroke-width':2}, gMarkers);
-  radialLabel(sd, 455, [`坐 · ${sitM}山`], '#2563eb', 15.5);
-  radialLabel(fd, 455, [`向 · ${faceM}山`], '#16a34a', 15.5);
+  radialLabel(sd, 455, [`坐 · ${sitM}山`], '#2563eb', 17);
+  radialLabel(fd, 455, [`${faceM}向`], '#16a34a', 17);   // 盘顶正向：直接显示「X向」（如子山午向 → 午向）
 
   // 一百二十分金：盘面不画标记线，仅顶部 #fenjinBar 提示条显示判定结果
 
