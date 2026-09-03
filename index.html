@@ -70,6 +70,10 @@
   footer{padding:10px 26px 24px; color:var(--muted); font-size:12px; line-height:1.7;}
   .note-add{font-size:12px; color:#9a6700; background:#fff8e6; border:1px solid #f0dfae;
     border-radius:8px; padding:6px 10px; line-height:1.6; margin-top:8px;}
+  /* 版本标记（页脚/页首小字，便于核对手机端实际加载的版本） */
+  .ver-tag{font-size:11px; color:#a6aebb; letter-spacing:.5px; user-select:none;}
+  .home-wrap .ver-tag{margin-top:14px;}
+  header .ver-tag{margin-left:auto;}
 
   /* ===== 两屏流程（首页输入 → 判读页） ===== */
   .screen.hidden{display:none;}
@@ -259,6 +263,7 @@
       <div class="quick" id="quickPalaces"></div>
     </div>
     <button class="btn-primary" id="btnGo">进入查询</button>
+    <div class="ver-tag" id="verTagHome"></div>
   </div>
 </div>
 
@@ -267,6 +272,7 @@
   <header>
     <h1>八尺峦头</h1>
     <span class="sub" id="sitSummary"></span>
+    <span class="ver-tag" id="verTagCompass"></span>
   </header>
   <main>
     <section class="compass-card">
@@ -542,10 +548,21 @@ const PALACE_CENTER = {  // 五黄宫 → 所占三山 + 标签中心角（须�
 };
 
 /* ===== 长生水法（双山三合） =====
-   八宫 → 所属三合局：以「本宫长生地支」定（艮宫长生寅→火局、坤宫长生申→水局、乾宫长生亥→木局、巽宫长生巳→金局，余依本宫地支）。
+   双山五行：二十四山两两成「双山」，共十二双山，各归属一三合局（30° 一局，逐山定局，非按宫统一定局）。
+     壬子(水) · 癸丑(金) · 艮寅(火) · 甲卯(木) · 乙辰(水) · 巽巳(金) · 丙午(火) · 丁未(木) · 坤申(水) · 庚酉(金) · 辛戌(火) · 乾亥(木)
+   对应三合局：申子辰水局、巳酉丑金局、寅午戌火局、亥卯未木局。
    长生十二宫顺序：长生、沐浴、冠带、临官、帝旺、衰、病、死、墓、绝、胎、养。
    来水吉方（宜来）：长生、帝旺（生旺水）；去水吉方（水口，宜出）：墓、绝。 */
-const CHANGSHENG_JU = { '坎':'水','艮':'火','震':'木','巽':'金','离':'火','坤':'水','兑':'金','乾':'木' };
+const SHUANGSHAN_PAIR = {                       // 山 → 所属双山
+  '壬':'壬子','子':'壬子',  '癸':'癸丑','丑':'癸丑',  '艮':'艮寅','寅':'艮寅',  '甲':'甲卯','卯':'甲卯',
+  '乙':'乙辰','辰':'乙辰',  '巽':'巽巳','巳':'巽巳',  '丙':'丙午','午':'丙午',  '丁':'丁未','未':'丁未',
+  '坤':'坤申','申':'坤申',  '庚':'庚酉','酉':'庚酉',  '辛':'辛戌','戌':'辛戌',  '乾':'乾亥','亥':'乾亥'
+};
+const SHUANGSHAN_JU = {                         // 山 → 双山所属三合局
+  '壬':'水','子':'水',  '癸':'金','丑':'金',  '艮':'火','寅':'火',  '甲':'木','卯':'木',
+  '乙':'水','辰':'水',  '巽':'金','巳':'金',  '丙':'火','午':'火',  '丁':'木','未':'木',
+  '坤':'水','申':'水',  '庚':'金','酉':'金',  '辛':'火','戌':'火',  '乾':'木','亥':'木'
+};
 const JU_LONGSEQ = {
   '火':['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'],  // 长生寅→墓戌→绝亥
   '水':['申','酉','戌','亥','子','丑','寅','卯','辰','巳','午','未'],  // 长生申→墓辰→绝巳
@@ -575,11 +592,16 @@ const STAR_FG = {吉:'#15803d',平:'#0e7490',凶:'#b91c1c'};
 /* ===== 元运 + 玄空飞星（运盘 / 山盘 / 向盘） =====
    ① 元运：三元九运，每运 20 年，上元一运起于 1864 年 → 2024–2043 为九运（九紫入中）。
    ② 运盘：运星入中，依洛书轨迹【顺飞】九宫。
-   ③ 山盘：取「坐山所在宫」的运星入中，依【坐山三元龙阴阳】定顺逆（阳顺阴逆）飞布。
-   ④ 向盘：取「朝向所在宫」的运星入中，依【朝向三元龙阴阳】定顺逆（阳顺阴逆）飞布。
+   ③ 山盘：取「坐山所在宫」的运星入中；顺逆按挨星法——入中之星寻其元旦盘【本宫】，
+      取本宫中与坐山【同元】之龙的阴阳定顺逆（阳顺阴逆）；
+      若入中之星为 5（居中宫无本宫），则随坐山本身的阴阳。
+   ④ 向盘：取「朝向所在宫」的运星入中，同理按向首定顺逆。
    故「时间」经元运影响运盘，「坐山朝向」经三元龙阴阳影响山盘与向盘。 */
 const YUAN_START = 1864;                                  // 上元一运起算年
 const LUOSHU_SEQ = ['中','乾','兑','艮','离','坎','坤','震','巽'];   // 洛书顺飞轨迹
+const STAR_PALACE = {'1':'坎','2':'坤','3':'震','4':'巽','5':'中','6':'乾','7':'兑','8':'艮','9':'离'};  // 星数 → 元旦盘本宫
+const YUAN_OF = {};                                       // 山 → 元龙位（0地 1天 2人）
+Object.keys(PALACE_MEMBERS).forEach(p => PALACE_MEMBERS[p].forEach((m, i) => YUAN_OF[m] = i));
 const MTN_YINYANG = {                                     // 二十四山阴阳（三元龙）：阳顺阴逆
   '乾':'阳','坤':'阳','艮':'阳','巽':'阳','甲':'阳','庚':'阳','丙':'阳','壬':'阳',
   '寅':'阳','申':'阳','巳':'阳','亥':'阳',
@@ -598,22 +620,35 @@ function yuanRange(yun, year){                // 元运 → [起, 讫] 公历年
 }
 function feiPan(x, forward){                  // x 入中飞布九宫；forward=true 顺飞，false 逆飞
   const map = {};
-  LUOSHU_SEQ.forEach((pal, k) => {            // 逆飞即沿洛书轨迹倒行：中→巽→震→坤→坎→离→艮→兑→乾
-    const step = forward ? k : -((9 - k) % 9);
+  LUOSHU_SEQ.forEach((pal, k) => {            // 顺飞：乾=x+1…巽=x+8；逆飞倒行：乾=x-1…巽=x-8
+    const step = forward ? k : -k;
     map[pal] = ((x - 1 + step) % 9 + 9) % 9 + 1;
   });
   return map;
+}
+function starDirection(star, mtn){            // 挨星顺逆：入中星 + 坐/向山 → {proxy, forward}
+  let proxy;                                   // 定阴阳所依之山
+  if (star === 5){                            // 5 居中宫无本宫，随坐/向山本身
+    proxy = mtn;
+  } else {                                     // 寻本宫，取与坐/向同元之龙
+    const Q = STAR_PALACE[String(star)];
+    proxy = PALACE_MEMBERS[Q][YUAN_OF[mtn]];
+  }
+  const yang = MTN_YINYANG[proxy] === '阳';
+  return { proxy, yang, forward: yang };       // 阳顺阴逆
 }
 function buildZhaiPan(year, sitM, faceM){     // 玄空宅命盘：运盘 + 山盘 + 向盘
   const yun = yuanOf(year);
   const yunPan = feiPan(yun, true);                                   // 运星入中，顺飞
   const sitPalace = PALACE_OF[sitM], facePalace = PALACE_OF[faceM];
   const shanStar = yunPan[sitPalace];                                 // 坐山宫运星 → 山星入中之数
-  const xiangStar = yunPan[facePalace];                               // 朝向宫运星 → 向星入中之数
-  const shanPan = feiPan(shanStar, MTN_YINYANG[sitM] === '阳');       // 阳顺阴逆
-  const xiangPan = feiPan(xiangStar, MTN_YINYANG[faceM] === '阳');
+  const xiangStar = yunPan[facePalace];                              // 朝向宫运星 → 向星入中之数
+  const sd = starDirection(shanStar, sitM), xd = starDirection(xiangStar, faceM);
+  const shanPan = feiPan(shanStar, sd.forward);                       // 阳顺阴逆（依本宫同元龙）
+  const xiangPan = feiPan(xiangStar, xd.forward);
   return { yun, yunPan, shanPan, xiangPan, shanStar, xiangStar, sitPalace, facePalace,
-           sitYang: MTN_YINYANG[sitM], faceYang: MTN_YINYANG[faceM] };
+           shanProxy: sd.proxy, shanYang: sd.yang ? '阳' : '阴', shanFwd: sd.forward,
+           xiangProxy: xd.proxy, xiangYang: xd.yang ? '阳' : '阴', xiangFwd: xd.forward };
 }
 const Rules = {
   list: [], byId: {},
@@ -746,9 +781,10 @@ Rules.register({
 
 Rules.register({
   id: 'changsheng_sit', name: '坐山水法（来去水）', type: '坐向论', color: '#334155', labelR: 442,
-  verse: '双山长生水法：以坐山所属三合局起长生十二宫，来水宜自长生、帝旺方（生旺水），去水（水口）宜出墓、绝方。',
+  verse: '双山长生水法：以坐山所属双山五行（三合局）起长生十二宫，来水宜自长生、帝旺方（生旺水），去水（水口）宜出墓、绝方。',
   evaluate(ctx){
-    const ju = CHANGSHENG_JU[ctx.sitPalace];
+    const sitM = MOUNTAINS[ctx.sit];
+    const ju = SHUANGSHAN_JU[sitM];             // 逐山定局（双山五行，30°一局）
     const seq = JU_LONGSEQ[ju];                  // 长生..养 十二支顺列
     const laiAll = [seq[0], seq[4]];             // 来水吉方：长生、帝旺
     const quAll  = [seq[8], seq[9]];             // 去水吉方（水口）：墓、绝
@@ -758,16 +794,17 @@ Rules.register({
     quAll.forEach(m => out.push({ kind:'qu', m, color:'#334155', dashed:false }));
     out.push({ kind:'waterArrow', lai:laiMain, qu:quMain, color:'#334155', dashed:false });  // 最外环实线：来→去
     return out.map(e => Object.assign(e, {
-      note: `坐山（${ctx.sitPalace}宫）属<b>${ju}局</b>：长生在<b>${laiMain}</b>、帝旺在<b>${laiAll[1]}</b>（宜来水）；` +
+      note: `坐山<b>${sitM}</b>（双山<b>${SHUANGSHAN_PAIR[sitM]}</b> · <b>${ju}局</b>）：长生在<b>${laiMain}</b>、帝旺在<b>${laiAll[1]}</b>（宜来水）；` +
             `墓在<b>${quMain}</b>、绝在<b>${quAll[1]}</b>（宜去水·水口）——外环以「长生(来)→墓(去)」<b>实线</b>环状箭头示水流向。` }));
   }
 });
 
 Rules.register({
   id: 'changsheng_face', name: '向上水法（来去水）', type: '坐向论', color: '#be185d', labelR: 442,
-  verse: '双山长生水法：以向上所属三合局起长生十二宫，来水宜自长生、帝旺方，去水（水口）宜出墓、绝方。',
+  verse: '双山长生水法：以向上所属双山五行（三合局）起长生十二宫，来水宜自长生、帝旺方，去水（水口）宜出墓、绝方。',
   evaluate(ctx){
-    const ju = CHANGSHENG_JU[ctx.facePalace];
+    const faceM = MOUNTAINS[ctx.face];
+    const ju = SHUANGSHAN_JU[faceM];            // 逐山定局（双山五行，30°一局）
     const seq = JU_LONGSEQ[ju];
     const laiAll = [seq[0], seq[4]];
     const quAll  = [seq[8], seq[9]];
@@ -777,7 +814,7 @@ Rules.register({
     quAll.forEach(m => out.push({ kind:'qu', m, color:'#be185d', dashed:true }));
     out.push({ kind:'waterArrow', lai:laiMain, qu:quMain, color:'#be185d', dashed:true });  // 最外环虚线：来→去
     return out.map(e => Object.assign(e, {
-      note: `朝向（${ctx.facePalace}宫）属<b>${ju}局</b>：长生在<b>${laiMain}</b>、帝旺在<b>${laiAll[1]}</b>（宜来水）；` +
+      note: `朝向<b>${faceM}</b>（双山<b>${SHUANGSHAN_PAIR[faceM]}</b> · <b>${ju}局</b>）：长生在<b>${laiMain}</b>、帝旺在<b>${laiAll[1]}</b>（宜来水）；` +
             `墓在<b>${quMain}</b>、绝在<b>${quAll[1]}</b>（宜去水·水口）——外环以「长生(来)→墓(去)」<b>虚线</b>环状箭头示水流向。` }));
   }
 });
@@ -1132,7 +1169,7 @@ function drawNinePalace(){
   // 宅命盘：入中之数与顺逆（每宫已自带「运/山/向」标签，故不再另设配色图例）
   if (zhai){
     txt(gMarkers, CX, y0+total+17,
-      `运星${P.yun}入中顺飞　山星${P.shanStar}入中（${sitM}·${P.sitYang}·${P.sitYang==='阳'?'顺':'逆'}飞）　向星${P.xiangStar}入中（${faceM}·${P.faceYang}·${P.faceYang==='阳'?'顺':'逆'}飞）`,
+      `运星${P.yun}入中顺飞　山星${P.shanStar}入中（依${P.shanProxy}${P.shanYang}·${P.shanFwd?'顺':'逆'}飞）　向星${P.xiangStar}入中（依${P.xiangProxy}${P.xiangYang}·${P.xiangFwd?'顺':'逆'}飞）`,
       {'font-size':11, fill:'#6b7280', 'text-anchor':'middle'});
   }
 }
@@ -1542,6 +1579,13 @@ function render(){
   renderMarkers();
   renderResults();
 }
+
+/* ===== 版本标记：与 sw.js 的 CACHE 版本号保持一致，便于确认手机端实际加载的版本 ===== */
+const APP_VER = 'v17 · 2026-09-03';
+['verTagHome', 'verTagCompass'].forEach(id => {
+  const e = document.getElementById(id);
+  if (e) e.textContent = '版本 ' + APP_VER;
+});
 
 buildPanel();
 render();
