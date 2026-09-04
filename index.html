@@ -610,6 +610,71 @@ const MTN_YINYANG = {                                     // 二十四山阴阳�
 };
 const YUAN_NAME = {1:'一运',2:'二运',3:'三运',4:'四运',5:'五运',6:'六运',7:'七运',8:'八运',9:'九运'};
 
+/* ===== 下卦 / 替卦（起星）判定 =====
+   每山 15°，以山中线为基准：距中线 ≤4.5°（正中 9°）＝ 下卦（正针）；
+   距中线 >4.5° 落入外侧 3° 兼向区（替卦条件区）；距中线 ≈7.5° 即山界骑缝（分金模块红警，弃线）。
+   兼向是否起星（沈氏系）：同卦宫·同阴阳（天元兼人元）虽兼不替仍下卦；阴阳互兼（天元兼地元）或
+   出卦相兼（人元兼地元）→ 查替星口诀；口诀无替（替星＝原星）则仍与下卦同。
+   替星口诀：子癸甲申→贪狼1，壬卯乙未坤→巨门2，乾亥辰巽巳戌→武曲6，酉辛丑艮丙→破军7，寅午庚丁→右弼9。
+   起星仅换入中之数，顺逆仍依原坐向三元龙（与下卦同）。判定起星后，中央九宫视图可切至「替星盘」
+   （buildTiPan）：以替星替换对应侧入中星并重飞；若替星恰与原星同数（盘面与下卦无异）则不产生替盘。 */
+const TI_XING = {'子':1,'癸':1,'甲':1,'申':1, '壬':2,'卯':2,'乙':2,'未':2,'坤':2,
+  '乾':6,'亥':6,'辰':6,'巽':6,'巳':6,'戌':6,
+  '酉':7,'辛':7,'丑':7,'艮':7,'丙':7, '寅':9,'午':9,'庚':9,'丁':9};
+function shanQiStatus(mtn, absDeg, star){          // 单山坐向线性质：下卦 / 兼向（含起星与否）
+  const d = normalizeDeg(absDeg);
+  const i = Math.floor((d + 7.5) / 15) % 24;       // 线所在山（与分金同法）
+  const start = normalizeDeg(i * 15 - 7.5);
+  let off = normalizeDeg(d - start); if (off >= 15) off -= 15;
+  const dist = Math.abs(off - 7.5);                // 距该山中线（0–7.5）
+  if (dist > 4.5 + 0.02){                          // 外侧 3° 兼向区
+    const jian = MOUNTAINS[off < 7.5 ? (i + 23) % 24 : (i + 1) % 24];
+    const qi = !(PALACE_OF[mtn] === PALACE_OF[jian] &&
+                 MTN_YINYANG[mtn] === MTN_YINYANG[jian]);   // 同宫同阴阳（天人相兼）不替
+    if (qi){
+      const proxy = starDirection(star, mtn).proxy;         // 替星查「入中星本宫·同元龙」之字
+      const ti = TI_XING[proxy];
+      return { kind:'ti', label: `兼${jian} · ${ti === star ? '起星·星同下卦' : '起星替' + ti}`,
+               color:'#b45309' };
+    }
+    return { kind:'jian', label:`兼${jian} · 仍下卦`, color:'#0e7490' };
+  }
+  return { kind:'xia', label:'下卦', color:'#16a34a' };
+}
+function pairQiStatus(){                           // 坐向对整体判定（徽标 + 明细）
+  const sitM = MOUNTAINS[state.sit], faceM = MOUNTAINS[opposite(state.sit)];
+  const P = buildZhaiPan(ganzhiYearOf(state.testMs).year, sitM, faceM);
+  const fd = normalizeDeg(state.faceDeg), sd = normalizeDeg(fd + 180);
+  const ss = shanQiStatus(sitM, sd, P.shanStar);
+  const fs = shanQiStatus(faceM, fd, P.xiangStar);
+  let tag, color;
+  if (ss.kind === 'ti' || fs.kind === 'ti')                 { tag = '起星替卦';     color = '#b45309'; }
+  else if (ss.kind === 'xia' && fs.kind === 'xia')          { tag = '下卦';         color = '#16a34a'; }
+  else                                                      { tag = '兼向 · 仍下卦'; color = '#0e7490'; }
+  return { tag, color, ss, fs, brief: '坐' + sitM + ss.label + '，向' + faceM + fs.label };
+}
+function buildTiPan(){                       // 起星替盘：任一侧起星且替星≠原星时，返回整盘数据；否则 null
+  const G = ganzhiYearOf(state.testMs);
+  const sitM = MOUNTAINS[state.sit], faceM = MOUNTAINS[opposite(state.sit)];
+  const P0 = buildZhaiPan(G.year, sitM, faceM);
+  const fd = normalizeDeg(state.faceDeg), sd = normalizeDeg(fd + 180);
+  const sub = (m, deg, star) => {             // 单侧入中星是否起星 → {num 实际入中星, chg 盘面是否有变}
+    const st = shanQiStatus(m, deg, star);
+    if (st.kind !== 'ti') return { num: star, chg: false };
+    const ti = TI_XING[starDirection(star, m).proxy];   // 替星口诀（起星查「入中星本宫·同元龙」之字）
+    return { num: ti, chg: ti !== star };               // 星同下卦（ti=star）不算起盘
+  };
+  const s = sub(sitM, sd, P0.shanStar), f = sub(faceM, fd, P0.xiangStar);
+  if (!s.chg && !f.chg) return null;          // 两侧均与下卦无异 → 无需替盘
+  return Object.assign({}, P0, {
+    origShanStar: P0.shanStar, origXiangStar: P0.xiangStar,   // 供盘面说明「原星→替星」
+    sitChg: s.chg, faceChg: f.chg,
+    shanStar: s.num,  xiangStar: f.num,       // 入中星（已替侧为替星）
+    shanPan: feiPan(s.num, P0.shanFwd),       // 顺逆仍依下卦（原坐向三元龙）
+    xiangPan: feiPan(f.num, P0.xiangFwd)
+  });
+}
+
 function yuanOf(year){                        // 公历年 → 元运（1–9）
   return Math.floor((year - YUAN_START) / 20) % 9 + 1;
 }
@@ -929,7 +994,7 @@ function buildFenjinTable(){
 
 /* ================= 状态 ================= */
 const state = { sit: 0, faceDeg: 180, rules: {}, testMs: Date.now(), nineMode: 'zhai' };
-  // sit：坐山索引(24山)；faceDeg：精确朝向度数(0-360，0=正北顺时针，1°精度，驱动盘面整盘旋转)；testMs：流年类规则（戊己都天等）的测试基准，默认当前时刻；nineMode：中央九宫视图 'zhai'（元运宅命盘，含运/山/向三盘）｜'year'（流年年星盘）
+  // sit：坐山索引(24山)；faceDeg：精确朝向度数(0-360，0=正北顺时针，1°精度，驱动盘面整盘旋转)；testMs：流年类规则（戊己都天等）的测试基准，默认当前时刻；nineMode：中央九宫视图 'zhai'（元运宅命盘，运/山/向三盘）｜'ti'（起星替盘，起星侧替星入中重飞，无替可起时灰禁自动回退 zhai）｜'year'（流年年星盘）
 Rules.list.forEach(r => state.rules[r.id] = true);   // 默认全选，可按需关闭
 state.rules['changsheng_face'] = false;              // 向上水法默认不勾选
 
@@ -1095,36 +1160,49 @@ function ringArc(aFrom, aTo, r, color, dashed, arrowId){
     'marker-end': `url(#${arrowId})`}, gMarkers);
 }
 
-/* 中心区：年九宫飞星盘（屏幕固定取向·南在顶，不随盘面旋转——圆环随朝向度数旋转，九宫盘保持水平可读），标注星数 1-9 与吉凶；五黄按年顺飞定位 */
+/* 中心区：九宫飞星盘（屏幕固定取向·南在顶，不随盘面旋转——圆环随朝向度数旋转，九宫盘保持水平可读），
+   三视图：宅命盘（下卦）｜替星盘（起星替卦）｜年星盘（流年九星）。替星盘无替可起时灰禁、不可点。 */
 function drawNinePalace(){
   const G = ganzhiYearOf(state.testMs);
   const layout = [['巽','离','坤'],['震','中','兑'],['艮','坎','乾']];   // 上南下北、左东右西（屏幕固定）
   const cell = 80, gap = 6, total = cell*3 + gap*2, x0 = CX - total/2, y0 = CY - total/2;
-  // 九宫格直接绘于 gMarkers（不包旋转组）：随盘旋转的是圆环部分，中央九宫盘保持屏幕固定取向
-  const zhai = (state.nineMode !== 'year');                             // 宅命盘（运/山/向三盘）｜年星盘
   const sitM = MOUNTAINS[state.sit], faceM = MOUNTAINS[opposite(state.sit)];
-  const P = zhai ? buildZhaiPan(G.year, sitM, faceM) : null;
+  const tiPan = buildTiPan();                                  // 起星替盘（无替可起 → null）
+  if (state.nineMode === 'ti' && !tiPan) state.nineMode = 'zhai';   // 坐向改回无替时自动回退宅命盘
+  const view = state.nineMode;                                 // 'zhai' 宅命盘(下卦)｜'ti' 替星盘｜'year' 年星盘
+  const zhai = (view !== 'year');                              // 运/山/向三行盘（宅命盘或替星盘）
+  const P = view === 'zhai' ? buildZhaiPan(G.year, sitM, faceM)
+          : view === 'ti'  ? tiPan : null;
   const five = zhai ? null : yearWuhuang(G.year);
   const starOf = zhai ? null : buildNineStar(five);
 
   // 标题
   if (zhai){
     const [ys, ye] = yuanRange(P.yun, G.year);
-    txt(gMarkers, CX, y0-24, `${YUAN_NAME[P.yun]}（${ys}–${ye}）· ${sitM}山${faceM}向 · 玄空宅命盘`,
+    txt(gMarkers, CX, y0-24,
+      `${YUAN_NAME[P.yun]}（${ys}–${ye}）· ${sitM}山${faceM}向 · ${view === 'ti' ? '起星替盘' : '玄空宅命盘'}`,
       {'font-size':12.5, 'font-weight':700, fill:'#374151', 'text-anchor':'middle'});
   } else {
     txt(gMarkers, CX, y0-24, `年九宫飞星 · ${G.gz}年（${G.year}）· 五黄在${five}宫`,
       {'font-size':12.5, 'font-weight':700, fill:'#374151', 'text-anchor':'middle'});
   }
 
-  // 视图切换（宅命盘 / 年星盘）
-  [['zhai','宅命盘'],['year','年星盘']].forEach(([id, name], i) => {
-    const active = (state.nineMode === id);
-    const t = txt(gMarkers, CX - 54 + i*108, y0-7, name,
+  // 视图切换（宅命盘 / 替星盘 / 年星盘）；激活同款蓝色加粗；无替可起时替星盘灰禁、光标默认
+  [['zhai','宅命盘'],['ti','替星盘'],['year','年星盘']].forEach(([id, name], i) => {
+    const active = (view === id);
+    const usable = (id !== 'ti' || !!tiPan);
+    const t = txt(gMarkers, CX - 74 + i*74, y0-7, name,
       {'font-size':12, 'font-weight': active ? 700 : 400,
-       fill: active ? '#2563eb' : '#9aa0ad', 'text-anchor':'middle'});
-    t.style.cursor = 'pointer';
-    t.onclick = () => { state.nineMode = id; render(); };
+       fill: active ? '#2563eb' : (usable ? '#9aa0ad' : '#8c96a8'), 'text-anchor':'middle'});
+    if (usable){
+      t.style.cursor = 'pointer';
+      t.onclick = () => { state.nineMode = id; render(); };
+    }
+    // 起星替卦：替星盘 tab 标题右上角标记小红点提示（无论是否激活均显示）
+    if (id === 'ti' && tiPan){
+      el('circle', {cx: CX - 74 + i*74 + 19, cy: y0 - 15, r: 3.6,
+        fill:'#ef4444', stroke:'#ffffff', 'stroke-width':1.3}, gMarkers);
+    }
   });
 
   // 九宫
@@ -1166,11 +1244,16 @@ function drawNinePalace(){
     }
   }));
 
-  // 宅命盘：入中之数与顺逆（每宫已自带「运/山/向」标签，故不再另设配色图例）
+  // 盘底说明行：入中星与顺逆（替盘侧注明「原星→替星」；下卦徽标/明细已移除，由替星盘视图取代）
   if (zhai){
-    txt(gMarkers, CX, y0+total+17,
-      `运星${P.yun}入中顺飞　山星${P.shanStar}入中（依${P.shanProxy}${P.shanYang}·${P.shanFwd?'顺':'逆'}飞）　向星${P.xiangStar}入中（依${P.xiangProxy}${P.xiangYang}·${P.xiangFwd?'顺':'逆'}飞）`,
-      {'font-size':11, fill:'#6b7280', 'text-anchor':'middle'});
+    const fwdTxt = f => (f ? '顺' : '逆') + '飞';
+    const shanTxt = (view === 'ti' && P.sitChg)
+      ? `山星${P.origShanStar}替作${P.shanStar}` : `山星${P.shanStar}`;
+    const xiangTxt = (view === 'ti' && P.faceChg)
+      ? `向星${P.origXiangStar}替作${P.xiangStar}` : `向星${P.xiangStar}`;
+    const cap = `运星${P.yun}入中顺飞　${shanTxt}入中（依${P.shanProxy}${P.shanYang}·${fwdTxt(P.shanFwd)}）　` +
+                `${xiangTxt}入中（依${P.xiangProxy}${P.xiangYang}·${fwdTxt(P.xiangFwd)}）`;
+    txt(gMarkers, CX, y0+total+17, cap, {'font-size':11, fill:'#6b7280', 'text-anchor':'middle'});
   }
 }
 
@@ -1581,7 +1664,7 @@ function render(){
 }
 
 /* ===== 版本标记：与 sw.js 的 CACHE 版本号保持一致，便于确认手机端实际加载的版本 ===== */
-const APP_VER = 'v17 · 2026-09-03';
+const APP_VER = 'v20 · 2026-09-04';
 ['verTagHome', 'verTagCompass'].forEach(id => {
   const e = document.getElementById(id);
   if (e) e.textContent = '版本 ' + APP_VER;
