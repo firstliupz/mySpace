@@ -75,6 +75,22 @@
   .home-wrap .ver-tag{margin-top:14px;}
   header .ver-tag{margin-left:auto;}
 
+  /* ===== 模块九宫格 ===== */
+  .mod-wrap{max-width:560px; margin:0 auto; padding:34px 22px 60px; text-align:center;}
+  .mod-title{font-size:22px; font-weight:800; color:var(--ink); letter-spacing:5px; margin:0 0 26px;}
+  .mod-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  .mod-cell{aspect-ratio:1/1; border:1px solid var(--border); border-radius:16px; background:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:21px; font-weight:700;
+    color:var(--ink); cursor:pointer; box-shadow:0 1px 4px rgba(20,30,50,.05); transition:.15s; user-select:none;}
+  .mod-cell:hover{background:#eef3fd; border-color:#bcd0f5; transform:translateY(-2px);}
+  .mod-cell.mod-locked{color:#c2c8d2; background:#fafbfc; cursor:default; font-weight:400; font-size:26px;}
+  .mod-cell.mod-locked:hover{transform:none; background:#fafbfc; border-color:var(--border);}
+  /* 返回键：块级 + 右外边距 auto → 贴左上角（容器为居中排版） */
+  .mod-back{display:block; margin:0 auto 16px 0; text-align:left;}
+  .toast{position:fixed; left:50%; bottom:52px; transform:translateX(-50%) translateY(20px);
+    background:rgba(30,40,58,.92); color:#fff; font-size:13.5px; padding:9px 18px; border-radius:999px;
+    opacity:0; pointer-events:none; transition:.25s; z-index:99;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
   /* ===== 两屏流程（首页输入 → 判读页） ===== */
   .screen.hidden{display:none;}
   /* 判读页整体下移：避开手机状态栏／刘海（安全区高度 + 适当留白） */
@@ -191,7 +207,7 @@
     .hengqu{font-size:16.5px; line-height:1.7; letter-spacing:3px; height:132px;}
     .home-card{padding:14px;}
     .options-flex{gap:6px 16px;}
-    /* 选项固定三排 3 列：①八煞·黄泉·大游年 ②坐山水法·向上水法·三吉六秀 ③戊己都天·五黄三煞 */
+    /* 选项固定三排 3 列：①八煞·黄泉·大游年 ②三合:坐山水法·向上水法·三吉六秀｜天星:格龙消砂·辅星纳水·纳甲水法 ③戊己都天·五黄三煞 */
     .opt-row{grid-template-columns:repeat(3, minmax(0,1fr)); gap:2px 6px;}
     .opt-row .rule-item{font-size:12.5px; padding:6px 0; gap:5px;}
     .opt-row .rule-item input{width:16px; height:16px; flex:0 0 16px;}
@@ -203,9 +219,19 @@
 </head>
 <body>
 
+<!-- ============ 第零屏 · 模块九宫格 ============ -->
+<div class="screen" id="screenModules">
+  <div class="mod-wrap">
+    <h1 class="mod-title">八尺峦头</h1>
+    <div class="mod-grid" id="modGrid"></div>
+    <div class="ver-tag" id="verTagModules" style="margin-top:26px;"></div>
+  </div>
+</div>
+
 <!-- ============ 第一屏 · 首页（坐向输入） ============ -->
-<div class="screen" id="screenHome">
+<div class="screen hidden" id="screenHome">
   <div class="home-wrap">
+    <button class="btn-back mod-back" id="btnModBack" type="button">‹ 返回</button>
     <div class="home-hero">
     <svg class="home-compass" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
       <circle cx="50" cy="50" r="48" fill="#ffffff" stroke="#b9b3a4" stroke-width="1.2"/>
@@ -343,13 +369,13 @@
 
   <footer style="display:none">
     盘式说明：本盘取「人立太极点」视角——<b>坐山恒在正下方、朝向恒在正上方</b>（背坐面朝），盘体随坐向自动旋转、文字保持正立；
-    外圈刻度为周天 360°（每山 15°，0° 为磁北，度数随盘转动）；各环均为纯白素底，<b>仅规则标记（坐向、八煞、黄泉、星曜、流年、长生）以颜色突出</b>；
-    中带八卦宫（三山一宫），卦符按<b>环形方向</b>摆放（字顶朝外）——开启「大游年」时，卦名隐去，宫位环带内以<b>环状排版</b>标注该宫星曜「星＋五行」与应期；
+    各环均为纯白素底，<b>仅规则标记（坐向、八煞、黄泉、星曜、流年、长生）以颜色突出</b>；
+    中带八卦宫（三山一宫，仅标卦名）——开启「大游年」时，卦名隐去，宫位环带内以<b>环状排版</b>标注该宫星曜「星＋五行」与九星名（辅弼＝伏位、贪狼＝生气、巨门＝天医、禄存＝祸害、文曲＝六煞、廉贞＝五鬼、武曲＝延年、破军＝绝命）；
     内带二十四山；八煞、黄泉、长生来水标记直接标印于<b>环内山名外侧</b>，不出盘外；
-    宅体与二十四山带之间设<b>双层内环</b>——外圈（214～250）标「戊己都天」、内圈（190～214）标「五黄三煞」（随当年干支与月建变动，纯本地离线推算）；
+    宅体与二十四山带之间设<b>双层内环</b>（等宽各 24）——外圈（226～250）标「戊己都天」、内圈（202～226）标「五黄三煞」（随当年干支与月建变动，纯本地离线推算）；
     <b>中心为年九宫飞星盘</b>（屏幕固定取向·南在顶，不随盘面旋转）：年五黄按"2022年中宫起、洛书九宫逐年顺飞"定位（如2026丙午年落正南离宫），余星按洛书顺飞，并据星曜<b>吉凶着色</b>；
     <b>坐山水法 / 向上水法</b>（最外环，可分别开关）：坐山水法用<b>实线</b>、向上水法用<b>虚线</b>——按吉论，来水取<b>长生</b>（生方·宜来）、去水取<b>墓库</b>（水口·宜去），于最外环以「来→去」环状箭头示水流向；山名带同步高亮来去吉方（长生、帝旺、墓、绝）。
-    <b>三吉六秀</b>（亮绿色环，可开关）：来龙按「坐山所属纳甲分组」查表得三吉整宫与六秀单山（例：坎龙组坎癸申辰→三吉巽艮震、六秀辛丙庚；乾龙组乾甲→三吉兑震艮、六秀丁庚丙）。八组二十四山全覆盖。
+    <b>三吉六秀</b>（亮绿色环，可开关）：天星贵山（赖公《催官篇》本义），固定不随坐山变——三吉：亥、卯(震)、庚；六秀：艮、丙、酉(兑)、丁、巽、辛。盘面以亮绿色环标出（三吉深绿、六秀浅绿，均为单山）。
     本页为典籍口诀之速查与可视化，非堪舆实操建议。
   </footer>
 </div>
@@ -610,6 +636,22 @@ const MTN_YINYANG = {                                     // 二十四山阴阳�
 };
 const YUAN_NAME = {1:'一运',2:'二运',3:'三运',4:'四运',5:'五运',6:'六运',7:'七运',8:'八运',9:'九运'};
 
+/* ===== 二十四山五行（固定标记，三合模块常驻）=====
+   按气类分六组：太阳火（子午卯酉）、太阴火（甲庚丙壬）、木（乾坤艮巽）、
+   土（乙辛丁癸）、金（辰戌丑未）、水（寅申巳亥）。不随坐向变，始终标于二十四山带内。 */
+const MTN_WUXING = {
+  '子':{wx:'火', grp:'太阳火'}, '午':{wx:'火', grp:'太阳火'}, '卯':{wx:'火', grp:'太阳火'}, '酉':{wx:'火', grp:'太阳火'},
+  '甲':{wx:'火', grp:'太阴火'}, '庚':{wx:'火', grp:'太阴火'}, '丙':{wx:'火', grp:'太阴火'}, '壬':{wx:'火', grp:'太阴火'},
+  '乾':{wx:'木', grp:'木'}, '坤':{wx:'木', grp:'木'}, '艮':{wx:'木', grp:'木'}, '巽':{wx:'木', grp:'木'},
+  '乙':{wx:'土', grp:'土'}, '辛':{wx:'土', grp:'土'}, '丁':{wx:'土', grp:'土'}, '癸':{wx:'土', grp:'土'},
+  '辰':{wx:'金', grp:'金'}, '戌':{wx:'金', grp:'金'}, '丑':{wx:'金', grp:'金'}, '未':{wx:'金', grp:'金'},
+  '寅':{wx:'水', grp:'水'}, '申':{wx:'水', grp:'水'}, '巳':{wx:'水', grp:'水'}, '亥':{wx:'水', grp:'水'}
+};
+const WX_COLOR = {                                     // 六组配色（太阳火亮红 / 太阴火浅红；木亮绿）
+  '太阳火':'#ff0000', '太阴火':'#f87171',
+  '木':'#22c55e', '土':'#b45309', '金':'#f59e0b', '水':'#2563eb'
+};
+
 /* ===== 下卦 / 替卦（起星）判定 =====
    每山 15°，以山中线为基准：距中线 ≤4.5°（正中 9°）＝ 下卦（正针）；
    距中线 >4.5° 落入外侧 3° 兼向区（替卦条件区）；距中线 ≈7.5° 即山界骑缝（分金模块红警，弃线）。
@@ -752,7 +794,7 @@ Rules.register({
 });
 
 Rules.register({
-  id: 'dayounian', name: '大游年（八宅星曜）', type: '坐宫论', color: '#0d9488', labelR: 412,
+  id: 'dayounian', name: '大游年（八宅星曜）', type: '坐宫论', color: '#0d9488', labelR: 448,  // 挂盘外标签带，避免压住内侧环带
   verse: '乾六天五祸绝延生，坎五天生延绝祸六，艮六绝祸生延天五，震延生祸绝五天六，巽天五六祸生绝延，离六五绝延祸生天，坤天延绝生祸五六，兑生祸延绝六五天。',
   evaluate(ctx){
     const s = DYN_ORDER.indexOf(ctx.sitPalace);
@@ -765,8 +807,8 @@ Rules.register({
         mountains: PALACE_MEMBERS[p],
         range: [first*15 - 7.5, last*15 + 7.5],        // 整宫扇面（45°）
         labelAt: DYN_ORDER.indexOf(p) * 45,            // 宫中心角
-        tag: key + st.wx, yq: st.yq,                   // 宫内简标：星+五行（如「天木」）、应期（如「辰戌丑未」）
-        label: st.name, sub: `${p}宫 · 应期${st.yq}`,
+        tag: key + st.wx, starName: st.star,           // 宫内简标：星+五行（如「天木」）、九星名（如「巨门」——取代原应期行）
+        label: st.name, sub: `${p}宫 · ${st.star}${st.name}`,
         color: st.color,                                // 按星分色：吉星绿蓝系，凶星红紫系
         note: `<b>${p}宫</b>为<b>${st.name}</b>（${st.star}${st.wx}，${st.nature}），` +
               `应期在<b>${st.yq}</b>。${extra || ''}`
@@ -787,14 +829,14 @@ Rules.register({
     const d = wujiDoutian(G.stem);
     const nl = m => `${m}山（${degRange(idxOf(m))}）`;
     return [
-      { mountains:[d.wu], band:[214, 250], label: '戊都', color: '#9333ea',
+      { mountains:[d.wu], band:[226, 250], label: '戊都', color: '#9333ea',
         note: `流年<b>${G.gz}</b>（${G.year} 年，立春界），五虎遁排得全年月干支，` +
               `天干为戊之月建<b>${d.wu}</b>，故<b>${d.wu}山为戊都天</b>（${degRange(idxOf(d.wu))}），` +
               `年内忌此方动土、修造。` },
-      { mountains:[d.ji], band:[214, 250], label: '己都', color: '#db2777',
+      { mountains:[d.ji], band:[226, 250], label: '己都', color: '#db2777',
         note: `天干为己之月建<b>${d.ji}</b>，故<b>${d.ji}山为己都天</b>（${degRange(idxOf(d.ji))}），` +
               `与戊都天同忌动土修造。` },
-      { mountains:[d.jia], band:[214, 250], label: '夹都', color: '#57534e',
+      { mountains:[d.jia], band:[226, 250], label: '夹都', color: '#57534e',
         note: `戊都天（${d.wu}）与己都天（${d.ji}）之间所夹的<b>${d.jia}山</b>为夹都天` +
               `（${degRange(idxOf(d.jia))}），亦忌修造动土。` }
     ];
@@ -811,7 +853,7 @@ Rules.register({
     const out = [];
     // 年三煞
     const dir = SANSHA_DIR[yBranch], ss = SAN_SHA[dir];
-    out.push({ mountains: ss.m, band:[190, 214], labelAt: ss.labelAt, label: '三煞',
+    out.push({ mountains: ss.m, band:[202, 226], labelAt: ss.labelAt, label: '三煞',
       perMountain: true,                       // 三山各标一次「三煞」，而非只在中心标一次
       color: '#be123c', op: .16, fs: 12.5,
       note: `流年<b>${G.gz}</b>（${G.year}），年支<b>${yBranch}</b>，三煞在<b>${dir}方</b>` +
@@ -824,7 +866,7 @@ Rules.register({
         note: '年五黄（廉贞）入<b>中宫</b>，年家最凶，全年忌中宫动土。' });
     } else {
       const yp = PALACE_CENTER[yw];
-      out.push({ mountains: yp.m, band:[190, 214], range:[yp.labelAt-22.5, yp.labelAt+22.5], labelAt: yp.labelAt, label: '年五黄',
+      out.push({ mountains: yp.m, band:[202, 226], range:[yp.labelAt-22.5, yp.labelAt+22.5], labelAt: yp.labelAt, label: '年五黄',
         color: '#d97706', op: .14, fs: 14, sw: 3.0,
         note: `年五黄（廉贞）落<b>${yw}宫</b>（${yp.m.join('')}山），年家最凶方之一，全年忌此方动土。` });
     }
@@ -836,7 +878,7 @@ Rules.register({
         note: `月建<b>${mBranch}月</b>，月五黄入<b>中宫</b>，当月忌中宫动土。` });
     } else {
       const mp = PALACE_CENTER[mw];
-      out.push({ mountains: mp.m, band:[190, 214], range:[mp.labelAt-22.5, mp.labelAt+22.5], labelAt: mp.labelAt, label: '月五黄',
+      out.push({ mountains: mp.m, band:[202, 226], range:[mp.labelAt-22.5, mp.labelAt+22.5], labelAt: mp.labelAt, label: '月五黄',
         color: '#f59e0b', op: .14, fs: 13, sw: 3.0,
         note: `月建<b>${mBranch}月</b>，月五黄落<b>${mw}宫</b>（${mp.m.join('')}山），随月流转，当月忌此方动土。` });
     }
@@ -845,7 +887,7 @@ Rules.register({
 });
 
 Rules.register({
-  id: 'changsheng_sit', name: '坐山水法（来去水）', type: '坐向论', color: '#334155', labelR: 442,
+  id: 'changsheng_sit', name: '坐山水法（来去水）', type: '坐向论', color: '#334155', labelR: 442, mods: ['sanhe'],
   verse: '双山长生水法：以坐山所属双山五行（三合局）起长生十二宫，来水宜自长生、帝旺方（生旺水），去水（水口）宜出墓、绝方。',
   evaluate(ctx){
     const sitM = MOUNTAINS[ctx.sit];
@@ -865,7 +907,7 @@ Rules.register({
 });
 
 Rules.register({
-  id: 'changsheng_face', name: '向上水法（来去水）', type: '坐向论', color: '#be185d', labelR: 442,
+  id: 'changsheng_face', name: '向上水法（来去水）', type: '坐向论', color: '#be185d', labelR: 442, mods: ['sanhe'],
   verse: '双山长生水法：以向上所属双山五行（三合局）起长生十二宫，来水宜自长生、帝旺方，去水（水口）宜出墓、绝方。',
   evaluate(ctx){
     const faceM = MOUNTAINS[ctx.face];
@@ -887,58 +929,125 @@ Rules.register({
 // 纳甲（用于六秀与三吉宫对应核验）：八卦所纳天干。
 const NAJIA = {'乾':['甲','壬'],'坤':['乙','癸'],'艮':['丙'],'兑':['丁'],'坎':['戊'],'离':['己'],'震':['庚'],'巽':['辛']};
 
-// 三吉六秀：来龙分组 → { palace:来龙八宫, sanji:[三吉宫…], liuxiu:[六秀山…] }。
-// 来源：用户提供的「来龙(二十四山)→三吉方→六秀方」表；按此表直接查，不依赖纳甲反推。
-const SANJI_LIU = {
-  '乾甲':      { palace:'乾', sanji:['兑','震','艮'], liuxiu:['丁','庚','丙'] },
-  '震庚亥未':  { palace:'震', sanji:['离','乾','坎'], liuxiu:['壬','甲','癸'] },
-  '坎癸申辰':  { palace:'坎', sanji:['巽','艮','震'], liuxiu:['辛','丙','庚'] },
-  '艮丙':      { palace:'艮', sanji:['坤','坎','乾'], liuxiu:['乙','癸','甲'] },
-  '坤乙':      { palace:'坤', sanji:['艮','巽','兑'], liuxiu:['丙','辛','丁'] },
-  '巽辛':      { palace:'巽', sanji:['坎','坤','离'], liuxiu:['癸','乙','壬'] },
-  '离壬寅戌':  { palace:'离', sanji:['震','兑','巽'], liuxiu:['庚','丁','辛'] },
-  '兑丁巳丑':  { palace:'兑', sanji:['乾','离','坤'], liuxiu:['甲','壬','乙'] }
-};
-
-// 来龙分组：八宫纳甲分组（哪几山属于同一来龙组）。
-// 注：四正宫（震/坎/离/兑）本身不是二十四山，以其中针山（卯/子/午/酉）代表，其余兼山按表列保留。
-const LONG_GROUPS = {
-  '乾':['乾','甲'],            '震':['卯','庚','亥','未'],
-  '坎':['子','癸','申','辰'],  '艮':['艮','丙'],
-  '坤':['坤','乙'],            '巽':['巽','辛'],
-  '离':['午','壬','寅','戌'],  '兑':['酉','丁','巳','丑']
-};
+// 三吉六秀（标准定义 / 赖公天星《催官篇》本义）：
+// 天星贵山，固定不随坐山变。三吉 = 亥、卯(震)、庚；六秀 = 艮、丙、酉(兑)、丁、巽、辛。
+// 依据：赖文俊《催官篇》、万树华编《入地眼全书·天星卷》；纳甲本京房纳甲
+// （艮纳丙、兑纳丁、巽纳辛、震纳庚 → 三吉取 亥·震(卯)·庚，六秀取 艮丙·兑(酉)丁·巽辛）。
+const SANJI_STD  = ['亥', '卯', '庚'];                  // 三吉：天皇亥 + 震（纳庚，震庚同体，取正山卯）
+const LIUXIU_STD = ['艮', '丙', '酉', '丁', '巽', '辛']; // 六秀：艮丙 · 兑(酉)丁 · 巽辛 三对纳甲秀峰
 
 Rules.register({
-  id: 'sanjiliuxiu', name: '三吉六秀', type: '坐山论', color: '#16a34a',
-  labelR: 398, verse: '来龙（坐山所属纳甲分组）翻卦得三吉整宫；六秀为各来龙组对应的单山。',
+  id: 'sanjiliuxiu', name: '三吉六秀', type: '天星贵山', color: '#16a34a', mods: ['sanhe'],
+  labelR: 398, verse: '天星贵山（赖公《催官篇》本义）：三吉亥·卯(震)·庚，六秀艮·丙·酉(兑)·丁·巽·辛，固定不随坐山变。',
   evaluate(ctx){
-    const sitM = MOUNTAINS[ctx.sit];                    // 坐山具体山名
-    let key = null;
-    for (const [group, ms] of Object.entries(LONG_GROUPS)){
-      if (ms.includes(sitM)) { key = group; break; }
-    }
-    if (!key) return [];                                 // 理论上 24 山全覆盖，不会进此分支
-    const groupKey = Object.keys(SANJI_LIU).find(k => SANJI_LIU[k].palace === key);
-    const rec = SANJI_LIU[groupKey];
-    if (!rec) return [];
     const out = [];
-    rec.sanji.forEach(p => {                            // 三吉：整宫扇面（亮绿）
-      const mem = PALACE_MEMBERS[p];
-      const a1 = idxOf(mem[0])*15 - 7.5, a2 = idxOf(mem[2])*15 + 7.5;
-      out.push({ kind:'sjlx-palace', range:[a1,a2], palace:p, label:'三吉', color:'#16a34a' });
+    SANJI_STD.forEach(m => {                             // 三吉：单山（深绿）
+      if (MOUNTAINS.indexOf(m) >= 0)
+        out.push({ kind:'sjlx-mtn', m, label:'三吉', color:'#16a34a' });
     });
-    rec.liuxiu.forEach(m => {                           // 六秀：单山（稍浅亮绿）
+    LIUXIU_STD.forEach(m => {                           // 六秀：单山（浅绿）
       if (MOUNTAINS.indexOf(m) >= 0)
         out.push({ kind:'sjlx-mtn', m, label:'六秀', color:'#4ade80' });
     });
-    const note = `来龙为 <b>${rec.palace}宫</b>（坐山 ${sitM} 属 ${groupKey} 组）：翻卦得 <b>三吉</b> 整宫 —— <b>${rec.sanji.join('、')}</b>；` +
-      `<b>六秀</b> 单山 —— <b>${rec.liuxiu.join('、')}</b>。` +
-      `盘面以亮绿色环标出：三吉为整宫扇面、六秀为单山（细标＋中心点）。`;
+    const note = `三吉六秀为<b>天星贵山</b>（赖公《催官篇》本义），<b>固定不随坐山变</b>：` +
+      `三吉 —— <b>亥、卯(震)、庚</b>；六秀 —— <b>艮、丙、酉(兑)、丁、巽、辛</b>。` +
+      `盘面以亮绿色环标出：三吉深绿、六秀浅绿，均为单山扇面并居中标注名称（无中心点）。`;
     return out.map(e => Object.assign(e, { note }));
   }
 });
 window.FengShuiRules = Rules;   // 控制台可动态试验新规则
+
+/* ================= 天星模块 · 格龙消砂（天父翻卦） / 辅星纳水（地母翻卦） / 纳甲水法 =================
+   仅天星模块启用（mods:['tianxing']）；三合模块仍用坐山水法、向上水法、三吉六秀。 */
+// 八卦纳甲（二十四山归属，按给定规则表）：每卦所纳之山。
+const NAJIA_SHAN = {
+  '乾': ['乾','甲'], '坤': ['坤','乙'], '艮': ['艮','丙'], '巽': ['巽','辛'],
+  '兑': ['丁','巳','酉','丑'], '离': ['壬','寅','午','戌'],
+  '震': ['庚','亥','卯','未'], '坎': ['癸','申','子','辰']
+};
+const NJ_LUCK_COLOR = { '吉': '#16a34a', '凶': '#dc2626' };
+const STAR_LUCK = { '辅弼':'吉','贪狼':'吉','巨门':'吉','武曲':'吉','禄存':'凶','文曲':'凶','廉贞':'凶','破军':'凶','左辅':'吉','右弼':'吉' };
+// 纳甲水法（固定对照）：卦宫洛书数 → 九星（坎1贪狼、坤2巨门、震3禄存、巽4文曲、乾6武曲、兑7破军、艮8左辅、离9右弼；中5廉贞无山可配）
+const LUOSHU_STAR = { '坎':'贪狼','坤':'巨门','震':'禄存','巽':'文曲','乾':'武曲','兑':'破军','艮':'左辅','离':'右弼' };
+// 二十四山阴阳（固定标记 · 净阴净阳）：艮丙巽辛庚亥卯未丁巳酉丑 十二山为阴，乾坤甲乙壬癸寅午戌申子辰 十二山为阳。
+// 依据：先天八卦配洛书「一三七九为净阳、二四六八为净阴」——清·胡国桢《罗经解定》：「艮纳丙，巽纳辛，兑纳丁（合巳酉丑），震纳庚（合亥卯未）……丙丁庚辛亥卯未巳酉丑艮巽十二山均为阴山」，罗盘以黑字标之；余十二山为阳（红字）。
+const YIN_MTN = new Set(['艮','丙','巽','辛','庚','亥','卯','未','丁','巳','酉','丑']);
+
+/* 翻卦通法：三爻阴阳（自下而上 1=阳，位序 0=初/下 1=中 2=上）。
+   以本宫（坐山/朝向所纳之卦）起辅弼，逐爻翻变——前 7 翻得七宫，第 8 翻回归本宫（辅弼），恰成八卦一周。
+   天父卦（格龙消砂）爻变：上、中、下、中、上、中、下、中；地母卦（辅星纳水）爻变：中、下、中、上、中、下、中；纳甲水法不用翻卦，按卦宫洛书数直取九星（见 LUOSHU_STAR）。 */
+const TRIGRAM_BITS = { '乾':'111','兑':'110','离':'101','震':'100','巽':'011','坎':'010','艮':'001','坤':'000' };
+const FLIP_TIANFU = ['shang','zhong','xia','zhong','shang','zhong','xia'];   // 上中下中上中下（第8翻回本宫）
+const FLIP_DIMU   = ['zhong','xia','zhong','shang','zhong','xia','zhong'];   // 中下中上中下中
+function fanGuaTable(base, stars, flips){
+  let cur = TRIGRAM_BITS[base];
+  const table = {}; table[base] = stars[0];                     // 本宫 → 辅弼
+  for (let k = 0; k < 7; k++){
+    const pos = flips[k] === 'shang' ? 2 : flips[k] === 'zhong' ? 1 : 0;
+    const b = cur.split(''); b[pos] = b[pos] === '1' ? '0' : '1';
+    cur = b.join('');
+    for (const p in TRIGRAM_BITS) if (TRIGRAM_BITS[p] === cur){ table[p] = stars[k + 1]; break; }
+  }
+  return table;
+}
+// 九星星序（起卦点为坐山/朝向本宫，随坐向动态成表）
+const TIANFU_SEQ = ['辅弼','贪狼','巨门','禄存','文曲','廉贞','武曲','破军'];   // 坐子→坎辅 巽贪 艮巨 离禄 乾文 兑廉 震武 坤破
+const DIMU_SEQ   = ['辅弼','武曲','破军','廉贞','贪狼','巨门','禄存','文曲'];   // 朝午→离辅 乾武 巽破 艮廉 坤贪 坎巨 兑禄 震文
+// 二十四山 → 卦宫：纳甲（坎纳癸申子辰、离纳壬寅午戌…），辅星/地母/天父均据此落二十四山
+
+function najiaPalaceOf(m){                    // 二十四山 → 纳甲卦宫
+  for (const p in NAJIA_SHAN) if (NAJIA_SHAN[p].indexOf(m) >= 0) return p;
+  return null;
+}
+
+// （旧纳甲九星规则已移除：阴阳改为盘面固定标记，见 buildStatic；纳甲水法现由 fuxing 规则按洛书数固定取星承担）
+
+Rules.register({
+  id: 'tianfu', name: '格龙消砂（坐山）', type: '坐山论', color: '#2563eb', mods: ['tianxing'],
+  verse: '格龙消砂（天父翻卦）：以坐山所纳之卦为本宫起辅弼（坐子即坎起辅），按「上、中、下、中、上、中、下、中」逐爻翻变，配九星辅、贪、巨、禄、文、廉、武、破。用于格龙、消砂。',
+  evaluate(ctx){
+    const sitM = MOUNTAINS[ctx.sit];
+    const TF = fanGuaTable(najiaPalaceOf(sitM), TIANFU_SEQ, FLIP_TIANFU);   // 坐山本宫起辅弼，动态成表
+    const out = [];
+    for (const m of MOUNTAINS){                       // 二十四山每山：据纳甲卦宫查天父翻卦九星，24山环标出
+      const pal = najiaPalaceOf(m);
+      const star = TF[pal];
+      out.push({ kind:'flip-mtn', role:'天父', m, star, luck: STAR_LUCK[star], isSite: (m === sitM), silent:true });
+    }
+    return out;
+  }
+});
+
+Rules.register({
+  id: 'dimu', name: '辅星纳水（朝向）', type: '朝向论', color: '#0d9488', mods: ['tianxing'],
+  verse: '辅星纳水（地母翻卦）：以朝向所纳之卦为本宫起辅弼（朝午即离起辅），按「中、下、中、上、中、下、中、上」逐爻翻变，配九星辅、武、破、廉、贪、巨、禄、文。用于纳水。与纳甲水法互斥（同一环，二择一）。',
+  evaluate(ctx){
+    const faceM = MOUNTAINS[ctx.face];
+    const DM = fanGuaTable(najiaPalaceOf(faceM), DIMU_SEQ, FLIP_DIMU);      // 朝向本宫起辅弼，动态成表
+    const out = [];
+    for (const m of MOUNTAINS){                       // 二十四山每山：据纳甲卦宫查地母翻卦九星，24山环标出
+      const pal = najiaPalaceOf(m);
+      const star = DM[pal];
+      out.push({ kind:'flip-mtn', role:'地母', m, star, luck: STAR_LUCK[star], isSite: (m === faceM), silent:true });
+    }
+    return out;
+  }
+});
+
+Rules.register({
+  id: 'fuxing', name: '纳甲水法（固定）', type: '纳甲定局', color: '#7c3aed', mods: ['tianxing'],
+  verse: '纳甲水法（固定对照）：二十四山按八卦纳甲归卦宫，以卦宫洛书数直取九星——坎1贪狼、坤2巨门、震3禄存、巽4文曲、乾6武曲、兑7破军、艮8左辅、离9右弼（中5廉贞无山可配）——不随坐向变。贪巨辅武为吉、禄文廉破为凶。与辅星纳水互斥（同一环，二择一）。',
+  evaluate(){                                       // 固定对照表：本山纳甲归卦宫 → 洛书数 → 九星，不依赖坐向
+    const out = [];
+    for (const m of MOUNTAINS){
+      const pal = najiaPalaceOf(m);
+      const star = LUOSHU_STAR[pal];
+      out.push({ kind:'flip-mtn', role:'辅星', m, star, luck: STAR_LUCK[star], isSite:false, silent:true });
+    }
+    return out;
+  }
+});
+
 
 /* ================= 一百二十分金判断 ================= */
 function normalizeDeg(x){ return ((x % 360) + 360) % 360; }
@@ -993,10 +1102,21 @@ function buildFenjinTable(){
 }
 
 /* ================= 状态 ================= */
-const state = { sit: 0, faceDeg: 180, rules: {}, testMs: Date.now(), nineMode: 'zhai' };
+const state = { sit: 0, faceDeg: 180, rules: {}, testMs: Date.now(), nineMode: 'zhai', module: 'sanhe' };
   // sit：坐山索引(24山)；faceDeg：精确朝向度数(0-360，0=正北顺时针，1°精度，驱动盘面整盘旋转)；testMs：流年类规则（戊己都天等）的测试基准，默认当前时刻；nineMode：中央九宫视图 'zhai'（元运宅命盘，运/山/向三盘）｜'ti'（起星替盘，起星侧替星入中重飞，无替可起时灰禁自动回退 zhai）｜'year'（流年年星盘）
 Rules.list.forEach(r => state.rules[r.id] = true);   // 默认全选，可按需关闭
 state.rules['changsheng_face'] = false;              // 向上水法默认不勾选
+
+// 模块清单：当前「三合」「天星」为完整模块（功能完全一致，天星系三合之副本）；
+// 其余 7 格以「…」留白占位，点按提示「敬请期待」。后续按门类逐个填充。
+const MODULES = [
+  { key:'sanhe',    name:'三合', ready:true },
+  { key:'tianxing', name:'天星', ready:true },
+  { key:'m3', name:'…', ready:false }, { key:'m4', name:'…', ready:false },
+  { key:'m5', name:'…', ready:false }, { key:'m6', name:'…', ready:false },
+  { key:'m7', name:'…', ready:false }, { key:'m8', name:'…', ready:false },
+  { key:'m9', name:'…', ready:false }
+];
 
 /* ================= 静态盘面 ================= */
 const svg = document.getElementById('compass');
@@ -1017,14 +1137,15 @@ function buildStatic(){
 
   // 盘底（全部纯白素底，颜色只留给规则标记）
   el('circle', {cx:CX, cy:CY, r:440, fill:'#ffffff', stroke:'#b9b3a4', 'stroke-width':2}, gBase);
-  el('circle', {cx:CX, cy:CY, r:415, fill:'none', stroke:'#cbd5e1', 'stroke-width':1.5}, gBase);  // 长生水法外环（最外层来去水环）
-  el('circle', {cx:CX, cy:CY, r:400, fill:'none', stroke:'#86efac', 'stroke-width':1.4}, gBase);  // 三吉六秀环（外界，亮绿）
-  el('circle', {cx:CX, cy:CY, r:368, fill:'none', stroke:'#86efac', 'stroke-width':1.2}, gBase);  // 三吉六秀环（内界，接八卦环外侧）
+  if (state.module === 'sanhe'){
+    el('circle', {cx:CX, cy:CY, r:400, fill:'none', stroke:'#86efac', 'stroke-width':1.4}, gBase);  // 三吉六秀环（外界，亮绿）
+    el('circle', {cx:CX, cy:CY, r:350, fill:'none', stroke:'#86efac', 'stroke-width':1.2}, gBase);  // 三吉六秀环（内界，直接接八卦带外侧 350，取消原 350~368 空环）
+  }
   el('circle', {cx:CX, cy:CY, r:250, fill:'#ffffff', stroke:'#ddd6c6', 'stroke-width':1.5}, gBase);
-  // 内环（250～214）：戊己都天等流年神煞的标记环带，素底无色
-  el('circle', {cx:CX, cy:CY, r:214, fill:'#ffffff', stroke:'#e6e1d5', 'stroke-width':1.2}, gBase);
-  // 最内环（214～190）：五黄三煞等流年神煞标记环带（最靠近宅体），素底无色
-  el('circle', {cx:CX, cy:CY, r:190, fill:'#ffffff', stroke:'#e6e1d5', 'stroke-width':1.2}, gBase);
+  // 内环（250～226）：戊己都天等流年神煞的标记环带（宽 24，与五黄三煞同宽），素底无色
+  el('circle', {cx:CX, cy:CY, r:226, fill:'#ffffff', stroke:'#e6e1d5', 'stroke-width':1.2}, gBase);
+  // 最内环（226～202）：五黄三煞等流年神煞标记环带（最靠近宅体，宽 24），素底无色
+  el('circle', {cx:CX, cy:CY, r:202, fill:'#ffffff', stroke:'#e6e1d5', 'stroke-width':1.2}, gBase);
 
   // 二十四山（三山一宫）—— 纯白素底，颜色只留给规则标记
   MOUNTAINS.forEach((m, i) => {
@@ -1041,7 +1162,7 @@ function buildStatic(){
   for (const p in PALACE_MEMBERS){
     const first = idxOf(PALACE_MEMBERS[p][0]);
     const a = first * 15 - 7.5;
-    const [x1,y1] = point(a, 250), [x2,y2] = point(a, 366);
+    const [x1,y1] = point(a, 250), [x2,y2] = point(a, 350);
     el('line', {x1,y1,x2,y2, stroke:'#a7adba', 'stroke-width':1.8}, gBase);
   }
   // 山名（随盘整体旋转，文字本身保持水平不变）
@@ -1049,35 +1170,56 @@ function buildStatic(){
     const [x,y] = point(i*15, 286);
     txt(gBase, x, y, m, {'font-size':22, 'font-weight':600, fill:'#2b3442'});
   });
+  // 二十四山阴阳（固定标记 · 净阴净阳：艮丙巽辛庚亥卯未丁巳酉丑 十二山为阴，余十二山为阳）——天星模块常驻，不随坐向变、不与选项挂钩
+  if (state.module === 'tianxing'){
+    MOUNTAINS.forEach((m, i) => {
+      const yy = YIN_MTN.has(m) ? '阴' : '阳';
+      const [x,y] = point(i*15, 263);
+      txt(gBase, x, y, yy, {'font-size':10.5, 'font-weight':700, 'text-anchor':'middle', class:'mtn-yy',
+        fill: yy === '阳' ? '#db2777' : '#7c3aed',
+        'font-family':'"PingFang SC","Microsoft YaHei",sans-serif'});
+    });
+  }
+  // 二十四山五行（固定标记，三合模块常驻）：字标五行，颜色分六组——太阳火亮红/太阴火浅红/木亮绿/土土橙/金橙黄/水蓝
+  if (state.module === 'sanhe'){
+    MOUNTAINS.forEach((m, i) => {
+      const w = MTN_WUXING[m]; if (!w) return;
+      const [x,y] = point(i*15, 263);
+      txt(gBase, x, y, w.wx, {'font-size':10.5, 'font-weight':700, 'text-anchor':'middle', class:'mtn-wx',
+        'data-grp': w.grp, fill: WX_COLOR[w.grp],
+        'font-family':'"PingFang SC","Microsoft YaHei",sans-serif'});
+    });
+  }
 
-  // 八卦带（三山一宫）；大游年开启时卦名让位——宫位环带内直接画星曜简标（见 renderMarkers）
+  // 八卦带（三山一宫，322~350，宽 28）：仅留卦名，卦符已去；大游年开启时卦名让位——宫位环带内直接画星曜简标（见 renderMarkers）
   const palOrder = ['坎','艮','震','巽','离','坤','兑','乾'];
   const dynOn = !!state.rules.dayounian;
   palOrder.forEach((p, k) => {
     const a1 = k*45 - 22.5, a2 = k*45 + 22.5;
-    el('path', {d: sectorPath(a1, a2, 322, 366), fill:'#ffffff',
+    el('path', {d: sectorPath(a1, a2, 322, 350), fill:'#ffffff',
       stroke:'#ffffff', 'stroke-width':1}, gBase);
-    // 卦符随环形方向摆放（字顶朝外，像真实罗盘刻在环上），而非一律竖排
-    const [sx,sy] = point(k*45, dynOn ? 360 : 358);
-    const tg = txt(gBase, sx, sy, TRIGRAMS[p],
-      {'font-size': dynOn ? 15 : 18, fill:'#7a8494', 'font-weight':600});
-    tg.setAttribute('transform', `rotate(${k*45 + ROT} ${sx} ${sy})`);
     if (!dynOn){                                        // 大游年关闭时才显示卦名（如「艮」）
-      const [cx2,cy2] = point(k*45, 334);
-      txt(gBase, cx2, cy2, p, {'font-size':26, 'font-weight':700, fill:'#3c4552'});
+      const [cx2,cy2] = point(k*45, 336);
+      txt(gBase, cx2, cy2, p, {'font-size':22, 'font-weight':700, fill:'#3c4552'});
     }
   });
 
-  // 度盘：5°细刻、15°主刻、30°数字
-  for (let d = 0; d < 360; d += 5){
-    const major = d % 15 === 0;
-    const [x1,y1] = point(d, major ? 376 : 381), [x2,y2] = point(d, 390);
-    el('line', {x1,y1,x2,y2, stroke: major ? '#6b7480' : '#a7adba',
-      'stroke-width': major ? 1.3 : .6}, gBase);
-  }
-  for (let d = 0; d < 360; d += 30){
-    const [x,y] = point(d, 370);
-    txt(gBase, x, y, d + '°', {'font-size':12, fill:'#8a93a0'});
+  // 360° 刻度环（最外圈 424~440）：刻度线 + 每 10° 一个度数小字（不再单独占一环）；随盘整体旋转，与山位刻度对齐
+  el('circle', {cx:CX, cy:CY, r:424, fill:'none', stroke:'#ddd6c6', 'stroke-width':1.2}, gBase);
+  for (let d = 0; d < 360; d++){
+    const major = d % 10 === 0, mid = !major && d % 5 === 0;
+    const rEnd  = major ? 437 : (mid ? 431 : 428);
+    const [x1,y1] = point(d, 425), [x2,y2] = point(d, rEnd);
+    el('line', {x1,y1,x2,y2,
+      stroke: major ? '#8b8676' : (mid ? '#b3ae9f' : '#cdc8ba'),
+      'stroke-width': major ? 1.6 : (mid ? 1.1 : 0.7)}, gBase);
+    if (major){                                        // 度数小字（10° 一标，字号 9，白描边避免被长刻度压住）
+      const [tx,ty] = point(d, 433);
+      txt(gBase, tx, ty, String(d), {'font-size':9, fill:'#7c7767', class:'deg-num',
+        'text-anchor':'middle', 'dominant-baseline':'central',
+        stroke:'#ffffff', 'stroke-width':2.6, 'paint-order':'stroke',
+        'font-family':'"Helvetica Neue",Arial,sans-serif'});
+    }
   }
 
   // 中央区域：九宫飞星盘（由 renderMarkers → drawNinePalace 绘制，取代原宅体示意）
@@ -1265,9 +1407,9 @@ function renderMarkers(){
   const sd = (fd + 180) % 360;                      // 精确坐山度数（坐向恒差 180°）
 
   // 坐山 / 朝向 扇面（中心对齐精确度数，扇宽 ±7.5° 一个山格）
-  el('path', {d: sectorPath(sd-7.5, sd+7.5, 250, 366),
+  el('path', {d: sectorPath(sd-7.5, sd+7.5, 250, 350),
     fill:'rgba(37,99,235,.14)', stroke:'#2563eb', 'stroke-width':2}, gMarkers);
-  el('path', {d: sectorPath(fd-7.5, fd+7.5, 250, 366),
+  el('path', {d: sectorPath(fd-7.5, fd+7.5, 250, 350),
     fill:'rgba(22,163,74,.13)', stroke:'#16a34a', 'stroke-width':2}, gMarkers);
   radialLabel(sd, 455, [`坐 · ${sitM}山`], '#2563eb', 17);
   radialLabel(fd, 455, [`${faceM}向`], '#16a34a', 17);   // 盘顶正向：直接显示「X向」（如子山午向 → 午向）
@@ -1276,9 +1418,10 @@ function renderMarkers(){
 
   // （中间区域的前／后／坐方／向方 徽标已按需求移除）
 
-  // 神煞规则标记（兼容：单山标煞 / 整宫扇面 / 内环 / 长生来去水）
+  // 神煞规则标记（兼容：单山标煞 / 整宫扇面 / 内环 / 长生来去水 / 天星纳甲·翻卦）
   for (const r of Rules.list){
     if (r.stub || !state.rules[r.id]) continue;
+    if (r.mods && r.mods.indexOf(state.module) < 0) continue;   // 模块专属规则仅在本模块绘制
     const ctx = { sit, face, sitPalace: PALACE_OF[sitM], facePalace: PALACE_OF[faceM] };
     for (const e of r.evaluate(ctx)){
       const color = e.color || r.color;               // 条目可自带颜色（如大游年按星分色）
@@ -1309,20 +1452,38 @@ function renderMarkers(){
           'text-anchor':'middle','dominant-baseline':'middle','font-family':'"PingFang SC",sans-serif'});
         continue;
       }
-      if (e.kind === 'sjlx-palace'){                       // 三吉：整宫扇面（亮绿色环 368~400）
-        el('path', {d: sectorPath(e.range[0], e.range[1], 368, 400),
+      if (e.kind === 'sjlx-palace'){                       // 三吉：整宫扇面（亮绿色环 350~400）
+        el('path', {d: sectorPath(e.range[0], e.range[1], 350, 400),
           fill: e.color, 'fill-opacity':.18, stroke: e.color, 'stroke-width':2.4}, gMarkers);
         const amid = (e.range[0] + e.range[1]) / 2;
-        arcText(amid, 374, e.label, e.color, 15);
+        arcText(amid, 375, e.label, e.color, 20);
         continue;
       }
-      if (e.kind === 'sjlx-mtn'){                          // 六秀：单山细标（亮绿色环 368~400）
+      if (e.kind === 'sjlx-mtn'){                          // 三吉/六秀：单山标（亮绿色环 350~400，宽 50，环居中排字、不再加中心点）
         const i = idxOf(e.m), a = i * 15;
-        el('path', {d: sectorPath(a-7.5, a+7.5, 368, 400),
+        el('path', {d: sectorPath(a-7.5, a+7.5, 350, 400), class:'sjlx-mtn',
           fill: e.color, 'fill-opacity':.26, stroke: e.color, 'stroke-width':1.6}, gMarkers);
-        arcText(a, 392, e.label, e.color, 13);
-        const [dx,dy] = point(a, 384);                     // 单山中心点，强调“一个点”
-        el('circle', {cx:dx, cy:dy, r:3, fill:e.color}, gMarkers);
+        arcText(a, 375, e.label, e.color, 20);
+        continue;
+      }
+      // （纳甲九星环与阴阳小字已移除：阴阳改为盘面固定标记，见 buildStatic）
+      if (e.kind === 'flip-mtn'){                           // 格龙消砂（天父）/辅星纳水（地母）/纳甲水法：二十四山环每山标九星（格龙 350~386 内；辅星纳水、纳甲水法共用 388~423 外环，二择一；两环等宽 36，最外 424~440 让给 360° 刻度环）
+        const i = idxOf(e.m), a = i * 15;
+        const isTF = e.role === '天父';
+        const rIn = isTF ? 350 : 388, rOut = isTF ? 386 : 423, rMid = (rIn + rOut) / 2;
+        const color = NJ_LUCK_COLOR[e.luck];               // 九星吉凶：吉绿 / 凶红
+        const hi = e.isSite;                               // 当前坐山（格龙消砂）/ 朝向（辅星纳水）所在山高亮；纳甲水法为固定对照，不高亮
+        el('path', {d: sectorPath(a-7.5, a+7.5, rIn, rOut), class:'flip-mtn', 'data-role':e.role,
+          fill: color, 'fill-opacity': hi ? .30 : .13, stroke: hi ? color : 'none',
+          'stroke-width': hi ? 2.4 : 0}, gMarkers);
+        const [x,y] = point(a, rMid);
+        txt(gMarkers, x, y, e.star, {'font-size':15, fill: hi ? '#0f172a' : color,
+          'font-weight': hi ? 700 : 500, 'text-anchor':'middle','dominant-baseline':'central',
+          'font-family':'"PingFang SC","Microsoft YaHei",sans-serif'});
+        if (hi){   // 高亮山：内外缘各加一道环线以突出当前坐/向所在山
+          el('circle', {cx:CX, cy:CY, r:rIn, fill:'none', stroke:color, 'stroke-width':1.4}, gMarkers);
+          el('circle', {cx:CX, cy:CY, r:rOut, fill:'none', stroke:color, 'stroke-width':1.4}, gMarkers);
+        }
         continue;
       }
       if (!e.mountains) continue;
@@ -1336,16 +1497,16 @@ function renderMarkers(){
         continue;
       }
       if (e.range && e.labelAt !== undefined && e.tag){ // 整宫扇面 + 宫内简标（大游年式：星曜直接画进宫位环带）
-        el('path', {d: sectorPath(e.range[0], e.range[1], 250, 366),
+        el('path', {d: sectorPath(e.range[0], e.range[1], 250, 350),
           fill: color, 'fill-opacity': .13, stroke: color, 'stroke-width':1.6}, gMarkers);
-        arcText(e.labelAt, 342.5, e.tag, color, 18);              // 星+五行，环状排版
-        arcText(e.labelAt, 326, e.yq, color, 12);                 // 应期，环状排版
+        arcText(e.labelAt, 343, e.tag, color, 15);                // 星+五行，环状排版（外行）
+        arcText(e.labelAt, 326, e.starName, color, 12);           // 九星名（辅弼/贪狼/巨门…，取代原应期行；与外行错开半径防叠字）
         continue;
       }
       if (e.range && e.labelAt !== undefined && !e.band){ // 整宫扇面 + 宫位外标签（备用模式；带 band 的项交给下方 e.band 分支以落到正确内环）
-        el('path', {d: sectorPath(e.range[0], e.range[1], 250, 366),
+        el('path', {d: sectorPath(e.range[0], e.range[1], 250, 350),
           fill: color, 'fill-opacity': .13, stroke: color, 'stroke-width':1.6}, gMarkers);
-        const [lx1,ly1] = point(e.labelAt, 369), [lx2,ly2] = point(e.labelAt, r.labelR - 24);
+        const [lx1,ly1] = point(e.labelAt, 353), [lx2,ly2] = point(e.labelAt, r.labelR - 24);
         el('line', {x1:lx1, y1:ly1, x2:lx2, y2:ly2, stroke: color,
           'stroke-width':1.3, 'stroke-dasharray':'2 4'}, gMarkers);
         radialLabel(e.labelAt, r.labelR, [e.label, e.sub], color, 12.5);
@@ -1392,6 +1553,67 @@ function renderMarkers(){
 }
 
 /* ================= 面板 ================= */
+/* 选项开关按模块生成：三合排 ② 为 坐山水法·向上水法·三吉六秀；天星排 ② 为 格龙消砂·辅星纳水·纳甲水法（辅星纳水与纳甲水法互斥，同一环二择一） */
+const OPT_SHORT = {'basha':'八煞','xiangshang':'黄泉','dayounian':'大游年','wujidoutian':'戊己都天',
+  'wuhuangsansha':'五黄三煞','changsheng_sit':'坐山水法','changsheng_face':'向上水法','sanjiliuxiu':'三吉六秀',
+  'tianfu':'格龙消砂','dimu':'辅星纳水','fuxing':'纳甲水法'};
+// 互斥选项组：同组之内同时只能开启一项（勾选新项自动取消同组其余项）
+const EXCLUSIVE_GROUPS = [['dimu','fuxing']];
+const ROW_GROUPS = {
+  sanhe: [
+    ['basha','xiangshang','dayounian'],
+    ['changsheng_sit','changsheng_face','sanjiliuxiu'],
+    ['wujidoutian','wuhuangsansha']
+  ],
+  tianxing: [
+    ['basha','xiangshang','dayounian'],
+    ['tianfu','dimu','fuxing'],
+    ['wujidoutian','wuhuangsansha']
+  ]
+};
+// 各模块进入时的选项默认值（未列出的规则默认全开）
+const RULE_DEFAULTS = {
+  sanhe:    { changsheng_face:false },
+  tianxing: { changsheng_sit:false, changsheng_face:false, sanjiliuxiu:false, tianfu:true, dimu:true, fuxing:false }
+};
+function applyModuleDefaults(){
+  const base = {}; Rules.list.forEach(r => base[r.id] = true);
+  Object.assign(state.rules, base, RULE_DEFAULTS[state.module] || {});
+}
+function buildRuleToggles(){
+  const rt = document.getElementById('ruleToggles');
+  rt.innerHTML = '';
+  const ruleById = Object.fromEntries(Rules.list.map(r => [r.id, r]));
+  (ROW_GROUPS[state.module] || []).forEach(group => {
+    const row = document.createElement('div');
+    row.className = 'opt-row';
+    group.forEach(id => {
+      const r = ruleById[id];
+      if (!r) return;
+      const lab = document.createElement('label');
+      lab.className = 'rule-item';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!state.rules[r.id];
+      cb.disabled = !!r.stub;
+      cb.onchange = () => {                              // 互斥组：勾选本项则自动取消同组其余项，再重建开关并重绘
+        state.rules[r.id] = cb.checked;
+        if (cb.checked){
+          const grp = EXCLUSIVE_GROUPS.find(g => g.indexOf(r.id) >= 0);
+          if (grp) grp.forEach(id => { if (id !== r.id) state.rules[id] = false; });
+        }
+        buildRuleToggles(); render();
+      };
+      lab.appendChild(cb);
+      const span = document.createElement('span');
+      span.innerHTML = `<span class="rname">${OPT_SHORT[r.id] || r.name}</span>`;
+      lab.appendChild(span);
+      row.appendChild(lab);
+    });
+    rt.appendChild(row);
+  });
+}
+
 function buildPanel(){
   const selSit = document.getElementById('selSit');
   const selFace = document.getElementById('selFace');
@@ -1517,36 +1739,7 @@ function buildPanel(){
   }
 
   const rt = document.getElementById('ruleToggles');
-  // 选项只保留规则短名（不含备注/类型徽标），保持简洁
-  const SHORT = {'basha':'八煞','xiangshang':'黄泉','dayounian':'大游年','wujidoutian':'戊己都天','wuhuangsansha':'五黄三煞','changsheng_sit':'坐山水法','changsheng_face':'向上水法','sanjiliuxiu':'三吉六秀'};
-  // 选项分三排：① 八煞·黄泉·大游年 ② 坐山水法·向上水法·三吉六秀 ③ 戊己都天·五黄三煞（「时间输入」模块位于选项标题下方、三排之前）
-  const ROW_GROUPS = [
-    ['basha','xiangshang','dayounian'],
-    ['changsheng_sit','changsheng_face','sanjiliuxiu'],
-    ['wujidoutian','wuhuangsansha']
-  ];
-  const ruleById = Object.fromEntries(Rules.list.map(r => [r.id, r]));
-  ROW_GROUPS.forEach((group, gi) => {
-    const row = document.createElement('div');
-    row.className = 'opt-row';
-    group.forEach(id => {
-      const r = ruleById[id];
-      if (!r) return;
-      const lab = document.createElement('label');
-      lab.className = 'rule-item';
-      const cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.checked = !!state.rules[r.id];
-      cb.disabled = !!r.stub;
-      cb.onchange = () => { state.rules[r.id] = cb.checked; render(); };
-      lab.appendChild(cb);
-      const span = document.createElement('span');
-      span.innerHTML = `<span class="rname">${SHORT[r.id] || r.name}</span>`;
-      lab.appendChild(span);
-      row.appendChild(lab);
-    });
-    rt.appendChild(row);
-  });
+  buildRuleToggles();
 
   // 统一「时间输入」模块：嵌入选项卡内、标题正下方第一位（驱动戊己都天、五黄三煞、九宫飞星等所有与时间相关的因素，共享 state.testMs）
   const tw = document.getElementById('timeInputBox');
@@ -1631,15 +1824,16 @@ function renderResults(){
     `向 <b>${faceM}山</b>（${PALACE_OF[faceM]}宫 · ${degRange(face)}）</div>`;
 
   for (const r of Rules.list){
+    if (r.mods && r.mods.indexOf(state.module) < 0) continue;   // 模块专属规则仅在本模块判读
     let body;
     if (r.stub){ body = '<span class="muted">预留规则，未启用。</span>'; }
     else if (!state.rules[r.id]){ body = '<span class="muted">未启用（可在上方勾选）。</span>'; }
     else {
-      const es = r.evaluate(ctx);
+      const es = r.evaluate(ctx).filter(e => !e.silent);
       const hits = es.filter(e => e.mountains && e.mountains.length);
       body = hits.length
         ? hits.map(e => `<div class="verdict bad">犯 · ${e.label}</div><div>${e.note}</div>`).join('')
-        : es.map(e => `<div class="verdict ok">不犯</div><div>${e.note}</div>`).join('');
+        : es.map(e => `<div class="verdict ${e.bad ? 'bad' : 'ok'}">${e.vtext || '不犯'}</div><div>${e.note}</div>`).join('');
     }
     html += `<div class="rule-card"><div class="rule-head">` +
       `<span class="dot" style="background:${r.color}"></span>${r.name}` +
@@ -1664,20 +1858,49 @@ function render(){
 }
 
 /* ===== 版本标记：与 sw.js 的 CACHE 版本号保持一致，便于确认手机端实际加载的版本 ===== */
-const APP_VER = 'v20 · 2026-09-04';
-['verTagHome', 'verTagCompass'].forEach(id => {
+const APP_VER = 'v40 · 2026-09-16';
+['verTagHome', 'verTagCompass', 'verTagModules'].forEach(id => {
   const e = document.getElementById(id);
   if (e) e.textContent = '版本 ' + APP_VER;
 });
 
 buildPanel();
 render();
+renderModuleGrid();
+showScreen('modules');
 
-/* ===== 两屏切换（首页输入 → 判读页） ===== */
-function showScreen(name){
-  document.getElementById('screenHome').classList.toggle('hidden', name !== 'home');
-  document.getElementById('screenCompass').classList.toggle('hidden', name !== 'compass');
+/* ===== 模块九宫格 + 三屏导航（模块选择 → 坐向输入 → 判读页） ===== */
+function renderModuleGrid(){
+  const grid = document.getElementById('modGrid');
+  grid.innerHTML = '';
+  MODULES.forEach(m => {
+    const cell = document.createElement('button');
+    cell.type = 'button';
+    cell.className = 'mod-cell' + (m.ready ? '' : ' mod-locked');
+    cell.textContent = m.name;
+    if (m.ready){
+      cell.onclick = () => { state.module = m.key; applyModuleDefaults(); buildRuleToggles(); enterInput(); };
+    } else {
+      cell.onclick = () => toast('该模块敬请期待');
+    }
+    grid.appendChild(cell);
+  });
 }
+function enterInput(){
+  showScreen('home');
+}
+function toast(msg){
+  let t = document.getElementById('toast');
+  if (!t){ t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove('show'), 1400);
+}
+function showScreen(name){
+  ['modules','home','compass'].forEach(n =>
+    document.getElementById('screen' + n[0].toUpperCase() + n.slice(1))
+      .classList.toggle('hidden', name !== n));
+}
+document.getElementById('btnModBack').addEventListener('click', () => showScreen('modules'));
 document.getElementById('btnGo').addEventListener('click', () => {
   render();
   showScreen('compass');
