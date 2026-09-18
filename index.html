@@ -940,7 +940,7 @@ Rules.register({
     const laiMain = seq[0], quMain = seq[8];
     const note = `朝向<b>${faceM}</b>（双山<b>${SHUANGSHAN_PAIR[faceM]}</b> · <b>${ju}局</b>）：长生在<b>${laiMain}</b>、帝旺在<b>${laiAll[1]}</b>（宜来水）；` +
           `墓在<b>${quMain}</b>、绝在<b>${quAll[1]}</b>（宜去水·水口）——外环以「长生(来)→墓(去)」<b>虚线</b>环状箭头示水流向。`;
-    if (state.module === 'tianxing'){           // 天星模块：与辅星水法、纳甲水法共用 388~423 外环，逐山标十二长生宫（每宫一双山＝2 山，故二十四山全覆盖）
+    if (curMod() === 'tianxing'){           // 天星模块：与辅星水法、纳甲水法共用 388~423 外环，逐山标十二长生宫（每宫一双山＝2 山，故二十四山全覆盖）
       const p2i = {}; seq.forEach((s, i) => { p2i[SHUANGSHAN_PAIR[s]] = i; });
       const out = [];
       for (const m of MOUNTAINS){
@@ -976,7 +976,7 @@ Rules.register({
     const note = `三吉六秀为<b>天星贵山</b>（赖公《催官篇》本义），<b>固定不随坐山变</b>：` +
       `三吉 —— <b>亥、卯(震)、庚</b>；六秀 —— <b>艮、丙、酉(兑)、丁、巽、辛</b>。` +
       `三合模块以亮绿色环标出（350~400，三吉深绿、六秀浅绿）；天星模块标于<b>格龙消砂同一环</b>（350~386），二者互斥二择一。`;
-    if (state.module === 'tianxing'){                  // 天星模块：借格龙消砂同环（350~386）标注贵山，仅标三吉六秀九山，不随坐向变、不高亮
+    if (curMod() === 'tianxing'){                  // 天星模块：借格龙消砂同环（350~386）标注贵山，仅标三吉六秀九山，不随坐向变、不高亮
       const out = [];
       SANJI_STD.forEach(m => { if (MOUNTAINS.indexOf(m) >= 0)
         out.push({ kind:'flip-mtn', role:'三吉六秀', m, star:'三吉', color:'#16a34a', fillOp:.26, luck:'吉', silent:true }); });
@@ -1149,11 +1149,13 @@ const state = { sit: 0, faceDeg: 180, rules: {}, testMs: Date.now(), nineMode: '
 Rules.list.forEach(r => state.rules[r.id] = true);   // 默认全选，可按需关闭
 state.rules['changsheng_face'] = false;              // 三合水法默认不勾选（天星模块与辅星水法同环，默认用辅星）
 
-// 模块清单：当前「三合」「天星」为完整模块（功能完全一致，天星系三合之副本）；
-// 其余 7 格以「…」留白占位，点按提示「敬请期待」。后续按门类逐个填充。
+// 模块清单：「排盘」为在用模块；「排盘测试」为其副本入口（仅入口名不同，内容同源，供试验新功能）；
+// 三合模块已停用（入口撤除，规则与数据原样保留备用）；其余 7 格以「…」留白占位，点按提示「敬请期待」。
+const MODULE_ALIAS = { tianxing_test: 'tianxing' };   // 副本入口 → 取用哪个模块的内容（只换名，不改内容）
+function curMod(){ return MODULE_ALIAS[state.module] || state.module; }
 const MODULES = [
-  { key:'sanhe',    name:'三合', ready:true },
-  { key:'tianxing', name:'天星', ready:true },
+  { key:'tianxing',      name:'排盘',     ready:true },
+  { key:'tianxing_test', name:'排盘测试', ready:true },
   { key:'m3', name:'…', ready:false }, { key:'m4', name:'…', ready:false },
   { key:'m5', name:'…', ready:false }, { key:'m6', name:'…', ready:false },
   { key:'m7', name:'…', ready:false }, { key:'m8', name:'…', ready:false },
@@ -1180,7 +1182,7 @@ function buildStatic(){
 
   // 盘底（全部纯白素底，颜色只留给规则标记）
   el('circle', {cx:CX, cy:CY, r:440, fill:'#ffffff', stroke:'#b9b3a4', 'stroke-width':2}, gBase);
-  if (state.module === 'sanhe'){
+  if (curMod() === 'sanhe'){
     el('circle', {cx:CX, cy:CY, r:400, fill:'none', stroke:'#86efac', 'stroke-width':1.4}, gBase);  // 三吉六秀环（外界，亮绿）
     el('circle', {cx:CX, cy:CY, r:350, fill:'none', stroke:'#86efac', 'stroke-width':1.2}, gBase);  // 三吉六秀环（内界，直接接八卦带外侧 350，取消原 350~368 空环）
   }
@@ -1214,7 +1216,7 @@ function buildStatic(){
     txt(gBase, x, y, m, {'font-size':22, 'font-weight':600, fill:'#2b3442'});
   });
   // 二十四山阴阳（固定标记 · 净阴净阳：艮丙巽辛庚亥卯未丁巳酉丑 十二山为阴，余十二山为阳）——天星模块常驻，不随坐向变、不与选项挂钩
-  if (state.module === 'tianxing'){
+  if (curMod() === 'tianxing'){
     MOUNTAINS.forEach((m, i) => {
       const yy = YIN_MTN.has(m) ? '阴' : '阳';
       const [x,y] = point(i*15, 263);
@@ -1228,7 +1230,7 @@ function buildStatic(){
   // 且角向旁移 +6°（约 32px）——山心 310 处有八煞/黄泉标记（arcText 居山心），旁移标在山名侧旁以免重叠
   MOUNTAINS.forEach((m, i) => {
     const w = MTN_WUXING[m]; if (!w) return;
-    const tianxing = state.module === 'tianxing';
+    const tianxing = curMod() === 'tianxing';
     const [x,y] = point(i*15 + (tianxing ? 6 : 0), tianxing ? 309 : 263);
     txt(gBase, x, y, w.wx, {'font-size':10.5, 'font-weight':700, 'text-anchor':'middle', class:'mtn-wx',
       'data-grp': w.grp, fill: WX_COLOR[w.grp],
@@ -1268,9 +1270,10 @@ function buildStatic(){
 
   // 中央区域：九宫飞星盘（由 renderMarkers → drawNinePalace 绘制，取代原宅体示意）
 
-  // 点击热区（点选山位 → 设为坐山）
+  // 点击热区（点选山位 → 设为坐山）：范围严格限定在二十四山带 250~322，
+  // 不越入八卦带（322~350）、人盘格龙消砂/三吉六秀环（350~386）与天盘水法环（388~423）
   MOUNTAINS.forEach((m, i) => {
-    const p = el('path', {d: sectorPath(i*15-7.5, i*15+7.5, 250, 390),
+    const p = el('path', {d: sectorPath(i*15-7.5, i*15+7.5, 250, 322),
       class:'hit', 'data-idx':i}, gHit);
     const title = el('title', {}, p);
     title.textContent = `点选为坐山：${m}山（${PALACE_OF[m]}宫 · ${degRange(i)}）`;
@@ -1466,7 +1469,7 @@ function renderMarkers(){
   // 神煞规则标记（兼容：单山标煞 / 整宫扇面 / 内环 / 长生来去水 / 天星纳甲·翻卦）
   for (const r of Rules.list){
     if (r.stub || !state.rules[r.id]) continue;
-    if (r.mods && r.mods.indexOf(state.module) < 0) continue;   // 模块专属规则仅在本模块绘制
+    if (r.mods && r.mods.indexOf(curMod()) < 0) continue;   // 模块专属规则仅在本模块绘制
     const ctx = { sit, face, sitPalace: PALACE_OF[sitM], facePalace: PALACE_OF[faceM] };
     // 「实地排盘」开启：本规则所属盘层整体偏转（人盘中针 −7.5°、天盘缝针 +7.5°，地盘不动）
     RING_SHIFT = state.field ? (RING_LAYER[r.id] || 0) : 0;
@@ -1630,13 +1633,13 @@ const RULE_DEFAULTS = {
 };
 function applyModuleDefaults(){
   const base = {}; Rules.list.forEach(r => base[r.id] = true);
-  Object.assign(state.rules, base, RULE_DEFAULTS[state.module] || {});
+  Object.assign(state.rules, base, RULE_DEFAULTS[curMod()] || {});
 }
 function buildRuleToggles(){
   const rt = document.getElementById('ruleToggles');
   rt.innerHTML = '';
   const ruleById = Object.fromEntries(Rules.list.map(r => [r.id, r]));
-  (ROW_GROUPS[state.module] || []).forEach(group => {
+  (ROW_GROUPS[curMod()] || []).forEach(group => {
     const row = document.createElement('div');
     row.className = 'opt-row';
     group.forEach(id => {
@@ -1650,7 +1653,7 @@ function buildRuleToggles(){
       cb.disabled = !!r.stub;
       cb.onchange = () => {                              // 互斥组：勾选本项则自动取消同组其余项，再重建开关并重绘（互斥仅在天星模块生效）
         state.rules[r.id] = cb.checked;
-        if (cb.checked && state.module === 'tianxing'){
+        if (cb.checked && curMod() === 'tianxing'){
           const grp = EXCLUSIVE_GROUPS.find(g => g.indexOf(r.id) >= 0);
           if (grp) grp.forEach(id => { if (id !== r.id) state.rules[id] = false; });
         }
@@ -1883,7 +1886,7 @@ function renderResults(){
     `向 <b>${faceM}山</b>（${PALACE_OF[faceM]}宫 · ${degRange(face)}）</div>`;
 
   for (const r of Rules.list){
-    if (r.mods && r.mods.indexOf(state.module) < 0) continue;   // 模块专属规则仅在本模块判读
+    if (r.mods && r.mods.indexOf(curMod()) < 0) continue;   // 模块专属规则仅在本模块判读
     let body;
     if (r.stub){ body = '<span class="muted">预留规则，未启用。</span>'; }
     else if (!state.rules[r.id]){ body = '<span class="muted">未启用（可在上方勾选）。</span>'; }
@@ -1919,7 +1922,7 @@ function render(){
 }
 
 /* ===== 版本标记：与 sw.js 的 CACHE 版本号保持一致，便于确认手机端实际加载的版本 ===== */
-const APP_VER = 'v46 · 2026-09-18';
+const APP_VER = 'v48 · 2026-09-18';
 ['verTagHome', 'verTagCompass', 'verTagModules'].forEach(id => {
   const e = document.getElementById(id);
   if (e) e.textContent = '版本 ' + APP_VER;
