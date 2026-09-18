@@ -212,7 +212,7 @@
     .home-card{padding:14px;}
     .options-flex{gap:6px 16px;}
     /* 选项按模块分行：三合 ①八煞·黄泉·大游年 ②坐山水法·三合水法·三吉六秀 ③戊己都天·五黄三煞；
-   天星 ①八煞·黄泉·大游年 ②格龙消砂·三吉六秀（同一环，二择一互斥） ③三合水法·辅星水法·纳甲水法（同一环，三择一互斥） ④戊己都天·五黄三煞 */
+   天星 ①格龙消砂·三吉六秀（同一环，二择一互斥） ②三合水法·辅星水法·纳甲水法（同一环，三择一互斥） ③戊己都天·五黄三煞 ④八煞·黄泉·大游年 */
     .opt-row{grid-template-columns:repeat(3, minmax(0,1fr)); gap:2px 6px;}
     .opt-row .rule-item{font-size:12.5px; padding:6px 0; gap:5px;}
     .opt-row .rule-item input{width:16px; height:16px; flex:0 0 16px;}
@@ -1620,10 +1620,10 @@ const ROW_GROUPS = {
     ['wujidoutian','wuhuangsansha']
   ],
   tianxing: [
-    ['basha','xiangshang','dayounian'],
     ['tianfu','sanjiliuxiu'],
     ['changsheng_face','dimu','fuxing'],
-    ['wujidoutian','wuhuangsansha']
+    ['wujidoutian','wuhuangsansha'],
+    ['basha','xiangshang','dayounian']
   ]
 };
 // 各模块进入时的选项默认值（未列出的规则默认全开）
@@ -1922,7 +1922,7 @@ function render(){
 }
 
 /* ===== 版本标记：与 sw.js 的 CACHE 版本号保持一致，便于确认手机端实际加载的版本 ===== */
-const APP_VER = 'v48 · 2026-09-18';
+const APP_VER = 'v49 · 2026-09-18';
 ['verTagHome', 'verTagCompass', 'verTagModules'].forEach(id => {
   const e = document.getElementById(id);
   if (e) e.textContent = '版本 ' + APP_VER;
