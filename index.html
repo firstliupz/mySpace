@@ -159,8 +159,13 @@
   .annual-test .at-res{font-size:12.5px; color:#3c4552; font-weight:600;}
 
   /* SVG 交互 */
-  .hit{fill:rgba(0,0,0,0); cursor:pointer;}
-  .hit:hover{fill:rgba(31,41,55,.07);}
+  .hit{fill:rgba(0,0,0,0); cursor:pointer; -webkit-tap-highlight-color:transparent;}
+  /* 悬停高亮仅限真实指针设备（鼠标／触控板）：触摸设备点击后触点位置停驻，
+     整盘重建时该位置已换成别的山，:hover 会落到新山上形成「选中态残留」，故触摸端一律不启用。
+     兜底：JS 按 pointerType 给 <html> 加/去 .touch-mode（应对不支持 hover/pointer 媒体查询的老浏览器）。 */
+  @media (hover:hover) and (pointer:fine){
+    html:not(.touch-mode) .hit:hover{fill:rgba(31,41,55,.07);}
+  }
   .sector-sha{animation:shaPulse 2.2s ease-in-out infinite;}
   @keyframes shaPulse{0%,100%{opacity:.6;} 50%{opacity:1;}}
 
@@ -1922,11 +1927,19 @@ function render(){
 }
 
 /* ===== 版本标记：与 sw.js 的 CACHE 版本号保持一致，便于确认手机端实际加载的版本 ===== */
-const APP_VER = 'v49 · 2026-09-18';
+const APP_VER = 'v50 · 2026-09-18';
 ['verTagHome', 'verTagCompass', 'verTagModules'].forEach(id => {
   const e = document.getElementById(id);
   if (e) e.textContent = '版本 ' + APP_VER;
 });
+
+/* 触摸设备禁用 SVG 悬停高亮（兜底老浏览器不支持 hover/pointer 媒体查询）：
+   触摸点击后触点停驻，整盘重建时该位置已换成别的山，:hover 会误落在新山上显示成「选中态」。
+   实际按输入类型切换：手指／触控笔 → 加 .touch-mode（无悬停高亮）；鼠标 → 移除（保留悬停反馈）。 */
+window.addEventListener('pointerdown', e => {
+  const t = e.pointerType || 'mouse';
+  document.documentElement.classList.toggle('touch-mode', t !== 'mouse');
+}, { passive: true });
 
 buildPanel();
 render();
