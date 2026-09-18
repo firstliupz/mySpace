@@ -1,4 +1,4 @@
-const CACHE = 'fs24-pwa-v40';
+const CACHE = 'fs24-pwa-v46';
 
 self.addEventListener('install', event => {
   event.waitUntil(
