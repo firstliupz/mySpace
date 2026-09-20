@@ -115,6 +115,66 @@
   .hengqu span{display:block; margin-left:6px;}      /* 竖排下 margin-left = 列间距 */
   .hengqu span:last-child{margin-left:0;}
   .home-card{text-align:left; margin-top:10px;}
+  /* ===== 日课模块（v51） ===== */
+  .rk-types{display:flex; flex-wrap:wrap; gap:8px;}
+  .rk-type{padding:9px 16px; border:1px solid var(--border); border-radius:20px; background:#fff;
+    color:var(--ink); font-size:14px; cursor:pointer; font-family:inherit;}
+  .rk-type.on{background:var(--blue); border-color:var(--blue); color:#fff; font-weight:700;}
+  .rk-sub{padding:5px 12px; border:1px solid var(--border); border-radius:16px; background:#fff;
+    color:var(--ink); font-size:13px; cursor:pointer; font-family:inherit;}
+  .rk-sub.on{background:var(--ink); border-color:var(--ink); color:#fff; font-weight:600;}
+  .rk-help{font-size:12px; font-weight:400; color:var(--blue); text-decoration:none; margin-left:8px; cursor:pointer;
+    border:1px solid var(--blue); border-radius:10px; padding:1px 9px; vertical-align:middle;}
+  .rk-help:hover{background:var(--blue); color:#fff;}
+  .rk-subs{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; align-items:center;}
+  .rk-subs:empty{display:none;}
+  /* 使用说明 modal */
+  .rk-mask{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center;
+    z-index:9999; padding:18px;}
+  .rk-mask.on{display:flex;}
+  .rk-modal{background:#fff; border-radius:14px; max-width:660px; width:100%; max-height:84vh; overflow:auto;
+    box-shadow:0 12px 40px rgba(0,0,0,.25);}
+  .rk-modal-hd{position:sticky; top:0; background:var(--blue); color:#fff; padding:12px 16px; font-weight:700; font-size:15px;
+    display:flex; justify-content:space-between; align-items:center;}
+  .rk-modal-x{color:#fff; font-size:22px; text-decoration:none; line-height:1; padding:0 4px;}
+  .rk-modal-bd{padding:14px 16px 20px; font-size:13px; line-height:1.7; color:var(--ink);}
+  .rk-help-intro{margin:0 0 10px; color:var(--muted);}
+  .rk-help-h{font-size:14px; margin:14px 0 6px; color:var(--ink); border-left:3px solid var(--blue); padding-left:8px;}
+  .rk-help-tbl{width:100%; border-collapse:collapse; font-size:12.5px;}
+  .rk-help-tbl th,.rk-help-tbl td{border:1px solid var(--border); padding:6px 8px; text-align:left; vertical-align:top;}
+  .rk-help-tbl th{background:#f3f6fb; font-weight:700;}
+  .rk-help-ul{margin:6px 0 0; padding-left:18px;}
+  .rk-help-ul li{margin:4px 0;}
+  .rk-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(268px,1fr)); gap:7px 16px;}
+  .rk-f{display:flex; align-items:flex-start; gap:7px; font-size:13px; line-height:1.45;}
+  .rk-f input[type=checkbox]{margin-top:3px; flex:none;}
+  .rk-f.off{opacity:.45;}
+  .rk-src{color:var(--muted); font-size:11px; display:block; margin-top:1px;}
+  .rk-lv{font-size:10px; padding:0 5px; border-radius:8px; border:1px solid var(--border);
+    color:var(--muted); margin-left:4px; white-space:nowrap;}
+  .rk-lv.core{color:var(--blue); border-color:#bfd4f7;}
+  .rk-lv.todo{color:#a1a1aa; text-decoration:line-through;}
+  .rk-tbl{width:100%; border-collapse:collapse; font-size:12.5px;}
+  .rk-tbl th,.rk-tbl td{border-bottom:1px solid var(--border); padding:6px 7px; text-align:center;}
+  .rk-tbl th{background:#f7f9fb; font-weight:700; position:sticky; top:0; z-index:1;}
+  .rk-tbl td.l{text-align:left;}
+  .rk-tbl tr.rk-row{cursor:pointer;}
+  .rk-tbl tr.rk-row:hover{background:#f0f5ff;}
+  .rk-tbl tr.best{background:#effdf4;}
+  .rk-tbl tr.bad{background:#fdf2f2;}
+  .rk-scroll{max-height:520px; overflow:auto;}
+  .rk-tag{display:inline-block; font-size:11px; padding:1px 6px; border-radius:9px; margin:1px 2px;}
+  .rk-tag.g{background:#e8f7ee; color:#15803d;}
+  .rk-tag.b{background:#fdeaea; color:#b91c1c;}
+  .rk-tag.n{background:#f1f3f5; color:#6b7280;}
+  .rk-v{font-weight:700;} .rk-v.g{color:var(--green);} .rk-v.m{color:var(--orange);} .rk-v.b{color:var(--red);}
+  .rk-detail{font-size:12px; color:#4a5361; line-height:1.75; margin-top:10px; white-space:normal;}
+  .rk-detail b{color:var(--ink);}
+  .rk-inp{padding:7px 9px; border:1px solid var(--border); border-radius:8px; font-size:14px; font-family:inherit;}
+  .rk-note{font-size:12px; color:var(--muted); line-height:1.7; margin-top:6px; white-space:normal;}
+  .rk-verse{font-size:12.5px; color:#5b6472; background:#fafbfc; border-left:3px solid var(--border);
+    padding:7px 10px; margin:6px 0; white-space:normal; line-height:1.7;}
+
   .btn-primary{display:block; width:100%; margin-top:18px; padding:13px; font-size:16px; font-weight:700;
     color:#fff; background:var(--blue); border:none; border-radius:12px; cursor:pointer;
     letter-spacing:8px; text-indent:8px;}
@@ -305,6 +365,39 @@
     <button class="btn-primary" id="btnGo">进入查询</button>
     <div class="ver-tag" id="verTagHome"></div>
   </div>
+</div>
+
+<!-- ============ 日课屏（v51） ============ -->
+<div class="screen hidden" id="screenRike">
+  <header>
+    <h1>日课</h1>
+    <span class="sub" id="rkSummary"></span>
+    <span class="ver-tag" id="verTagRike"></span>
+  </header>
+  <main>
+    <div class="card">
+      <h2>① 日课类型<a href="javascript:void(0)" id="rkTypeHelp" class="rk-help">使用说明 ▸</a></h2>
+      <div class="rk-types" id="rkTypes"></div>
+      <div class="rk-subs" id="rkSubs"></div>
+      <div class="rk-verse" id="rkTypeVerse"></div>
+    </div>
+    <div class="card">
+      <h2>② 输入条件</h2>
+      <div id="rkInputs"></div>
+    </div>
+    <div class="card">
+      <h2>③ 参考因素<button class="btn-back" id="rkResetF" type="button" style="float:right;">恢复默认</button></h2>
+      <div id="rkFactors"></div>
+      <button class="btn-primary" id="rkGo" style="letter-spacing:6px; text-indent:6px;">开始择日</button>
+    </div>
+    <div class="card" id="rkResultCard" style="display:none;">
+      <h2>候选日课</h2>
+      <div class="rk-note" id="rkSummaryNote"></div>
+      <div class="rk-scroll"><table class="rk-tbl" id="rkTbl"></table></div>
+      <div class="rk-detail" id="rkDetail"></div>
+    </div>
+    <button class="btn-back" id="rkBack" type="button" style="margin-top:14px;">‹ 返回模块</button>
+  </main>
 </div>
 
 <!-- ============ 第二屏 · 判读页 ============ -->
@@ -1161,7 +1254,8 @@ function curMod(){ return MODULE_ALIAS[state.module] || state.module; }
 const MODULES = [
   { key:'tianxing',      name:'排盘',     ready:true },
   { key:'tianxing_test', name:'排盘测试', ready:true },
-  { key:'m3', name:'…', ready:false }, { key:'m4', name:'…', ready:false },
+  { key:'rike', name:'日课', ready:true },
+  { key:'m4', name:'…', ready:false },
   { key:'m5', name:'…', ready:false }, { key:'m6', name:'…', ready:false },
   { key:'m7', name:'…', ready:false }, { key:'m8', name:'…', ready:false },
   { key:'m9', name:'…', ready:false }
@@ -1927,8 +2021,1085 @@ function render(){
 }
 
 /* ===== 版本标记：与 sw.js 的 CACHE 版本号保持一致，便于确认手机端实际加载的版本 ===== */
-const APP_VER = 'v50 · 2026-09-18';
-['verTagHome', 'verTagCompass', 'verTagModules'].forEach(id => {
+/* ==========================================================================
+   日课模块（v51 立架；v53 定朔改写、补全神煞；v54 补入《玉匣记》周堂图系）
+   历法口径：公历 ⇄ 农历（北京时间定朔、GB/T 33661—2017 置闰）＋节气月（月建以「节」为界）＋干支日。
+   公历日期一律自动核对农历——择日以农历为体、干支为用，《玉匣记》一类以农历日期定者皆由此出。
+   典籍骨架：《钦定协纪辨方书》卷四·义例（建除·黄黑道）、卷五~六（神煞）、卷十一·用事。
+   凡未取得可靠起例者一律标【待补】且不计分，不以臆造之法定吉凶。
+   《玉匣记》杨公忌·月忌日以农历日期为准，归入民俗层（G），默认关闭、启用方计分。
+   周堂图（嫁娶·行嫁白虎·纳婿·出灵·起造·安香火·入宅·安床 八图）亦「只论月分大小，不论节气」，
+       由定朔所得大小月落位，同归民俗层（G）；其「值翁姑／值人」可从权者另设开关，不混作硬忌。
+   ========================================================================== */
+
+/* ---------- 1. 历法底座 ---------- */
+function rkJDN(y, m, d){                       // 公历 → 儒略日数（格里历）
+  const a = Math.floor((14 - m) / 12), yy = y + 4800 - a, mm = m + 12 * a - 3;
+  return d + Math.floor((153 * mm + 2) / 5) + 365 * yy + Math.floor(yy / 4)
+       - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045;
+}
+function rkDayGZ(jdn){                         // 日干支（0=甲子；验：2000-01-01 = 戊午）
+  const i = ((jdn + 49) % 60 + 60) % 60;
+  return { i, stem: STEMS[i % 10], branch: BRANCHES[i % 12], gz: STEMS[i % 10] + BRANCHES[i % 12] };
+}
+const RK_TERM_LON = {   // 二十四节气 → 太阳视黄经
+  '立春':315,'惊蛰':345,'清明':15,'立夏':45,'芒种':75,'小暑':105,
+  '立秋':135,'白露':165,'寒露':195,'立冬':225,'大雪':255,'小寒':285,
+  '雨水':330,'春分':0,'谷雨':30,'小满':60,'夏至':90,'大暑':120,
+  '处暑':150,'秋分':180,'霜降':210,'小雪':240,'冬至':270,'大寒':300 };
+const RK_TERM_GUESS = { '小寒':[1,6],'大寒':[1,20],'立春':[2,4],'雨水':[2,19],'惊蛰':[3,6],'春分':[3,21],
+  '清明':[4,5],'谷雨':[4,20],'立夏':[5,6],'小满':[5,21],'芒种':[6,6],'夏至':[6,21],
+  '小暑':[7,7],'大暑':[7,23],'立秋':[8,8],'处暑':[8,23],'白露':[9,8],'秋分':[9,23],
+  '寒露':[10,8],'霜降':[10,23],'立冬':[11,7],'小雪':[11,22],'大雪':[12,7],'冬至':[12,22] };
+const RK_TERM_CACHE = {};
+function rkTermMs(year, name){                 // 某年某节气时刻（UTC 毫秒），牛顿迭代逼近黄经
+  const key = year + '|' + name;
+  if (RK_TERM_CACHE[key] != null) return RK_TERM_CACHE[key];
+  const g = RK_TERM_GUESS[name], lon = RK_TERM_LON[name];
+  let jd = Date.UTC(year, g[0] - 1, g[1]) / 86400000 + 2440587.5;
+  for (let i = 0; i < 8; i++){
+    const diff = ((solarLon(jd) - lon + 540) % 360) - 180;
+    jd -= diff / 0.98565;                      // 太阳平均日行约 0.98565°
+  }
+  return (RK_TERM_CACHE[key] = (jd - 2440587.5) * 86400000);
+}
+function rkTermTable(y0, y1){                  // → Map '年-月-日' → 节气名（本地日期）
+  const map = new Map();
+  for (let y = y0; y <= y1; y++)
+    for (const n of Object.keys(RK_TERM_LON)){
+      const dt = new Date(rkTermMs(y, n));
+      map.set(dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate(), n);
+    }
+  return map;
+}
+const RK_MONTHS = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
+function rkMonthIdx(ms){                       // 月建序号：0=寅月（立春起）
+  const jd = ms / 86400000 + 2440587.5;
+  return Math.floor((((solarLon(jd) - 315) % 360 + 360) % 360) / 30) % 12;
+}
+
+/* ---------- 1b. 农历（定朔 + 无中气置闰） ----------
+   朔：Meeus《Astronomical Algorithms》第 49 章新月多项式（Chapront 改良系数本，k 起算于 1900-01-01 之朔），
+       逐项具名（Ms 日平近点角、Mm 月平近点角、F 月纬度参数），ΔT 由多项式给出，直接回 UT。
+   日界与月序：以东八区（UTC+8）0 时为日界；月名各依所含中气（含雨水者为正月……
+       含冬至者为十一月），无中气之月为闰月、名从其前月。冬至所在月必为十一月，故锚定自洽。
+   锚点校验（朔，北京时间）：2025-01-29 20:36 乙巳年正月初一；2026-02-17 20:01 丙午年正月初一；
+       2026-12-09 08:52 冬月初一；2027-01-08 04:24 腊月初一（腊月小、廿九除夕）；
+       2027-02-06 23:56 丁未年正月初一；2025-07-25 03:11 闰六月初一；节气 2025 冬至 12-21 23:03。
+   全表校验：1901–2028 年逐朔对 AstroPixels（Espenak/Meeus）朔望表，最大偏差 ≤ 1.5 分钟。 */
+const RK_LUNAR_CACHE = {};
+const RK_ZHONGQI = [['雨水',1],['春分',2],['谷雨',3],['小满',4],['夏至',5],['大暑',6],
+                    ['处暑',7],['秋分',8],['霜降',9],['小雪',10],['冬至',11],['大寒',12]];
+/* 朔：Meeus《Astronomical Algorithms》第 49 章新月多项式（Chapront 改良系数本，k 起算于 1900-01-01 之朔），
+   各项具名如上：Ms 日平近点角、Mm 月平近点角、F 月纬度参数；ΔT 由多项式给出，直接回 UT（不再另减）。
+   对表校验（AstroPixels / Espenak-Meeus 朔望表，1901–2028 年逐朔）：最大偏差 ≤ 1.5 分钟。 */
+function rkNewMoonMs(k){
+  const T = k / 1236.85, T2 = T * T, T3 = T2 * T;
+  let jde = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
+  jde += 0.00033 * Math.sin(D2R * (166.56 + 132.87 * T - 0.009173 * T2));
+  const Ms = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;   // 日平近点角
+  const Mm = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;  // 月平近点角
+  const F  =  21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;  // 月纬度参数
+  const c  = (0.1734 - 0.000393 * T) * Math.sin(D2R * Ms) + 0.0021 * Math.sin(D2R * 2 * Ms)
+           - 0.4068 * Math.sin(D2R * Mm) + 0.0161 * Math.sin(D2R * 2 * Mm) - 0.0004 * Math.sin(D2R * 3 * Mm)
+           + 0.0104 * Math.sin(D2R * 2 * F) - 0.0051 * Math.sin(D2R * (Ms + Mm)) - 0.0074 * Math.sin(D2R * (Ms - Mm))
+           + 0.0004 * Math.sin(D2R * (2 * F + Ms)) - 0.0004 * Math.sin(D2R * (2 * F - Ms))
+           - 0.0006 * Math.sin(D2R * (2 * F + Mm)) + 0.0010 * Math.sin(D2R * (2 * F - Mm))
+           + 0.0005 * Math.sin(D2R * (2 * Mm + Ms));
+  const dT = (T < -11) ? (0.001 + 0.000839 * T + 0.0002261 * T2 - 0.00000845 * T3 - 0.000000081 * T * T3)
+                       : (-0.000278 + 0.000265 * T + 0.000262 * T2);          // ΔT（日）
+  return ((jde + c - dT) - 2440587.5) * 86400000;                             // → UT 毫秒
+}
+function rkBjDay(ms){                          // → 东八区日期
+  const d = new Date(ms + 8 * 3600000);
+  return { y: d.getUTCFullYear(), m: d.getUTCMonth() + 1, d: d.getUTCDate() };
+}
+function rkBjMid(y, m, d){ return Date.UTC(y, m - 1, d) - 8 * 3600000; }   // 东八区 0 时 → UTC 毫秒
+function rkDayIdx(ms){ return Math.floor((ms + 8 * 3600000) / 86400000); } // → 东八区「日历日」序号（东八区 0 时恰为整日，朔在午后者不得进位）
+function rkMoonK(y, m, d){ return Math.round((rkJDN(y, m, d) - 0.5 - 2415020.75933) / 29.53058868); }
+function rkLunarMonths(y0, y1){                // 覆盖 [y0 年冬, y1 年春] 的朔望月表
+  const key = y0 + '-' + y1;
+  if (RK_LUNAR_CACHE[key]) return RK_LUNAR_CACHE[key];
+  const k0 = rkMoonK(y0 - 1, 11, 1), k1 = rkMoonK(y1 + 1, 3, 1);
+  const nms = [];
+  for (let k = k0; k <= k1; k++) nms.push(rkNewMoonMs(k));
+  const zq = [];
+  for (let y = y0 - 1; y <= y1 + 2; y++)
+    for (const [name, mm] of RK_ZHONGQI) zq.push({ ms: rkTermMs(y, name), name, mm });
+  zq.sort((a, b) => a.ms - b.ms);
+  const months = [];
+  for (let i = 0; i < nms.length - 1; i++){
+    const a = nms[i], b = nms[i + 1];
+    /* 归属一律按「东八区日历日」判定：朔虽在初一之某一时刻，初一则自该日 0 时始 */
+    const sa = rkDayIdx(a), sb = rkDayIdx(b);
+    const inZ = zq.filter(z => rkDayIdx(z.ms) >= sa && rkDayIdx(z.ms) < sb);
+    months.push({ start: a, end: b, sd: sa, ed: sb, zq: inZ, name: null, leap: false });
+  }
+  /* 依《农历的编算和颁行》（GB/T 33661—2017）第四条：
+     ① 含冬至之月为十一月；② 相邻两个十一月之间为农历年，得十三月者取其中最先一个无中气之月为闰月；
+     ③ 十一月之后第二个（不计闰月）之月为正月。如此可解 2033 年「闰冬月」一类，非「凡无中气即闰」所能得。 */
+  const dz = [];                               // 各十一月之月序
+  for (let y = y0 - 1; y <= y1 + 1; y++){
+    const di = rkDayIdx(rkTermMs(y, '冬至'));
+    const j = months.findIndex(mo => mo.sd <= di && di < mo.ed);
+    if (j >= 0) dz.push(j);
+  }
+  dz.sort((a, b) => a - b);
+  const leapAt = new Set();
+  for (let t = 0; t < dz.length - 1; t++){
+    const s = dz[t], e = dz[t + 1];
+    if (e - s === 13) for (let i = s; i < e; i++) if (!months[i].zq.length){ leapAt.add(i); break; }
+  }
+  if (dz.length){
+    const first = dz[0], ORD = [11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    let idx = 0;
+    for (let i = first - 1; i >= 0; i--){ idx = (idx + 11) % 12; months[i].name = ORD[idx]; }   // 表首一段反推
+    idx = 0;
+    for (let i = first; i < months.length; i++){
+      if (dz.indexOf(i) >= 0) idx = 0;         // 冬至所在月复位为十一月
+      months[i].leap = leapAt.has(i);
+      months[i].name = months[i].leap ? ORD[(idx + 11) % 12] : ORD[idx];   // 闰月名从其上月，且不占月序
+      if (!months[i].leap) idx = (idx + 1) % 12;
+    }
+  }
+  return (RK_LUNAR_CACHE[key] = months);
+}
+const RK_LUNAR_M = ['正','二','三','四','五','六','七','八','九','十','冬','腊'];
+const RK_LUNAR_N = ['初一','初二','初三','初四','初五','初六','初七','初八','初九','初十',
+  '十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','廿一','廿二','廿三','廿四',
+  '廿五','廿六','廿七','廿八','廿九','三十'];
+function rkLunarOf(y, m, d){
+  const ms = rkBjMid(y, m, d), di = rkDayIdx(ms);
+  const months = rkLunarMonths(y - 1, y + 1);
+  let i = months.findIndex(mo => di >= mo.sd && di < mo.ed);
+  if (i < 0) i = di < months[0].sd ? 0 : months.length - 1;
+  const mo = months[i];
+  /* 农历年以「正月」为岁首：不论何月（含冬月、腊月），其所属农历年皆取在上之最近一个正月的年份——
+     2027-01-01 冬月廿四仍属丙午年（正月起 2026-02-17），至 2027-02-06 正月初一始入丁未年。 */
+  let ny = -1;
+  for (let j = i; j >= 0; j--) if (months[j].name === 1 && !months[j].leap){ ny = j; break; }
+  if (ny < 0) for (let j = i + 1; j < months.length; j++) if (months[j].name === 1 && !months[j].leap){ ny = j; break; }
+  const ly = ny >= 0 ? rkBjDay(months[ny].start).y : y;
+  const ld = di - mo.sd + 1;
+  /* big＝月大（三十日）；周堂图一律「只论月分大小，不论节气」，故须先定大小月 */
+  return { ly, lm: mo.name, leap: mo.leap, ld, big: (mo.ed - mo.sd) === 30, mdays: mo.ed - mo.sd,
+    gz: STEMS[((ly - 4) % 10 + 10) % 10] + BRANCHES[((ly - 4) % 12 + 12) % 12],
+    sx: BRANCHES[((ly - 4) % 12 + 12) % 12],
+    text: RK_LUNAR_M[mo.name - 1] + '月' + (RK_LUNAR_N[ld - 1] || (ld + '日')),
+    leapText: (mo.leap ? '闰' : '') + RK_LUNAR_M[mo.name - 1] + '月' + (RK_LUNAR_N[ld - 1] || (ld + '日')) };
+}
+function rkMonthGZ(ms){
+  const k = rkMonthIdx(ms), b = RK_MONTHS[k], y = ganzhiYearOf(ms);
+  const s0 = STEMS.indexOf(WUHU_FIRST[y.stem]);
+  return { idx:k, branch:b, stem:STEMS[(s0 + k) % 10], gz:STEMS[(s0 + k) % 10] + b,
+    yearStem:y.stem, yearBranch:y.branch, yearGZ:y.gz };
+}
+
+/* ---------- 2. 建除 · 黄黑道 ---------- */
+const RK_JIANCHU = ['建','除','满','平','定','执','破','危','成','收','开','闭'];
+/* 两说并存（不强行归一）：考原「除危定执成开为吉，建破平收满闭为凶」；
+   选择宗镜「平成开危最吉，定除次吉，破大凶」，分值仅供参照。 */
+const RK_JC_KAOYUAN  = { '建':-2,'除':1,'满':-2,'平':-2,'定':1,'执':1,'破':-3,'危':1,'成':1,'收':-2,'开':1,'闭':-2 };
+const RK_JC_ZONGJING = { '建':0,'除':1,'满':0,'平':2,'定':-1,'执':-1,'破':-3,'危':2,'成':0,'收':0,'开':2,'闭':-1 };
+function rkJianchu(dayB, monB){
+  return RK_JIANCHU[((BRANCHES.indexOf(dayB) - BRANCHES.indexOf(monB)) % 12 + 12) % 12];
+}
+const RK_HH_NAME  = ['青龙','明堂','天刑','朱雀','金匮','天德','白虎','玉堂','天牢','元武','司命','勾陈'];
+const RK_HH_GOOD  = [ 1,       1,     0,     0,     1,     1,     0,     1,     0,     0,     1,     0 ];
+const RK_HH_START = { '寅':'子','申':'子','卯':'寅','酉':'寅','辰':'辰','戌':'辰',
+                      '巳':'午','亥':'午','子':'申','午':'申','丑':'戌','未':'戌' };
+function rkHuanghei(dayB, monB){
+  const k = ((BRANCHES.indexOf(dayB) - BRANCHES.indexOf(RK_HH_START[monB])) % 12 + 12) % 12;
+  return { name: RK_HH_NAME[k], good: !!RK_HH_GOOD[k] };
+}
+
+/* ---------- 3. 神煞起例 ---------- */
+const RK_WUHE  = {'甲':'己','乙':'庚','丙':'辛','丁':'壬','戊':'癸','己':'甲','庚':'乙','辛':'丙','壬':'丁','癸':'戊'};
+const RK_LIUHE = {'子':'丑','丑':'子','寅':'亥','亥':'寅','卯':'戌','戌':'卯','辰':'酉','酉':'辰','巳':'申','申':'巳','午':'未','未':'午'};
+const RK_CHONG = {'子':'午','午':'子','丑':'未','未':'丑','寅':'申','申':'寅','卯':'酉','酉':'卯','辰':'戌','戌':'辰','巳':'亥','亥':'巳'};
+const RK_SANHE = {'寅':['午','戌'],'午':['寅','戌'],'戌':['寅','午'],'申':['子','辰'],
+                  '子':['申','辰'],'辰':['申','子'],'亥':['卯','未'],'卯':['亥','未'],
+                  '未':['亥','卯'],'巳':['酉','丑'],'酉':['巳','丑'],'丑':['巳','酉']};
+/* 天德：正丁、二坤(申)、三壬、四辛、五乾(亥)、六甲、七癸、八艮(寅)、九丙、十乙、十一巽(巳)、十二庚 */
+const RK_TIANDE = { '寅':{s:'丁'},'卯':{b:'申'},'辰':{s:'壬'},'巳':{s:'辛'},'午':{b:'亥'},'未':{s:'甲'},
+  '申':{s:'癸'},'酉':{b:'寅'},'戌':{s:'丙'},'亥':{s:'乙'},'子':{b:'巳'},'丑':{s:'庚'} };
+/* 天德合：干取五合、支取六合（正壬·二巳·三丁·四丙·五寅·六己·七戊·八亥·九辛·十庚·十一申·十二乙） */
+const RK_TIANDE_HE = { '寅':{s:'壬'},'卯':{b:'巳'},'辰':{s:'丁'},'巳':{s:'丙'},'午':{b:'寅'},'未':{s:'己'},
+  '申':{s:'戊'},'酉':{b:'亥'},'戌':{s:'辛'},'亥':{s:'庚'},'子':{b:'申'},'丑':{s:'乙'} };
+/* 月德：三合局之阳干 —— 寅午戌月丙、申子辰月壬、亥卯未月甲、巳酉丑月庚 */
+const RK_YUEDE = { '寅':'丙','午':'丙','戌':'丙','申':'壬','子':'壬','辰':'壬',
+                   '亥':'甲','卯':'甲','未':'甲','巳':'庚','酉':'庚','丑':'庚' };
+const RK_YUEDE_HE = { '丙':'辛','壬':'丁','甲':'己','庚':'乙' };
+/* 天赦：春戊寅、夏甲午、秋戊申、冬甲子（四季以月建分） */
+const RK_TIANSHE = { '寅':'戊寅','卯':'戊寅','辰':'戊寅','巳':'甲午','午':'甲午','未':'甲午',
+                     '申':'戊申','酉':'戊申','戌':'戊申','亥':'甲子','子':'甲子','丑':'甲子' };
+/* 四废：春庚申辛酉、夏壬子癸亥、秋甲寅乙卯、冬丙午丁巳 */
+const RK_SIFEI = { '寅':['庚申','辛酉'],'卯':['庚申','辛酉'],'辰':['庚申','辛酉'],
+  '巳':['壬子','癸亥'],'午':['壬子','癸亥'],'未':['壬子','癸亥'],
+  '申':['甲寅','乙卯'],'酉':['甲寅','乙卯'],'戌':['甲寅','乙卯'],
+  '亥':['丙午','丁巳'],'子':['丙午','丁巳'],'丑':['丙午','丁巳'] };
+const RK_WUXING = {'甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水',
+  '子':'水','丑':'土','寅':'木','卯':'木','辰':'土','巳':'火','午':'火','未':'土','申':'金','酉':'金','戌':'土','亥':'水'};
+const RK_KE = {'木':'土','土':'水','水':'火','火':'金','金':'木'};   // 五行相克
+const RK_WUSHU = {'甲':'甲','己':'甲','乙':'丙','庚':'丙','丙':'戊','辛':'戊','丁':'庚','壬':'庚','戊':'壬','癸':'壬'};
+function rkBazi(y, m, d, h){                   // 排四柱（时辰 0–23；子时 23:00–00:59）
+  const g = rkDayGZ(rkJDN(y, m, d));
+  const hb = BRANCHES[Math.floor(((h + 1) % 24) / 2) % 12];
+  const hs = STEMS[(STEMS.indexOf(RK_WUSHU[g.stem]) + BRANCHES.indexOf(hb)) % 10];
+  const noon = new Date(y, m - 1, d, 12, 0, 0).getTime();
+  const mg = rkMonthGZ(noon), gy = ganzhiYearOf(noon);
+  return { year: gy.gz, month: mg.gz, day: g.stem + g.branch, hour: hs + hb,
+    dayStem: g.stem, dayBranch: g.branch, yearBranch: gy.branch };
+}
+/* 坐山论冲：仅地支山直接取其支（八干四维无「支」可冲，故不论，详见文档） */
+function rkPalaceBranch(m){ return BRANCHES.includes(m) ? m : null; }
+
+/* ---------- 3b. 补入神煞起例（皆录《协纪辨方书》原文，不参臆说） ---------- */
+/* 阴阳不将·历例（卷四）：按月十二组干支日；按语「惟六月戊午为逐阵不可用」，故六月表中剔除戊午 */
+const RK_BUJIANG = {
+  '寅':['辛亥','辛丑','辛卯','庚子','庚寅','己亥','己丑','己卯','丁亥','丁丑','丁卯','丙子','丙寅'],
+  '卯':['庚戌','庚子','庚寅','己亥','己丑','丁亥','丁丑','丙戌','丙子','丙寅','乙亥','乙丑'],
+  '辰':['己酉','己亥','己丑','丁酉','丁亥','丁丑','丙戌','丙子','乙酉','乙亥','乙丑','甲戌','甲子'],
+  '巳':['丁酉','丁亥','丙申','丙戌','丙子','乙酉','乙亥','甲申','甲戌','甲子','戊申','戊戌','戊子'],
+  '午':['丙申','丙戌','乙未','乙酉','乙亥','甲申','甲戌','戊申','戊戌','癸未','癸酉','癸亥'],
+  '未':['乙未','乙酉','甲午','甲申','甲戌','戊午','戊申','戊戌','癸未','癸酉','壬午','壬申','壬戌'],
+  '申':['乙巳','乙未','乙酉','甲午','甲申','戊午','戊申','癸巳','癸未','癸酉','壬午','壬申'],
+  '酉':['甲辰','甲午','甲申','戊辰','戊午','戊申','癸巳','癸未','壬辰','壬午','壬申','辛巳','辛未'],
+  '戌':['戊辰','戊午','癸卯','癸巳','癸未','壬辰','壬午','辛卯','辛巳','辛未','庚辰','庚午'],
+  '亥':['癸卯','癸巳','壬寅','壬辰','壬午','辛卯','辛巳','庚寅','庚辰','庚午','己卯','己巳'],
+  '子':['壬寅','壬辰','辛丑','辛卯','辛巳','庚寅','庚辰','己丑','己卯','己巳','丁丑','丁卯','丁巳'],
+  '丑':['辛丑','辛卯','庚子','庚寅','庚辰','己丑','己卯','丁丑','丁卯','丙子','丙寅','丙辰'] };
+/* 往亡·历例（卷六）：「正月在寅，二月在巳……」（月建序） */
+const RK_WANGWANG = { '寅':'寅','卯':'巳','辰':'申','巳':'亥','午':'卯','未':'午','申':'酉','酉':'子','戌':'辰','亥':'未','子':'戌','丑':'丑' };
+/* 气往亡·历例（卷六）：「立春后七日，惊蛰后十四日……皆自交节日数之」（自交节日起数第 N 日） */
+const RK_QIWANG = { '立春':7,'惊蛰':14,'清明':21,'立夏':8,'芒种':16,'小暑':24,'立秋':9,'白露':18,'寒露':27,'立冬':10,'大雪':20,'小寒':30 };
+/* 归忌·历例（卷六）：「孟月丑、仲月寅、季月子」（四孟寅巳申亥、四仲卯午酉子、四季辰未戌丑） */
+const RK_GUIJI = { '孟':'丑','仲':'寅','季':'子' };
+function rkMengZhongJi(b){ return ['寅','巳','申','亥'].includes(b) ? '孟' : (['卯','午','酉','子'].includes(b) ? '仲' : '季'); }
+/* 土符·历例（卷六）：「正月丑，二月巳……」（忌破土穿井、开渠筑墙） */
+const RK_TUFU = { '寅':'丑','卯':'巳','辰':'酉','巳':'寅','午':'午','未':'戌','申':'卯','酉':'未','戌':'亥','亥':'辰','子':'申','丑':'子' };
+/* 地囊：四库本「应改正」之纳甲正例（卷六奏议：通书「二月乙未譌癸未……今俱应改正」）
+   春（震坤乾）正庚子庚午·二乙未癸丑·三甲子壬午；夏（离乾艮）四己卯己酉·五壬戌甲辰·六丙辰丙戌；
+   秋（兑艮巽）七丁巳丁亥·八丙寅丙申·九辛丑辛未；冬（坎巽坤）十戊寅戊申·十一辛卯辛酉·十二癸酉乙卯 */
+const RK_DINANG = { '寅':['庚子','庚午'],'卯':['乙未','癸丑'],'辰':['甲子','壬午'],
+  '巳':['己卯','己酉'],'午':['壬戌','甲辰'],'未':['丙辰','丙戌'],
+  '申':['丁巳','丁亥'],'酉':['丙寅','丙申'],'戌':['辛丑','辛未'],
+  '亥':['戊寅','戊申'],'子':['辛卯','辛酉'],'丑':['癸酉','乙卯'] };
+/* 鸣吠·鸣吠对：四库本起例校正（卷六：「通书特误以庚寅壬寅为鸣吠、甲午为鸣吠对……应依起例改正」）
+   鸣吠十三日＝甲丙庚壬配午申（八日）＋乙丁己辛癸配酉（五日）；鸣吠对十一日＝丙庚壬配子（三日）＋甲丙庚壬配寅（四日）＋乙丁辛癸配卯（四日） */
+const RK_MINGFEI    = ['甲午','甲申','丙午','丙申','庚午','庚申','壬午','壬申','乙酉','丁酉','己酉','辛酉','癸酉'];
+const RK_MINGFEIDUI = ['丙子','庚子','壬子','甲寅','丙寅','庚寅','壬寅','乙卯','丁卯','辛卯','癸卯'];
+/* 复日（卷五）：「正七月甲庚、二八月乙辛、四十月丙壬、五十一月丁癸、三九六十二戊己」（日干） */
+const RK_FURI = { '寅':['甲','庚'],'申':['甲','庚'],'卯':['乙','辛'],'酉':['乙','辛'],
+  '巳':['丙','壬'],'亥':['丙','壬'],'午':['丁','癸'],'子':['丁','癸'],
+  '辰':['戊','己'],'戌':['戊','己'],'未':['戊','己'],'丑':['戊','己'] };
+/* 重日（卷五）：历例曰「重日者，巳亥二日也」 */
+const RK_CHONGRI = ['巳','亥'];
+/* 八专（卷五）：「丁未、己未、庚申、甲寅、癸丑，此五日」，忌出军嫁娶 */
+const RK_BAZHUAN = ['丁未','己未','庚申','甲寅','癸丑'];
+/* 四忌（神煞起例）：春甲子、夏丙子、秋庚子、冬壬子；四穷（总要历）：春乙亥、夏丁亥、秋辛亥、冬癸亥。
+   合之即为八龙（春甲子乙亥）、七鸟（夏丙子丁亥）、九虎（秋庚子辛亥）、六蛇（冬壬子癸亥）。 */
+const RK_SIJI    = { '春':'甲子','夏':'丙子','秋':'庚子','冬':'壬子' };
+const RK_SIQIONG = { '春':'乙亥','夏':'丁亥','秋':'辛亥','冬':'癸亥' };
+/* 五墓（广圣历·历例）：「正二月乙未，四五月丙戌，七八月辛丑，十月十一月壬辰，四季月戊辰」 */
+const RK_WUMU = { '寅':'乙未','卯':'乙未','辰':'戊辰','巳':'丙戌','午':'丙戌','未':'戊辰',
+  '申':'辛丑','酉':'辛丑','戌':'戊辰','亥':'壬辰','子':'壬辰','丑':'戊辰' };
+/* 九空（广圣历·历例）：「正月在辰，逆行四季」 */
+const RK_JIUKONG = { '寅':'辰','卯':'丑','辰':'戌','巳':'未','午':'辰','未':'丑','申':'戌','酉':'未','戌':'辰','亥':'丑','子':'戌','丑':'未' };
+/* 四耗（总圣历·历例）：春壬子、夏乙卯、秋戊午、冬辛酉 */
+const RK_SIHAO = { '春':'壬子','夏':'乙卯','秋':'戊午','冬':'辛酉' };
+/* 五虚（卷五）：春巳酉丑、夏申子辰、秋亥卯未、冬寅午戌（四时绝辰，忌开仓出财） */
+const RK_WUXU = { '春':['巳','酉','丑'],'夏':['申','子','辰'],'秋':['亥','卯','未'],'冬':['寅','午','戌'] };
+/* 无禄（卷五）：甲辰、乙巳、庚辰、辛巳、丙申、戊戌、丁亥、己丑、壬申、癸亥（禄落空亡） */
+const RK_WULU = ['甲辰','乙巳','庚辰','辛巳','丙申','戊戌','丁亥','己丑','壬申','癸亥'];
+/* 八风·触水龙（卷五）：春丁丑己酉、夏甲申甲辰、秋辛未丁未、冬甲戌甲寅（忌乘船渡水） */
+const RK_BAFENG = { '春':['丁丑','己酉'],'夏':['甲申','甲辰'],'秋':['辛未','丁未'],'冬':['甲戌','甲寅'] };
+/* 五离（卷五）：申酉日，忌结婚姻、立契券（除神同）；五合：寅卯日，宜结婚会亲、立券交易 */
+const RK_WULI = ['申','酉'], RK_WUHE5 = ['寅','卯'];
+/* 《玉匣记》民俗（农历日期为准；四库列存目，且《协纪辨方书》卷三十六·辨伪已驳杨公忌）
+   杨公忌十三日：正月十三、二月十一、三月初九、四月初七、五月初五、六月初三、七月初一、
+   七月廿九、八月廿七、九月廿五、十月廿三、十一月廿一、十二月十九；月忌日：初五、十四、二十三 */
+const RK_YANGJI = { 1:13, 2:11, 3:9, 4:7, 5:5, 6:3, 7:[1, 29], 8:27, 9:25, 10:23, 11:21, 12:19 };
+const RK_YUEJI = [5, 14, 23];
+
+/* ---------- 《玉匣记》周堂图（民俗层 G）：皆「只论月分大小，不论节气」 ----------
+   通例：位环 ring 顺时针排列；大月初一起 big 字顺行（＋1／日），小月初一起 small 字逆行（−1／日），
+       一日一位，周而复始（八位，惟入宅图十六位）。落位之字即当日所值，按各图吉凶例断。
+   各图环序来源：嫁娶、白虎、纳婿三图取《玉匣记》原文所载「大月／小月」两列全序（清坊本通行式），
+       并以「周堂煞七日」（初一、初七、初九、十五、十七、廿三、廿五皆值夫妇）与
+       「两图合参大小月皆可用七日」（初五、初八、十三、十六、廿一、廿四、廿九）回校，逐位皆合；
+       葬日（出灵）图取《玉匣记》原文，位名从图本；起造、香火、入宅、安床四图取图本全序，
+       安床图以坊本「大月／小月可用日」两列回校，逐日皆合。异文另见文档。 */
+const RK_ZT = {
+  hunjia:{ name:'嫁娶周堂', type:'hunjia', ring:['夫','姑','堂','翁','第','灶','妇','厨'], big:'夫', small:'妇',
+    good:['堂','第','灶','厨'], bad:['夫','妇','翁','姑'], hard:['夫','妇'], avoid:['翁','姑'],
+    src:'《玉匣记》嫁娶周堂图「只论月分大小，不问节气。大月从夫向姑顺数，小月从妇向灶逆数，如遇翁、姑而无翁姑，亦可用也」',
+    rule:'值堂、第、灶、厨吉；值翁、姑，翁姑少避即可（原注「归门时翁姑少避之，次早拜见」）；值夫、妇断不可用。' },
+  baihu:{ name:'行嫁白虎', type:'hunjia', ring:['灶','堂','床','死','睡','门','路','厨'], big:'灶', small:'厨',
+    good:['死','睡','厨','灶'], bad:['门','床','堂','路'], avoid:['门','床','堂','路'],
+    src:'《玉匣记》行嫁白虎图「大月从灶向堂顺行，小月从厨向路逆行。如值死、睡、厨、灶大吉；如值门、床、堂、路宜斩牲禳之」',
+    rule:'值死、睡、厨、灶大吉；值门、床、堂、路为妨，可禳——黄纸朱书「麒麟在此」贴于门、床、堂，值路则轿内挂碰头肉，遇岔路弃之。' },
+  naxu:{ name:'纳婿周堂', type:'hunjia', ring:['夫','姑','第','厨','户','灶','翁','门'], big:'夫', small:'户',
+    good:['户','厨','灶','门'], bad:['夫','姑','翁','第'], hard:['夫'], avoid:['姑','翁','第'],
+    src:'《玉匣记》纳婿周堂图「只论月分大小，不论节气。大月从夫向姑顺数，小月从户向厨逆数，遇户、厨、灶、门可用；遇公、姑、夫、弟不用」',
+    rule:'值户、厨、灶、门可用；值公（翁）、姑、夫、弟（第）不用。' },
+  chuling:{ name:'出灵（葬日）周堂', type:'sangzang', ring:['父','男','孙','亡','客','妇','婿','母'], big:'父', small:'母',
+    good:['亡'], bad:[], avoid:['父','男','孙','客','妇','婿','母'],
+    src:'《玉匣记》安葬日周堂图「其图只论月分大小，不论节气。大月初一，从父向男顺数；小月初一，从母向女逆数，一日一位数。值亡人则吉；如值人，则出外少避，惟停丧在外，则不论」',
+    rule:'值亡人则吉；值人（父、男、孙、客、妇、婿、母）→ 出殡时其人出外少避；停丧在外者不论。' },
+  qizao:{ name:'起造周堂', type:'xiuzao', ring:['坎王','艮图','震君','巽富','离败','坤绝','兑臣','乾破'], big:'坎王', small:'离败',
+    good:['坎王','艮图','震君','巽富'], half:['兑臣'], bad:['离败','坤绝','乾破'],
+    src:'《玉匣记》起灶（起造）周堂图「大月从王向艮顺行，小月从败向富逆行，择吉：富、君、图、王、臣」；图本作「大月从坎王向艮图顺数，小月从离败向巽富逆数；值震君、巽富、艮图、坎王吉，兑臣半吉」',
+    rule:'值坎王、艮图、震君、巽富吉；兑臣半吉；离败、坤绝、乾破凶。' },
+  xianghuo:{ name:'安香火周堂', type:'ruzhai', ring:['安','利','天','灾','害','师','富','煞'], big:'安', small:'天',
+    good:['安','利','天','师','富'], bad:['灾','害','煞'],
+    src:'《玉匣记》安香火周堂图「大月从安向利顺数，小月从天向利逆数；值天、利、安、师、富吉，能与神在日合之大吉」',
+    rule:'值安、利、天、师、富吉；值灾、害、煞凶。' },
+  ruzhai:{ name:'入宅周堂（十六神）', type:'ruzhai', ring:['月清','六道','台阶','三徒','昌盛','家亡','天福','五严',
+    '月福','地耗','玄武','天良','玉堂','五离','三财','三刑'], big:'月清', small:'玉堂',
+    good:['月清','台阶','昌盛','天福','月福','天良','玉堂','三财'], bad:['六道','三徒','家亡','五严','地耗','玄武','五离','三刑'],
+    src:'《玉匣记》入宅周堂图「大月从玉清（一作月清）起初一顺行，小月从玉堂起初一逆行；择吉：玉堂、三财、玉清、昌盛、台阶、天良、天福、月福」',
+    rule:'十六位：吉八（玉堂、三财、月清、昌盛、台阶、天良、天福、月福）、凶八（五离、三刑、六道、三徒、家亡、五严、地耗、玄武）。' },
+  anchuang:{ name:'安床（移床）周堂', type:'ruzhai', ring:['平','富','疾','凶','地','倒','安','病'], big:'平', small:'地',
+    good:['平','富','地','安'], bad:['疾','凶','倒','病'],
+    src:'《玉匣记》安床周堂图「大月从平向富顺行，小月从地向凶逆行；值平、富、地、安用之大吉，值疾、病、凶、倒则凶」',
+    rule:'值平、富、地、安吉；值疾、病、凶、倒凶。' }
+};
+function rkZtPos(g, lu){                         /* 落位：大月顺、小月逆，取模环长 */
+  const n = g.ring.length, k = lu.ld - 1;
+  const bi = g.ring.indexOf(g.big), si = g.ring.indexOf(g.small);
+  const idx = lu.big ? (bi + k) % n : ((si - k) % n + n) % n;
+  return { pos: g.ring[idx], idx, n, big: !!lu.big };
+}
+function rkSeason(b){ return ['寅','卯','辰'].includes(b) ? '春' : (['巳','午','未'].includes(b) ? '夏' : (['申','酉','戌'].includes(b) ? '秋' : '冬')); }
+
+/* ---------- 4. 因素清单（逐条标出处；impl:false 者标【待补】且不计分） ---------- */
+const RK_FACTORS = [
+ { id:'jianchu', layer:'A', name:'建除十二神', impl:true, core:true, weight:'core',
+   src:'《协纪辨方书》卷四·义例二', lv:'核心',
+   desc:'从月建上起建、顺行十二辰；每月交节则叠两值日。考原：除危定执成开为吉、建破平收满闭为凶；选择宗镜：平成开危最吉、定除次吉、破大凶。两说并存，可切换。' },
+ { id:'huanghei', layer:'A', name:'黄道黑道', impl:true, weight:'core',
+   src:'《协纪辨方书》卷四·义例二', lv:'核心',
+   desc:'寅申青龙起子，卯酉起寅，辰戌起辰，巳亥起午，子午起申，丑未起戌，顺行十二辰；青龙·明堂·金匮·天德·玉堂·司命为黄道。' },
+ { id:'yuepo', layer:'C', name:'月破（大耗）', impl:true, veto:true, weight:'veto',
+   src:'《协纪辨方书》卷四（建除「破」同位·大耗）', lv:'重忌',
+   desc:'日支冲月建之支。即建除之「破」日，诸事大忌。' },
+ { id:'silijue', layer:'A', name:'四离·四绝', impl:true, veto:true, weight:'veto',
+   src:'《协纪辨方书》卷十一·用事', lv:'重忌',
+   desc:'春分·秋分·夏至·冬至前一日为四离；立春·立夏·立秋·立冬前一日为四绝。「上朔、四离、四绝、晦日：除整理修饰外皆忌」。' },
+ { id:'tiande', layer:'D', name:'天德', impl:true, good:true, weight:'yi',
+   src:'《协纪辨方书》卷五·义例', lv:'上吉',
+   desc:'正丁、二坤（申）、三壬、四辛、五乾（亥）、六甲、七癸、八艮（寅）、九丙、十乙、十一巽（巳）、十二庚。' },
+ { id:'tiandehe', layer:'D', name:'天德合', impl:true, good:true, weight:'yi',
+   src:'《协纪辨方书》卷五·义例', lv:'吉',
+   desc:'天德在干则取五合之干（丁→壬），在支则取六合之支（申→巳）。' },
+ { id:'yuede', layer:'C', name:'月德', impl:true, good:true, weight:'yi',
+   src:'《协纪辨方书》卷五·义例', lv:'上吉',
+   desc:'寅午戌月丙日、申子辰月壬日、亥卯未月甲日、巳酉丑月庚日（三合局之阳干）。' },
+ { id:'yuedehe', layer:'C', name:'月德合', impl:true, good:true, weight:'yi',
+   src:'《协纪辨方书》卷五·义例', lv:'吉', desc:'月德之五合干：丙→辛、壬→丁、甲→己、庚→乙。' },
+ { id:'tianshe', layer:'D', name:'天赦', impl:true, good:true, weight:'yi',
+   src:'《协纪辨方书》卷五·义例', lv:'上吉', desc:'春戊寅、夏甲午、秋戊申、冬甲子（四季以月建分：寅卯辰为春）。' },
+ { id:'sanhe', layer:'D', name:'三合日', impl:true, good:true, weight:'yi',
+   src:'《协纪辨方书》卷五·义例', lv:'吉', desc:'日支与月建三合（寅午戌、申子辰、亥卯未、巳酉丑）。' },
+ { id:'liuhe', layer:'D', name:'六合日', impl:true, good:true, weight:'yi',
+   src:'《协纪辨方书》卷五·义例', lv:'吉', desc:'日支与月建六合（子丑、寅亥、卯戌、辰酉、巳申、午未）。' },
+ { id:'sifei', layer:'D', name:'四废', impl:true, veto:true, weight:'veto',
+   src:'《协纪辨方书》卷六·义例', lv:'重忌',
+   desc:'春庚申辛酉、夏壬子癸亥、秋甲寅乙卯、冬丙午丁巳。忌开市、修造等。' },
+ { id:'taisui', layer:'B', name:'太岁日·岁破日', impl:true, weight:'ji',
+   src:'《协纪辨方书》卷三·义例', lv:'忌',
+   desc:'日支同岁支为太岁日，冲岁支为岁破日；岁破为大忌。' },
+ { id:'sansha', layer:'B', name:'年三煞（方）', impl:true, need:'sit', weight:'ji',
+   src:'申子辰煞南、寅午戌煞北、亥卯未煞西、巳酉丑煞东', lv:'忌',
+   desc:'日支落入当年三煞方（南巳午未／北亥子丑／西申酉戌／东寅卯辰），修造动土忌；若兼犯坐山尤忌。' },
+ { id:'wuhuang', layer:'B', name:'年·月五黄（方）', impl:true, need:'sit', weight:'ji',
+   src:'洛书九宫顺飞（年：2022 入中顺飞；月：寅月入中顺飞）', lv:'忌',
+   desc:'五黄所临之方忌动土；需坐向方可判是否犯。' },
+ { id:'chongshan', layer:'B', name:'日冲坐山', impl:true, need:'sit', weight:'ji',
+   src:'修造通例（日辰不可冲坐山）', lv:'忌', desc:'课日支冲坐山所在宫支，修造、安葬、入宅忌。' },
+ { id:'benchong', layer:'F', name:'本命冲', impl:true, need:'bazi', veto:true, weight:'veto',
+   src:'后世合参法（非《协纪辨方书》正文）', lv:'重忌', desc:'课日支冲当事人（事主/新娘/亡人）生年地支。' },
+ { id:'tianke', layer:'F', name:'天克地冲', impl:true, need:'bazi', weight:'ji',
+   src:'后世合参法（非《协纪辨方书》正文）', lv:'忌', desc:'课日干克当事人日干，且课日支冲当事人日支。' },
+ { id:'bujiang', layer:'D', name:'阴阳不将', impl:true, good:true, types:['hunjia'], weight:'yi',
+   src:'《协纪辨方书》卷四·义例「天宝历曰……厌前干配厌后枝者为阴阳不将也」＋「历例曰」十二组干支', lv:'上吉',
+   desc:'月建为阳建（正月起寅顺行）、月厌为阴建（正月起戌逆行）；厌前之干配厌后之枝者为不将，「阴阳不将，夫妇荣昌」。本版直取卷四「历例」所载十二组干支，并按语「六月戊午为逐阵不可用」剔除之。' },
+ { id:'wangwang', layer:'C', name:'往亡', impl:true, types:['chuxing','ruzhai','hunjia'], weight:'ji',
+   src:'《协纪辨方书》卷六「堪舆经曰：往者去也，亡者无也……历例曰：往亡者正月在寅，二月在巳……」', lv:'忌',
+   desc:'忌拜官上任、远行归家、出军征讨、嫁娶寻医。寅午戌月顺行寅卯辰、亥卯未月顺行巳午未、申子辰月顺行申酉戌、巳酉丑月顺行亥子丑。' },
+ { id:'qiwang', layer:'C', name:'气往亡', impl:true, types:['chuxing','ruzhai'], weight:'ji',
+   src:'《协纪辨方书》卷六「历例曰：气往亡者立春后七日，惊蛰后十四日……皆自交节日数之」', lv:'忌',
+   desc:'自交节之日起数第 N 日（立春 7、惊蛰 14、清明 21、立夏 8、芒种 16、小暑 24、立秋 9、白露 18、寒露 27、立冬 10、大雪 20、小寒 30），取三合化象之成数。' },
+ { id:'guiji', layer:'C', name:'归忌', impl:true, types:['ruzhai','chuxing'], weight:'ji',
+   src:'《协纪辨方书》卷六「广圣历曰……历例曰：孟月丑、仲月寅、季月子」', lv:'忌',
+   desc:'忌远行归家、移徙。（《协纪》按：汉注「并忌嫁娶」之说他书所无，应止忌般移远回，不忌嫁娶。）四孟月（寅巳申亥）忌丑、四仲月（卯午酉子）忌寅、四季月（辰未戌丑）忌子。' },
+ { id:'tufu', layer:'C', name:'土符', impl:true, types:['xiuzao'], weight:'ji',
+   src:'《协纪辨方书》卷六「历例曰：正月丑，二月巳，三月酉……」（土神，忌破土穿井、开渠筑墙）', lv:'忌',
+   desc:'正月丑、二月巳、三月酉、四月寅、五月午、六月戌、七月卯、八月未、九月亥、十月辰、十一月申、十二月子。' },
+ { id:'dinang', layer:'C', name:'地囊', impl:true, types:['xiuzao'], weight:'ji',
+   src:'《协纪辨方书》卷六奏议「地囊乃四时三合卦之纳甲……今通书……今俱应改正」（四库本正例）', lv:'忌',
+   desc:'四时三合卦之纳甲：正庚子庚午、二乙未癸丑、三甲子壬午、四己卯己酉、五壬戌甲辰、六丙辰丙戌、七丁巳丁亥、八丙寅丙申、九辛丑辛未、十戊寅戊申、十一辛卯辛酉、十二癸酉乙卯。（通书本多讹，此从《协纪》改正之例。）' },
+ { id:'mingfei', layer:'D', name:'鸣吠·鸣吠对', impl:true, good:true, types:['sangzang'], weight:'yi',
+   src:'《协纪辨方书》卷六「应依起例改正」：鸣吠十三日、鸣吠对十一日', lv:'上吉',
+   desc:'鸣吠十三日（甲午甲申丙午丙申庚午庚申壬午壬申＋乙酉丁酉己酉辛酉癸酉）宜安葬；鸣吠对十一日（丙子庚子壬子＋甲寅丙寅庚寅壬寅＋乙卯丁卯辛卯癸卯）宜启攒破土。酉为西方入地之门，故用午申酉、子寅卯，避戌未土不用。' },
+ { id:'furi', layer:'D', name:'复日·重日', impl:true, types:['sangzang'], weight:'ji',
+   src:'《协纪辨方书》卷五「复日……正七月甲庚，二八月乙辛……」「历例曰：重日者，巳亥二日也」', lv:'忌',
+   desc:'复日以日干论（正七月甲庚、二八月乙辛、四十月丙壬、五十一月丁癸、三九六十二戊己）；重日即巳、亥二日。《协纪》：「忌为凶事，利为吉事」，故忌破土安葬启攒；与天德、月德、天赦、六合并则不忌。' },
+ { id:'bazhuan', layer:'D', name:'八专', impl:true, types:['hunjia','kaiye'], weight:'ji',
+   src:'《协纪辨方书》卷五「八专：丁未、己未、庚申、甲寅、癸丑，此五日」', lv:'忌', desc:'忌出军、嫁娶。' },
+ { id:'siji', layer:'D', name:'四忌·四穷（八龙七鸟九虎六蛇）', impl:true, types:['hunjia','kaiye'], weight:'ji',
+   src:'《协纪辨方书》卷五「神煞起例曰：四忌春甲子夏丙子秋庚子冬壬子」「总要历：四穷春乙亥夏丁亥秋辛亥冬癸亥」', lv:'忌',
+   desc:'四忌＝本令阳干加于辰首；四穷＝本令阴干加于辰尾。二者相合即八龙（春甲子乙亥）、七鸟（夏丙子丁亥）、九虎（秋庚子辛亥）、六蛇（冬壬子癸亥），「其日皆不可迎婚嫁娶」。' },
+ { id:'wumu', layer:'D', name:'五墓', impl:true, types:['hunjia','xiuzao','kaiye'], weight:'ji',
+   src:'《协纪辨方书》卷五「广圣历曰：五墓者四旺之墓辰也……历例曰：正二月乙未，四五月丙戌，七八月辛丑，十月十一月壬辰，四季月戊辰」', lv:'忌',
+   desc:'忌营造起土、嫁娶、出军。四季月（三、六、九、十二）为戊辰。' },
+ { id:'jiukong', layer:'D', name:'九空', impl:true, types:['kaiye','xiuzao'], weight:'ji',
+   src:'《协纪辨方书》卷五「广圣历曰：九空者月内杀神也……历例曰：九空者正月在辰，逆行四季」', lv:'忌',
+   desc:'忌修造仓库、出入货财。墓库破散之神：库破则空、冲则散。' },
+ { id:'sihao', layer:'D', name:'四耗', impl:true, types:['kaiye','hunjia'], weight:'ji',
+   src:'《协纪辨方书》卷五「总圣历曰：四耗者谓四时休干临分至之辰也……历例曰：春壬子，夏乙卯，秋戊午，冬辛酉」', lv:'忌',
+   desc:'忌会亲姻、出师、开仓库、施债负。' },
+ { id:'wuxu', layer:'D', name:'五虚', impl:true, types:['kaiye'], weight:'ji',
+   src:'《协纪辨方书》卷五「五虚：四时绝辰也……春巳酉丑，夏申子辰，秋亥卯未，冬寅午戌」', lv:'忌',
+   desc:'忌开仓库、营种莳、出财宝、施债负。' },
+ { id:'wulu', layer:'D', name:'无禄（十恶大败）', impl:true, weight:'ji',
+   src:'《协纪辨方书》卷五「无禄：甲辰、乙巳、庚辰、辛巳、丙申、戊戌、丁亥、己丑、壬申、癸亥，此十日禄皆落空」', lv:'忌',
+   desc:'禄落空亡之日。（《协纪》另载若干「填实」之例不以无禄论，本版未取，仅列正日。）' },
+ { id:'bafeng', layer:'D', name:'八风·触水龙（忌乘船渡水）', impl:true, types:['chuxing'], weight:'ji',
+   src:'《协纪辨方书》卷五「八风：春丁丑己酉，夏甲申甲辰，秋辛未丁未，冬甲戌甲寅」', lv:'忌',
+   desc:'忌乘船渡水、涉江河。' },
+ { id:'wuli', layer:'D', name:'五离（除神）', impl:true, types:['hunjia','kaiye','chuxing'], weight:'ji',
+   src:'《协纪辨方书》卷五「五离者月中离神也，忌结婚姻、会亲友、作交关、立契券；申酉日是也」', lv:'忌',
+   desc:'申、酉日；同理寅、卯日为「五合」，宜结婚会亲、立券交易（另条）。' },
+ { id:'wuhe5', layer:'D', name:'五合', impl:true, good:true, types:['hunjia','kaiye','chuxing'], weight:'yi',
+   src:'《协纪辨方书》卷五「五合者月内良辰也，宜结婚、会亲友、立券交易；寅卯日也」', lv:'吉', desc:'寅、卯日。' },
+ { id:'yuxia', layer:'G', name:'《玉匣记》民俗（杨公忌·月忌日）', impl:true, weight:'ji',
+   src:'《玉匣记》（四库列存目、不录正文，托名许逊）；《协纪辨方书》卷三十六·辨伪已驳杨公忌', lv:'民俗',
+   desc:'杨公忌十三日（正月十三、二月十一、三月初九、四月初七、五月初五、六月初三、七月初一、七月廿九、八月廿七、九月廿五、十月廿三、十一月廿一、十二月十九）与月忌日（初五、十四、二十三），皆以农历日期为准。《协纪》卷三十六：《辨伪》「世俗多畏杨公忌……皆因未悉其原委，故为所惑耳」，并指出其推法乃「室火猪日」。故本层默认关闭，仅供参照。' },
+ /* —— 出行·会友专属：补《协纪》卷十一「行幸遣使（出行同）」「宴会（会亲友同）」原漏项（起例已确证） —— */
+ { id:'tianzei', layer:'C', name:'天贼', impl:true, types:['chuxing'], weight:'ji',
+   src:'《协纪辨方书》卷六「天贼者，正月在丑，逆行十二辰……其日忌远行」', lv:'忌',
+   desc:'月中盗神，正月在丑逆行十二辰（正丑、二子、三亥、四戌、五酉、六申、七未、八午、九巳、十辰、十一卯、十二寅）；日支落此则忌远行、出游。' },
+ { id:'siday', layer:'C', name:'巳日', impl:true, types:['chuxing'], weight:'ji',
+   src:'《协纪辨方书》卷十一·用事「出行……忌……巳日」', lv:'忌',
+   desc:'日支为巳之日，出行所忌。' },
+ { id:'youri', layer:'C', name:'酉日', impl:true, types:['chuxing'], weight:'ji',
+   src:'《协纪辨方书》卷十一·用事「宴会（会亲友同）……忌……酉日」', lv:'忌',
+   desc:'日支为酉之日，会亲友、宴请所忌（酉主离散）。' },
+ /* —— 婚嫁·嫁娶独忌（纳采问名、结婚姻不忌） —— */
+ { id:'yandui', layer:'C', name:'厌对', impl:true, types:['hunjia'], weight:'ji',
+   src:'《协纪辨方书》卷五「厌对者，月厌之对冲也」', lv:'忌',
+   desc:'月厌正月起戌逆行十二辰，厌对为其对冲（正辰、二卯、三寅……逆行十二辰）；嫁娶忌之。' },
+ { id:'haizi', layer:'C', name:'亥日', impl:true, types:['hunjia'], weight:'ji',
+   src:'《协纪辨方书》卷十一·用事「嫁娶……忌……亥日」', lv:'忌',
+   desc:'日支为亥之日，嫁娶独忌（纳采问名、结婚姻不忌）。' },
+ /* —— 赴任·会友·开业专属神煞：已取得《协纪》卷十一·用事原文，起例待实现，暂不计入（标待补） —— */
+ { id:'tianyuan', layer:'D', name:'天愿', impl:false, types:['furen','chuxing','kaiye'], weight:'yi',
+   src:'《协纪辨方书》卷十一·用事', lv:'上吉', desc:'宜上官赴任、会亲友、立券、纳财、开市。起例待补，不计分。' },
+ { id:'yueen', layer:'D', name:'月恩', impl:false, types:['furen','chuxing','kaiye'], weight:'yi',
+   src:'《协纪辨方书》卷十一·用事', lv:'吉', desc:'宜上官、会亲友、立券、纳财。起例待补，不计分。' },
+ { id:'sixiang', layer:'D', name:'四相', impl:false, types:['furen','chuxing','kaiye'], weight:'yi',
+   src:'《协纪辨方书》卷十一·用事', lv:'吉', desc:'宜上官、会亲友、立券、纳财。起例待补，不计分。' },
+ { id:'shide', layer:'D', name:'时德', impl:false, types:['furen','chuxing','kaiye'], weight:'yi',
+   src:'《协纪辨方书》卷十一·用事', lv:'吉', desc:'宜上官、会亲友、立券、纳财。起例待补，不计分。' },
+ { id:'wangri', layer:'D', name:'王日', impl:false, types:['furen','chuxing'], weight:'yi',
+   src:'《协纪辨方书》卷十一·用事', lv:'吉', desc:'宜上官赴任、会亲友。起例待补，不计分。' },
+ { id:'guanri', layer:'D', name:'官日·守日·相日·临日·吉期', impl:false, types:['furen'], weight:'yi',
+   src:'《协纪辨方书》卷十一·用事', lv:'吉', desc:'五神皆上官赴任所宜，起例各异（官日、守日、相日、临日、吉期），待补，不计分。' },
+ { id:'tianxi', layer:'D', name:'天喜', impl:false, types:['furen','chuxing'], weight:'yi',
+   src:'《协纪辨方书》卷十一·用事', lv:'吉', desc:'宜上官、会亲友。起例待补，不计分。' },
+ { id:'tianshi', layer:'D', name:'大时（咸池）', impl:false, types:['furen','chuxing','kaiye'], weight:'ji',
+   src:'《协纪辨方书》卷六·义例', lv:'忌', desc:'月中凶神，上官、出行、开市、立券、纳财皆忌。起例待补，不计分。' },
+ { id:'tianli', layer:'D', name:'天吏（致死）', impl:false, types:['furen','chuxing','kaiye'], weight:'ji',
+   src:'《协纪辨方书》卷六·义例', lv:'忌', desc:'月中凶神，临官赴任、远行、开市、立券、纳财皆忌。正月起酉逆行四仲。起例待补，不计分。' },
+ { id:'wufu', layer:'D', name:'五富', impl:false, types:['kaiye'], weight:'yi',
+   src:'《协纪辨方书》卷六·义例', lv:'吉', desc:'宜开市、立券、纳财。正月起亥顺行四孟。起例待补，不计分。' },
+ { id:'mucang', layer:'D', name:'母仓', impl:false, types:['kaiye'], weight:'yi',
+   src:'《协纪辨方书》卷五·义例', lv:'吉', desc:'宜纳财。起例待补，不计分。' },
+ { id:'tiancang', layer:'D', name:'天仓', impl:false, types:['kaiye'], weight:'yi',
+   src:'《协纪辨方书》卷六·义例', lv:'吉', desc:'宜纳财。建后四辰为收日，即天仓。起例待补，不计分。' },
+ { id:'minri', layer:'D', name:'民日', impl:false, types:['chuxing','kaiye'], weight:'yi',
+   src:'《协纪辨方书》卷十一·用事', lv:'吉', desc:'宜会亲友、开市、立券、纳财。起例待补，不计分。' },
+ { id:'fude', layer:'D', name:'福德', impl:false, types:['chuxing'], weight:'yi',
+   src:'《协纪辨方书》卷十一·用事', lv:'吉', desc:'宜会亲友。起例待补，不计分。' },
+ { id:'xiaohao', layer:'D', name:'小耗', impl:false, types:['kaiye'], weight:'ji',
+   src:'《协纪辨方书》卷十一·用事', lv:'忌', desc:'立券、纳财所忌。起例待补，不计分。' },
+ { id:'zt_hunjia', layer:'G', name:'周堂图·嫁娶周堂', impl:true, zt:true, types:['hunjia'], lv:'民俗',
+   src:RK_ZT.hunjia.src, desc:RK_ZT.hunjia.rule + ' 环序：夫→姑→堂→翁→第→灶→妇→厨（顺）；大月初一起夫顺数，小月初一起妇逆数。' },
+ { id:'zt_baihu', layer:'G', name:'周堂图·行嫁白虎', impl:true, zt:true, types:['hunjia'], lv:'民俗',
+   src:RK_ZT.baihu.src, desc:RK_ZT.baihu.rule + ' 环序：灶→堂→床→死→睡→门→路→厨（顺）；大月初一起灶顺数，小月初一起厨逆数。' },
+ { id:'zt_naxu', layer:'G', name:'周堂图·纳婿周堂', impl:true, zt:true, types:['hunjia'], lv:'民俗',
+   src:RK_ZT.naxu.src, desc:RK_ZT.naxu.rule + ' 环序：夫→姑→第→厨→户→灶→翁→门（顺）；大月初一起夫顺数，小月初一起户逆数。（男方入赘女家方用）' },
+ { id:'zt_chuling', layer:'G', name:'周堂图·出灵（葬日）周堂', impl:true, zt:true, types:['sangzang'], lv:'民俗',
+   src:RK_ZT.chuling.src, desc:RK_ZT.chuling.rule + ' 环序：父→男→孙→亡→客→妇→婿→母（顺）；大月初一起父顺数，小月初一起母逆数。' },
+ { id:'zt_qizao', layer:'G', name:'周堂图·起造周堂', impl:true, zt:true, types:['xiuzao'], lv:'民俗',
+   src:RK_ZT.qizao.src, desc:RK_ZT.qizao.rule + ' 环序：坎王→艮图→震君→巽富→离败→坤绝→兑臣→乾破（顺）；大月初一起坎王顺数，小月初一起离败逆数。' },
+ { id:'zt_xianghuo', layer:'G', name:'周堂图·安香火周堂', impl:true, zt:true, types:['ruzhai'], lv:'民俗',
+   src:RK_ZT.xianghuo.src, desc:RK_ZT.xianghuo.rule + ' 环序：安→利→天→灾→害→师→富→煞（顺）；大月初一起安顺数，小月初一起天逆数。' },
+ { id:'zt_ruzhai', layer:'G', name:'周堂图·入宅周堂（十六神）', impl:true, zt:true, types:['ruzhai'], lv:'民俗',
+   src:RK_ZT.ruzhai.src, desc:RK_ZT.ruzhai.rule + ' 环序：月清→六道→台阶→三徒→昌盛→家亡→天福→五严→月福→地耗→玄武→天良→玉堂→五离→三财→三刑（顺）；大月初一起月清顺数，小月初一起玉堂逆数。' },
+ { id:'zt_anchuang', layer:'G', name:'周堂图·安床（移床）周堂', impl:true, zt:true, types:['ruzhai','hunjia'], lv:'民俗',
+   src:RK_ZT.anchuang.src, desc:RK_ZT.anchuang.rule + ' 环序：平→富→疾→凶→地→倒→安→病（顺）；大月初一起平顺数，小月初一起地逆数。' }
+];
+
+/* ---------- 5. 日课类型（宜忌清单据《协纪辨方书》卷十一·用事，四库本核校） ----------
+   结构：大类（key）下可有 subs 子项；子项各有独立 verse/yi/ji。
+   RK_STATE.type 记大类，RK_STATE.sub 记子项；因素 types 仍按大类匹配。 ---------- */
+const RK_TYPES = [
+ { key:'hunjia', name:'婚嫁', fields:['range','bride','groom','og'],
+   subs:[
+     { key:'nacai', name:'纳采问名',
+      verse:'纳采问名：宜天德、天德合、月德、月德合、天赦、天愿、月恩、四相、时德、三合、六合、五合；忌月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月害、月厌、大时、天吏、四废、四忌、四穷、五墓、往亡、八专。',
+      yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','wuhe5'],
+      ji:['yuepo','silijue','sifei','taisui','benchong','wangwang','bazhuan','siji','wumu','sihao','wuli'] },
+     { key:'jiehun', name:'结婚姻',
+      verse:'结婚姻：宜天德、天德合、月德、月德合、天赦、天愿、月恩、四相、时德、三合、六合、五合；忌月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月害、月厌、大时、天吏、四废、四忌、四穷、五墓、往亡、八专。',
+      yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','wuhe5'],
+      ji:['yuepo','silijue','sifei','taisui','benchong','wangwang','bazhuan','siji','wumu','sihao','wuli'] },
+     { key:'jiahun', name:'嫁娶',
+       verse:'嫁娶：宜天德、天德合、月德、月德合、天赦、天愿、三合、天喜、六合、不将；忌月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月害、月厌、厌对、大时、天吏、四废、四忌、四穷、五墓、往亡、八专、亥日。',
+       yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','bujiang','wuhe5'],
+       ji:['yuepo','silijue','sifei','taisui','benchong','wangwang','bazhuan','siji','wumu','sihao','wuli','yandui','haizi'] }
+   ]},
+ { key:'sangzang', name:'丧葬', fields:['range','dead','sit','quan','ting'],
+   verse:'安葬：宜天德、天德合、月德、月德合、天赦、天愿、六合、鸣吠；忌月建、月破、平日、收日、劫煞、灾煞、月煞、月刑、月厌、月害、四废、四忌、四穷、五墓、复日、重日。',
+   yi:['tiande','tiandehe','yuede','yuedehe','tianshe','liuhe','mingfei'],
+   ji:['yuepo','silijue','sifei','taisui','chongshan','sansha','wuhuang','furi','wulu'] },
+ { key:'furen', name:'赴任', fields:['range','owner','dir'],
+   subs:[
+     { key:'shangguan', name:'上官赴任·临政亲民',
+       verse:'上官赴任·临政亲民：宜天德、月德、天德合、月德合、天赦、天愿、月恩、四相、时德、王日、官日、守日、相日、临日、建日、吉期、天喜、开日；忌月破、平日、收日、满日、闭日、劫煞、灾煞、月煞、月刑、月厌、大时、天吏、四废、五墓、往亡。',
+       yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','wangri','guanri','tianxi','tianyuan'],
+       ji:['yuepo','silijue','sifei','taisui','wangwang','wumu','tianshi','tianli'] },
+     { key:'shien', name:'施恩封拜·袭爵受封',
+       verse:'施恩封拜（袭爵受封同）：宜王日、建日、吉期、天喜、开日（注：官日、守日、相日止宜袭爵受封）；忌月破、平日、收日、满日、闭日、劫煞、灾煞、月煞、月刑、月厌、大时、天吏、四废、五墓、往亡。',
+       yi:['tianshe','wangri','guanri','tianxi','tianyuan'],
+       ji:['yuepo','silijue','sifei','taisui','wangwang','wumu','tianshi','tianli'] },
+     { key:'shangbiao', name:'上表章',
+       verse:'上表章：宜天德、月德、天德合、月德合、天赦、天愿、月恩、四相、时德、临日、福德、开日、解神；忌月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月厌、大时、天吏、四废、往亡。',
+       yi:['tiande','tiandehe','yuede','yuedehe','tianshe','fude','tianyuan','yueen','shide'],
+       ji:['yuepo','silijue','sifei','taisui','wangwang','tianshi','tianli'] }
+   ]},
+ { key:'kaiye', name:'开业', fields:['range','owner','sit'],
+   subs:[
+     { key:'kaishi', name:'开市',
+       verse:'开市：宜天愿、民日、满日、成日、开日、五富；忌月破、大耗、小耗、平日、收日、劫煞、灾煞、月煞、月刑、月害、月厌、大时、天吏、四耗、四穷、五墓、九空。',
+       yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','wufu','minri','tianyuan'],
+       ji:['yuepo','silijue','sifei','taisui','benchong','jiukong','sihao','wuxu','wumu','xiaohao','tianshi','tianli'] },
+     { key:'liquan', name:'立券交易',
+       verse:'立券交易：宜天愿、民日、三合、满日、六合、五富、五合；忌月破、大耗、小耗、平日、收日、劫煞、灾煞、月煞、月刑、月害、月厌、大时、天吏、四耗、四穷、五墓、九空、五离。',
+       yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','wufu','minri','wuhe5','tianyuan'],
+       ji:['yuepo','silijue','sifei','taisui','benchong','jiukong','sihao','wumu','wuli','xiaohao','tianshi','tianli'] },
+     { key:'nacai_money', name:'纳财',
+       verse:'纳财：宜母仓、天愿、月恩、四相、时德、民日、三合、满日、收日、六合、五富、天仓；忌月破、大耗、小耗、平日、劫煞、灾煞、月煞、月刑、月害、月厌、大时、天吏、四耗、四穷、九空。',
+       yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','mucang','wufu','minri','tiancang','tianyuan','yueen','shide','sixiang'],
+       ji:['yuepo','silijue','sifei','taisui','benchong','jiukong','sihao','wumu','xiaohao','tianshi','tianli'] }
+   ]},
+ { key:'chuxing', name:'出行 / 会友', fields:['range','owner','dir'],
+   subs:[
+     { key:'chuxing_x', name:'出行',
+       verse:'出行（行幸遣使同）：宜天德、月德、天德合、月德合、天赦、天愿、月恩、四相、时德、王日、官日、相日、临日、民日、五合；忌月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月厌、大时、天吏、四废、天贼、往亡、巳日。',
+       yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','wuhe5','wangri','tianyuan','yueen','shide','minri'],
+       ji:['yuepo','silijue','sifei','taisui','benchong','wangwang','qiwang','guiji','bafeng','wulu','tianzei','siday','tianshi','tianli'] },
+     { key:'huiyou', name:'会友·宴请',
+       verse:'会友（宴会·会亲友同）：宜天德、月德、天德合、月德合、天恩、天赦、天愿、月恩、四相、时德、王日、民日、三合、福德、天喜、开日、六合、五合；忌月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月害、月厌、四废、五离、酉日。',
+       yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','wuhe5','minri','fude','tianxi','tianyuan','yueen','shide','wangri'],
+       ji:['yuepo','silijue','sifei','taisui','benchong','wuli','youri','tianshi','tianli'] }
+   ]},
+ { key:'ruzhai', name:'入宅', fields:['range','owner','sit'],
+   verse:'搬移（移徙·入宅）：宜天德、天德合、月德、月德合、天赦、天愿、月恩、四相、时德、民日、驿马、天马、成日、开日；忌月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月厌、大时、天吏、四废、五墓、归忌、往亡。',
+   yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe'],
+   ji:['yuepo','silijue','sifei','taisui','chongshan','sansha','wuhuang','guiji','wangwang','qiwang','benchong'] },
+ { key:'xiuzao', name:'修造', fields:['range','owner','sit','item'],
+   verse:'兴造动土：宜天德、天德合、月德、月德合、天赦、天愿、月恩、四相、时德、三合、开日；忌月建、土符、月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月厌、大时、天吏、四废、五墓、地囊、土王用事后。竖柱上梁同。',
+   yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe'],
+   ji:['yuepo','silijue','sifei','taisui','chongshan','sansha','wuhuang','tufu','dinang','wumu','jiukong'] }
+];
+
+/* ---------- 6. 逐日推算 ---------- */
+const RK_STATE = {
+  type:'hunjia', sub:null, from:'', to:'', sit:0, dir:0, item:'动土', quan:false, ogIn:true, ting:false,
+  bride:null, groom:null, owner:null, dead:null,
+  off:{}, jcSchool:'kaoyuan', rows:[], sel:-1
+};
+function rkCurType(){
+  const T = RK_TYPES.find(t => t.key === RK_STATE.type);
+  if (T && T.subs){
+    const s = T.subs.find(x => x.key === RK_STATE.sub) || T.subs[0];
+    return Object.assign({}, T, s);          // 以子项覆盖 verse/yi/ji/name/key，保留大类字段
+  }
+  return T;
+}
+function rkComputeDay(y, m, d, termMap){
+  const noon = new Date(y, m - 1, d, 12, 0, 0).getTime();
+  const g = rkDayGZ(rkJDN(y, m, d));
+  const mg = rkMonthGZ(noon);
+  const dayStart = new Date(y, m - 1, d, 0, 1, 0).getTime();
+  const dayEnd   = new Date(y, m - 1, d, 23, 59, 0).getTime();
+  const isTerm = rkMonthIdx(dayStart) !== rkMonthIdx(dayEnd);       // 交节：月建于日内更易
+  const prevMonB = RK_MONTHS[(rkMonthIdx(dayStart) + 11) % 12];
+  const jc = rkJianchu(g.branch, mg.branch);
+  const jcPrev = isTerm ? rkJianchu(g.branch, prevMonB) : null;     // 叠两值日的另一值
+  const hh = rkHuanghei(g.branch, mg.branch);
+
+  const hit = {};                                                    // 命中的神煞
+  const why = [];                                                    // 起例过程（人工可复核）
+  const mon = mg.branch, dayS = g.stem, dayB = g.branch, dayGZ = g.gz;
+  const season = rkSeason(mon);
+
+  /* 农历（择日最基础一层：公历 → 农历。凡以农历日期定者如《玉匣记》诸条，皆由此出） */
+  const lu = rkLunarOf(y, m, d);
+  why.push(`农历：定朔推得 <b>${lu.gz}年（${lu.sx}年）${lu.leapText}</b>${lu.leap ? '（闰月，名从其前月）' : ''}`);
+
+  why.push(`公历 ${y}-${m}-${d} → 儒略日 ${rkJDN(y,m,d)}；日干支＝(JDN+49) mod 60 ＝ <b>${dayGZ}</b>`);
+  why.push(`月建：太阳视黄经 ${ ((( (solarLon(noon/86400000+2440587.5) - 315) % 360 + 360) % 360)).toFixed(1) }° ÷ 30 → <b>${mg.gz}月</b>（${mon}月建，以「节」为界）`);
+  why.push(`建除：从月建 ${mon} 上起建顺行 → 日支 ${dayB} 当 <b>${jc}</b>` + (isTerm ? `；本日交节，叠两值日，另一值为 <b>${jcPrev}</b>` : ''));
+  why.push(`黄黑道：${mon}月青龙起 ${RK_HH_START[mon]}，顺行十二辰 → 日支 ${dayB} 当 <b>${hh.name}</b>（${hh.good?'黄道':'黑道'}）`);
+
+  hit.jianchu = { name: jc, val: jc, extra: jcPrev };
+  hit.huanghei = { name: hh.name, good: hh.good };
+
+  if (RK_CHONG[dayB] === mon){ hit.yuepo = true; why.push(`月破：日支 ${dayB} 冲月建 ${mon} → 犯`); }
+  const td = RK_TIANDE[mon];
+  if ((td.s && td.s === dayS) || (td.b && td.b === dayB)){
+    hit.tiande = true;
+    why.push(`天德：${mon}月天德在 ${td.s || td.b} → 日${td.s ? '干' : '支'} ${td.s || td.b} 相值（上吉）`);
+  }
+  const tdh = RK_TIANDE_HE[mon];
+  if ((tdh.s && tdh.s === dayS) || (tdh.b && tdh.b === dayB)){ hit.tiandehe = true; why.push(`天德合：${mon}月天德合在 ${tdh.s||tdh.b} → 值（吉）`); }
+  if (RK_YUEDE[mon] === dayS){ hit.yuede = true; why.push(`月德：${mon}月月德在 ${RK_YUEDE[mon]} → 日干 ${dayS} 相值（吉）`); }
+  if (RK_YUEDE_HE[RK_YUEDE[mon]] === dayS){ hit.yuedehe = true; why.push(`月德合：月德 ${RK_YUEDE[mon]} 之五合 ${RK_YUEDE_HE[RK_YUEDE[mon]]} → 值（吉）`); }
+  if (RK_TIANSHE[mon] === dayGZ){ hit.tianshe = true; why.push(`天赦：${mon}月天赦日 ${RK_TIANSHE[mon]} → 值（上吉）`); }
+  if ((RK_SANHE[mon] || []).includes(dayB)){ hit.sanhe = true; why.push(`三合：月建 ${mon} 三合 ${RK_SANHE[mon].join('·')} → 日支 ${dayB} 相合（吉）`); }
+  if (RK_LIUHE[mon] === dayB){ hit.liuhe = true; why.push(`六合：月建 ${mon} 六合 ${RK_LIUHE[mon]} → 日支 ${dayB} 相合（吉）`); }
+  if ((RK_SIFEI[mon] || []).includes(dayGZ)){ hit.sifei = true; why.push(`四废：${mon}月（${({'寅':'春','卯':'春','辰':'春','巳':'夏','午':'夏','未':'夏','申':'秋','酉':'秋','戌':'秋','亥':'冬','子':'冬','丑':'冬'})[mon]}季）四废 ${RK_SIFEI[mon].join('·')} → 犯（重忌）`); }
+  const yB = mg.yearBranch;
+  if (dayB === yB){ hit.taisui = '太岁日'; why.push(`太岁日：日支 ${dayB} 同岁支 ${yB} → 值太岁`); }
+  else if (RK_CHONG[dayB] === yB){ hit.taisui = '岁破日'; why.push(`岁破日：日支 ${dayB} 冲岁支 ${yB} → 犯岁破（忌）`); }
+  const tm = new Date(y, m - 1, d + 1);
+  const tName = termMap.get(tm.getFullYear() + '-' + (tm.getMonth() + 1) + '-' + tm.getDate());
+  if (tName){
+    const isLi = ['春分','秋分','夏至','冬至'].includes(tName);
+    hit.silijue = isLi ? '四离' : (['立春','立夏','立秋','立冬'].includes(tName) ? '四绝' : null);
+    if (hit.silijue) why.push(`${hit.silijue}：次日交「${tName}」，本日为其前一日 → 犯（除整理修饰外皆忌）`);
+  }
+  /* 方位类：需坐向 */
+  const sitM = MOUNTAINS[RK_STATE.sit];
+  if (RK_STATE.sit != null){
+    const dirSS = SANSHA_DIR[yB], ss = SAN_SHA[dirSS];
+    if (ss.m.includes(dayB)){ hit.sansha = true; why.push(`年三煞：${yB}年煞${dirSS}（${ss.m.join('')}山）→ 日支 ${dayB} 属之 → 犯`); }
+    if (ss.m.includes(sitM)) why.push(`（坐山 ${sitM} 亦在${dirSS}方三煞之内，本月修造尤忌）`);
+    const yw = yearWuhuang(ganzhiYearOf(noon).year), mw = monthWuhuangFromBranch(mon);
+    if ((PALACE_CENTER[yw] && PALACE_CENTER[yw].m.includes(sitM)) ||
+        (PALACE_CENTER[mw] && PALACE_CENTER[mw].m.includes(sitM))){
+      hit.wuhuang = (PALACE_CENTER[yw] && PALACE_CENTER[yw].m.includes(sitM) ? '年' : '') +
+                    (PALACE_CENTER[mw] && PALACE_CENTER[mw].m.includes(sitM) ? '月' : '') + '五黄';
+      why.push(`五黄：年五黄 ${yw} 宫、月五黄 ${mw} 宫 → 坐山 ${sitM} 落其中 → 犯${hit.wuhuang}`);
+    }
+    const sb = rkPalaceBranch(sitM);
+    if (sb && BRANCHES.includes(sb) && RK_CHONG[dayB] === sb){ hit.chongshan = true; why.push(`日冲坐山：坐山 ${sitM}（${sb}）被日支 ${dayB} 冲 → 犯`); }
+  }
+  /* 八字合参 */
+  const who = RK_STATE.type === 'hunjia' ? RK_STATE.bride : (RK_STATE.type === 'sangzang' ? RK_STATE.dead : RK_STATE.owner);
+  if (who){
+    if (RK_CHONG[dayB] === who.yearBranch){ hit.benchong = true; why.push(`本命冲：当事人 ${who.label} 生年支 ${who.yearBranch} 被日支 ${dayB} 冲 → 犯（重忌）`); }
+    if (RK_KE[RK_WUXING[dayS]] === RK_WUXING[who.dayStem] && RK_CHONG[dayB] === who.dayBranch){
+      hit.tianke = true; why.push(`天克地冲：课日干 ${dayS}（${RK_WUXING[dayS]}）克事主日干 ${who.dayStem}（${RK_WUXING[who.dayStem]}），且日支 ${dayB} 冲其日支 ${who.dayBranch} → 犯`);
+    }
+  }
+  /* ---- 补入神煞（皆依上列起例原文） ---- */
+  if ((RK_BUJIANG[mon] || []).includes(dayGZ)){
+    if (mon === '未' && dayGZ === '戊午') why.push(`阴阳不将：未月历例虽有戊午，然《协纪》按语「惟六月戊午为逐阵不可用」，故不取`);
+    else { hit.bujiang = true; why.push(`阴阳不将：${mon}月历例所列 ${RK_BUJIANG[mon].length} 组干支 → 日 <b>${dayGZ}</b> 在列（夫妇荣昌）`); }
+  }
+  if (RK_WANGWANG[mon] === dayB){ hit.wangwang = true; why.push(`往亡：${mon}月往亡在「${RK_WANGWANG[mon]}」→ 日支 ${dayB} 相值（忌上任、远行归家、出军、嫁娶、寻医）`); }
+  for (let back = 0; back <= 32; back++){
+    const dt2 = new Date(y, m - 1, d - back);
+    const nm = termMap.get(dt2.getFullYear() + '-' + (dt2.getMonth() + 1) + '-' + dt2.getDate());
+    if (nm && RK_QIWANG[nm] != null){
+      if (back === RK_QIWANG[nm]){ hit.qiwang = nm + '后' + RK_QIWANG[nm] + '日';
+        why.push(`气往亡：「${nm}」后第 ${RK_QIWANG[nm]} 日 → 本日当之（历例：皆自交节日数之）`); }
+      break;
+    }
+  }
+  if (RK_GUIJI[rkMengZhongJi(mon)] === dayB){ hit.guiji = true; why.push(`归忌：${mon}月属${rkMengZhongJi(mon)}月，归忌在「${RK_GUIJI[rkMengZhongJi(mon)]}」→ 日支 ${dayB} 相值（忌远行归家、移徙）`); }
+  if (RK_TUFU[mon] === dayB){ hit.tufu = true; why.push(`土符：${mon}月土符在「${RK_TUFU[mon]}」→ 日支 ${dayB} 相值（忌破土穿井、开渠筑墙）`); }
+  if ((RK_DINANG[mon] || []).includes(dayGZ)){ hit.dinang = true; why.push(`地囊：${mon}月地囊 ${RK_DINANG[mon].join('·')}（四时三合卦纳甲，四库本改正之例）→ 日 <b>${dayGZ}</b> 犯`); }
+  if (RK_MINGFEI.includes(dayGZ)){ hit.mingfei = '鸣吠'; why.push(`鸣吠：${dayGZ} 在鸣吠十三日内（甲丙庚壬配午申、乙丁己辛癸配酉）→ 安葬所宜`); }
+  if (RK_MINGFEIDUI.includes(dayGZ)){ hit.mingfei = hit.mingfei ? '鸣吠·鸣吠对' : '鸣吠对'; why.push(`鸣吠对：${dayGZ} 在鸣吠对十一日内（丙庚壬配子、甲丙庚壬配寅、乙丁辛癸配卯）→ 启攒破土所宜`); }
+  if ((RK_FURI[mon] || []).includes(dayS)){ hit.furi = '复日'; why.push(`复日：${mon}月复日之干 ${RK_FURI[mon].join('·')} → 日干 ${dayS} 相值（忌为凶事、利为吉事）`); }
+  if (RK_CHONGRI.includes(dayB)){ hit.furi = hit.furi ? '复日·重日' : '重日'; why.push(`重日：历例「重日者，巳亥二日也」→ 日支 ${dayB} 当之（忌破土安葬启攒；与德、赦、六合并则不忌）`); }
+  if (RK_BAZHUAN.includes(dayGZ)){ hit.bazhuan = true; why.push(`八专：${dayGZ} 在八专五日（丁未、己未、庚申、甲寅、癸丑）之内 → 忌出军嫁娶`); }
+  if (RK_SIJI[season] === dayGZ){ hit.siji = '四忌'; why.push(`四忌：${season}季四忌 ${RK_SIJI[season]} → 日 ${dayGZ} 犯（本令阳干加于辰首）`); }
+  if (RK_SIQIONG[season] === dayGZ){ hit.siji = hit.siji ? '四忌·四穷' : '四穷'; why.push(`四穷：${season}季四穷 ${RK_SIQIONG[season]} → 日 ${dayGZ} 犯（本令阴干加于辰尾）`); }
+  if (RK_WUMU[mon] === dayGZ){ hit.wumu = true; why.push(`五墓：${mon}月五墓 ${RK_WUMU[mon]} → 日 ${dayGZ} 犯（忌营造起土、嫁娶、出军）`); }
+  if (RK_JIUKONG[mon] === dayB){ hit.jiukong = true; why.push(`九空：${mon}月九空在「${RK_JIUKONG[mon]}」（正月在辰逆行四季）→ 日支 ${dayB} 犯（忌修造仓库、出入货财）`); }
+  if (RK_SIHAO[season] === dayGZ){ hit.sihao = true; why.push(`四耗：${season}季四耗 ${RK_SIHAO[season]} → 日 ${dayGZ} 犯（忌会亲姻、开仓库、施债负）`); }
+  if ((RK_WUXU[season] || []).includes(dayB)){ hit.wuxu = true; why.push(`五虚：${season}季五虚 ${RK_WUXU[season].join('')} → 日支 ${dayB} 属之（忌开仓、出财）`); }
+  if (RK_WULU.includes(dayGZ)){ hit.wulu = true; why.push(`无禄：${dayGZ} 在无禄十日（禄落空亡）之内 → 忌`); }
+  if ((RK_BAFENG[season] || []).includes(dayGZ)){ hit.bafeng = true; why.push(`八风·触水龙：${season}季 ${RK_BAFENG[season].join('·')} → 日 ${dayGZ} 犯（忌乘船渡水）`); }
+  if (RK_WULI.includes(dayB)){ hit.wuli = true; why.push(`五离：日支 ${dayB} 属申酉 → 忌结婚姻、会亲友、立契券`); }
+  /* 出行·会友 / 婚嫁·嫁娶 补项（起例见 RK_FACTORS 注释；厌对＝月厌对冲） */
+  const monIdx = BRANCHES.indexOf(mon);
+  const tzIdx = ((3 - monIdx) % 12 + 12) % 12;
+  if (dayB === BRANCHES[tzIdx]){ hit.tianzei = true; why.push(`天贼：本月天贼在「${BRANCHES[tzIdx]}」（正丑逆行十二辰）→ 日支 ${dayB} 犯（忌远行、出游）`); }
+  const yanIdx = ((12 - monIdx) % 12 + 12) % 12;          // 月厌：正月戌逆行十二辰（阳建寅顺、阴建戌逆）
+  const ydIdx = (yanIdx + 6) % 12;                          // 厌对＝月厌对冲
+  if (dayB === BRANCHES[ydIdx]){ hit.yandui = true; why.push(`厌对：本月厌对在「${BRANCHES[ydIdx]}」（月厌 ${BRANCHES[yanIdx]} 之对冲）→ 日支 ${dayB} 犯（嫁娶忌）`); }
+  if (dayB === '巳'){ hit.siday = true; why.push('巳日：日支为巳 → 出行所忌'); }
+  if (dayB === '酉'){ hit.youri = true; why.push('酉日：日支为酉 → 会亲友、宴请所忌（酉主离散）'); }
+  if (dayB === '亥'){ hit.haizi = true; why.push('亥日：日支为亥 → 嫁娶独忌（纳采问名、结婚姻不忌）'); }
+  if (RK_WUHE5.includes(dayB)){ hit.wuhe5 = true; why.push(`五合：日支 ${dayB} 属寅卯 → 宜结婚会亲、立券交易、会亲友`); }
+  {   /* 《玉匣记》民俗层（以农历日期为准，默认关闭） */
+    const yj = RK_YANGJI[lu.lm], yjArr = Array.isArray(yj) ? yj : [yj];
+    const yang = yjArr.includes(lu.ld), yueji = RK_YUEJI.includes(lu.ld);
+    if (yang || yueji){
+      hit.yuxia = [yang ? '杨公忌' : '', yueji ? '月忌日' : ''].filter(Boolean).join('·');
+      why.push(`《玉匣记》：农历 ${lu.leapText}${yang ? ` 为杨公忌日（${lu.lm}月${lu.ld}）` : ''}${yueji ? ` 逢月忌日（初五、十四、二十三）` : ''}（民俗层，《协纪》卷三十六·辨伪已驳）`);
+    }
+  }
+  {   /* 周堂图（民俗层 G，默认关闭）：只论月分大小，不论节气。落位见 RK_ZT */
+    const ids = { hunjia:['zt_hunjia','zt_baihu','zt_naxu'], sangzang:['zt_chuling'],
+                  xiuzao:['zt_qizao'], ruzhai:['zt_ruzhai','zt_xianghuo','zt_anchuang'] }[RK_STATE.type] || [];
+    ids.forEach(id => {
+      const g = RK_ZT[id.slice(3)], p = rkZtPos(g, lu);
+      let lv, val;
+      if (g.good.includes(p.pos)){ lv = '吉'; val = 1; }
+      else if ((g.half || []).includes(p.pos)){ lv = '半吉'; val = 0; }
+      else if ((g.hard || []).includes(p.pos)){ lv = '大忌'; val = -2; }
+      else if (RK_STATE.ting && id === 'zt_chuling'){ lv = '不论（停丧在外）'; val = 0; }
+      else if (!RK_STATE.ogIn && id === 'zt_hunjia' && (g.avoid || []).includes(p.pos)){ lv = '不忌（翁姑不在场）'; val = 0; }
+      else {
+        lv = id === 'zt_chuling' ? '值人（出外少避）'
+           : id === 'zt_baihu'   ? '可禳（朱书「麒麟在此」；值路则挂碰头肉遇岔路弃之）'
+           : id === 'zt_hunjia'  ? '可避（翁姑少避，次早拜见）'
+           : ((g.avoid || []).includes(p.pos) ? '可避' : '妨');
+        val = -1;
+      }
+      hit[id] = { pos: p.pos, lv, val, big: p.big };
+      why.push(`周堂·${g.name}：本月${p.big ? '大（三十日），初一从「' + g.big + '」顺数' : '小（二十九日），初一从「' + g.small + '」逆数'}，${lu.ld}日落「<b>${p.pos}</b>」→ ${lv}。${g.rule}`);
+    });
+  }
+  return { y, m, d, gz: dayGZ, stem: dayS, branch: dayB, mon: mg, jc, jcPrev, hh, hit, why, isTerm, lunar: lu };
+}
+
+function rkScore(row){
+  let s = 0, veto = [], good = [], bad = [];
+  /* 建除（两说择一，不强行归一） */
+  if (rkFactorOn('jianchu')){
+    const tbl = RK_STATE.jcSchool === 'zongjing' ? RK_JC_ZONGJING : RK_JC_KAOYUAN;
+    const v = tbl[row.jc];
+    s += v;
+    if (v > 0) good.push('建除·' + row.jc); else if (v < 0) bad.push('建除·' + row.jc);
+  }
+  if (rkFactorOn('huanghei')){
+    s += row.hh.good ? 1 : -1;
+    (row.hh.good ? good : bad).push(row.hh.name + (row.hh.good ? '（黄道）' : '（黑道）'));
+  }
+  /* 其余因素：一律按「已启用 + 命中」计分，故可逐条增删 */
+  RK_FACTORS.forEach(f => {
+    if (!f.impl || f.id === 'jianchu' || f.id === 'huanghei') return;
+    if (!rkFactorOn(f.id) || !row.hit[f.id]) return;
+    const label = f.name + (typeof row.hit[f.id] === 'string' ? '·' + row.hit[f.id] : '');
+    if (f.id === 'taisui'){                       // 太岁日不忌，岁破日方忌
+      if (row.hit[f.id] === '岁破日'){ s -= 3; bad.push('岁破日'); } else { bad.push('太岁日'); }
+      return;
+    }
+    if (f.zt){                                  /* 周堂图：同一图可吉可凶，分值随落位而定 */
+      const h = row.hit[f.id], v = h.val || 0;
+      s += v;
+      const lb = `${f.name.replace('周堂图·', '')}·值「${h.pos}」${h.lv}`;
+      if (v > 0) good.push(lb); else if (v < 0) bad.push(lb);
+      return;
+    }
+    if (f.veto){ s -= 5; veto.push(label); bad.push(label); }
+    else if (f.good){ s += 2; good.push(label); }
+    else { s -= 2; bad.push(label); }
+  });
+  const verdict = veto.length ? '忌' : (s >= 5 ? '宜（上吉）' : s >= 2 ? '可用' : s >= 0 ? '平' : '慎用');
+  return { score: s, veto, good, bad, verdict };
+}
+
+/* ---------- 7. 界面 ---------- */
+/* 因素可见性：按「当前日课类型（含子项）」过滤。
+   - 大类不匹配 → 隐藏（如 出行专属不显示于婚嫁）；
+   - 无 types 的通用日辰因素（建除/黄黑道/月破/天德…）跨类型始终显示；
+   - 有 types 且大类匹配：若当前大类含子项，仅显示与该子项宜忌清单(yi/ji)相关者；
+     周堂图(zt) 与 待补项(impl:false) 视为大类通用，所有子项均显示，避免误隐藏。 */
+function rkFactorVisible(f){
+  const T0 = RK_TYPES.find(t => t.key === RK_STATE.type);
+  if (!T0) return false;
+  if (f.types && !f.types.includes(T0.key)) return false;   // 错大类：隐藏
+  if (!f.types) return true;                                 // 通用：始终显示
+  if (T0.subs){
+    if (f.zt || !f.impl) return true;                         // 周堂图 / 待补：大类通用
+    const cur = T0.subs.find(s => s.key === RK_STATE.sub) || T0.subs[0];
+    return cur.yi.includes(f.id) || cur.ji.includes(f.id);    // 仅显示子项相关
+  }
+  return true;                                                // 无子项大类：大类匹配即显示
+}
+function rkFactorOn(id){
+  const f = RK_FACTORS.find(x => x.id === id);
+  const T0 = RK_TYPES.find(t => t.key === RK_STATE.type);                 // 大类（用于 inType 匹配）
+  const cur = (T0 && T0.subs) ? (T0.subs.find(s => s.key === RK_STATE.sub) || T0.subs[0]) : T0;
+  const inType = !f.types || f.types.includes(T0.key);
+  /* 默认开启：A 通用日辰层（骨架）＋ 该子项宜忌清单所列者；G 民俗层默认关；待补项默认关 */
+  const def = (f.layer === 'G' || !f.impl) ? false
+            : (inType && (f.core || f.layer === 'A' || cur.yi.includes(id) || cur.ji.includes(id)));
+  return inType && (RK_STATE.off[id] != null ? !RK_STATE.off[id] : def);
+}
+function rkRenderTypes(){
+  const T0init = RK_TYPES.find(t => t.key === RK_STATE.type);
+  if (T0init && T0init.subs && !RK_STATE.sub) RK_STATE.sub = T0init.subs[0].key;
+  const box = document.getElementById('rkTypes');
+  box.innerHTML = '';
+  RK_TYPES.forEach(t => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'rk-type' + (t.key === RK_STATE.type ? ' on' : '');
+    b.textContent = t.name;
+    b.onclick = () => { RK_STATE.type = t.key; RK_STATE.sub = t.subs ? t.subs[0].key : null; RK_STATE.off = {}; rkRenderAll(); };
+    box.appendChild(b);
+  });
+  const T0 = RK_TYPES.find(t => t.key === RK_STATE.type);
+  const sbEl = document.getElementById('rkSubs');
+  sbEl.innerHTML = '';
+  if (T0 && T0.subs){
+    sbEl.innerHTML = '<span class="rk-src">子项：</span>';
+    T0.subs.forEach(s => {
+      const c = document.createElement('button');
+      c.type = 'button'; c.className = 'rk-sub' + (s.key === RK_STATE.sub ? ' on' : '');
+      c.textContent = s.name;
+      c.onclick = () => { RK_STATE.sub = s.key; rkRenderAll(); };
+      sbEl.appendChild(c);
+    });
+  }
+  document.getElementById('rkTypeVerse').innerHTML =
+    '<b>《协纪辨方书》卷十一·用事</b><br>' + rkCurType().verse;
+}
+function rkLuText(v){                        // 公历 'YYYY-MM-DD' → 农历回显（择日最基础一层）
+  if (!v) return '';
+  const [a, b, c] = v.split('-').map(Number);
+  const u = rkLunarOf(a, b, c);
+  return `${u.gz}年（${u.sx}）${u.leapText}`;
+}
+function rkUpdateRangeLu(){                  // 择日范围两端即时核对农历
+  const el = document.getElementById('rk_range_lu');
+  if (!el) return;
+  const a = rkLuText(RK_STATE.from), b = rkLuText(RK_STATE.to);
+  el.innerHTML = (a || b) ? `起 ${a} &nbsp;→&nbsp; 止 ${b}` : '';
+}
+function rkRenderInputs(){
+  const T = RK_TYPES.find(t => t.key === RK_STATE.type);
+  const box = document.getElementById('rkInputs');
+  const today = new Date();
+  const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  if (!RK_STATE.from){
+    RK_STATE.from = iso(new Date(today.getTime() + 7 * 86400000));
+    RK_STATE.to = iso(new Date(today.getTime() + 97 * 86400000));
+  }
+  const L = [];
+  const pz = (label, who, key) => `
+    <div class="row" style="gap:6px;">
+      <label class="inline" style="min-width:74px;">${label}</label>
+      <input type="date" class="rk-inp" id="rk_${key}_d" value="${who ? who.d : ''}">
+      <select class="rk-inp" id="rk_${key}_h">
+        ${Array.from({length:24}, (_, i) => `<option value="${i}"${who && who.h === i ? ' selected' : ''}>${i}时</option>`).join('')}
+      </select>
+      <span id="rk_${key}_bz" class="rk-src" style="min-width:130px;">${who ? who.show : '（可不填）'}</span>
+    </div>`;
+  L.push(`<div class="row" style="gap:6px;">
+      <label class="inline" style="min-width:74px;">择日范围</label>
+      <input type="date" class="rk-inp" id="rk_from" value="${RK_STATE.from}">
+      <span class="rk-src">至</span>
+      <input type="date" class="rk-inp" id="rk_to" value="${RK_STATE.to}">
+      <span class="rk-src">（建议不超过 120 天）</span></div>
+    <div class="row"><label class="inline" style="min-width:74px;">农历核对</label>
+      <span class="rk-src" id="rk_range_lu" style="color:var(--blue);"></span></div>`);
+  if (T.fields.includes('bride')) L.push(pz('新娘生辰', RK_STATE.bride, 'bride'));
+  if (T.fields.includes('groom')) L.push(pz('新郎生辰', RK_STATE.groom, 'groom'));
+  if (T.fields.includes('owner')) L.push(pz('事主生辰', RK_STATE.owner, 'owner'));
+  if (T.fields.includes('dead'))  L.push(pz('亡人生辰', RK_STATE.dead, 'dead'));
+  if (T.fields.includes('sit')){
+    L.push(`<div class="row" style="gap:6px;">
+      <label class="inline" style="min-width:74px;">坐山</label>
+      <select class="rk-inp" id="rk_sit">${MOUNTAINS.map((m, i) =>
+        `<option value="${i}"${i === RK_STATE.sit ? ' selected' : ''}>${m}山（${i * 15}°）</option>`).join('')}</select>
+      <span class="rk-src">用于三煞方、五黄方、日冲坐山</span></div>`);
+  }
+  if (T.fields.includes('dir')){
+    L.push(`<div class="row" style="gap:6px;">
+      <label class="inline" style="min-width:74px;">出行方向</label>
+      <select class="rk-inp" id="rk_dir">${MOUNTAINS.map((m, i) =>
+        `<option value="${i}"${i === RK_STATE.dir ? ' selected' : ''}>${m}方（${i * 15}°）</option>`).join('')}</select>
+      <span class="rk-src">往亡方等条目待补，仅作记录</span></div>`);
+  }
+  if (T.fields.includes('item')){
+    L.push(`<div class="row" style="gap:6px;">
+      <label class="inline" style="min-width:74px;">分项</label>
+      <select class="rk-inp" id="rk_item">${['动土','竖柱上梁','安门','修方'].map(v =>
+        `<option${v === RK_STATE.item ? ' selected' : ''}>${v}</option>`).join('')}</select></div>`);
+  }
+  if (T.fields.includes('quan')){
+    L.push(`<div class="row" style="gap:6px;">
+      <label class="inline"><input type="checkbox" id="rk_quan"${RK_STATE.quan ? ' checked' : ''}> 权葬（大寒后五日至立春前）</label>
+      <span class="rk-src">《玉匣记》安葬从权法：不忌年月日时克山家【待补】</span></div>`);
+  }
+  if (T.fields.includes('og')){
+    L.push(`<div class="row" style="gap:6px;">
+      <label class="inline"><input type="checkbox" id="rk_og"${RK_STATE.ogIn ? ' checked' : ''}> 翁姑在场</label>
+      <span class="rk-src">《玉匣记》「值翁姑，归门时翁姑少避之，次早拜见」；若无翁姑在场，则翁姑日不忌</span></div>`);
+  }
+  if (T.fields.includes('ting')){
+    L.push(`<div class="row" style="gap:6px;">
+      <label class="inline"><input type="checkbox" id="rk_ting"${RK_STATE.ting ? ' checked' : ''}> 停丧在外</label>
+      <span class="rk-src">《玉匣记》「惟停丧在外，则不论」→ 勾选则出灵周堂不计</span></div>`);
+  }
+  L.push(`<div class="row" style="gap:6px;">
+    <label class="inline" style="min-width:74px;">建除口径</label>
+    <select class="rk-inp" id="rk_school">
+      <option value="kaoyuan"${RK_STATE.jcSchool === 'kaoyuan' ? ' selected' : ''}>考原（除危定执成开吉）</option>
+      <option value="zongjing"${RK_STATE.jcSchool === 'zongjing' ? ' selected' : ''}>选择宗镜（平成开危最吉）</option>
+    </select><span class="rk-src">两说并存，不强行归一</span></div>`);
+  box.innerHTML = L.join('');
+  const bind = (id, fn) => { const e = document.getElementById(id); if (e) e.onchange = fn; };
+  bind('rk_from', e => { RK_STATE.from = e.target.value; rkUpdateRangeLu(); });
+  bind('rk_to', e => { RK_STATE.to = e.target.value; rkUpdateRangeLu(); });
+  rkUpdateRangeLu();
+  bind('rk_sit', e => RK_STATE.sit = +e.target.value);
+  bind('rk_dir', e => RK_STATE.dir = +e.target.value);
+  bind('rk_item', e => RK_STATE.item = e.target.value);
+  bind('rk_quan', e => RK_STATE.quan = e.target.checked);
+  bind('rk_og', e => RK_STATE.ogIn = e.target.checked);
+  bind('rk_ting', e => RK_STATE.ting = e.target.checked);
+  bind('rk_school', e => RK_STATE.jcSchool = e.target.value);
+  ['bride','groom','owner','dead'].forEach(k => {
+    const de = document.getElementById('rk_' + k + '_d'), he = document.getElementById('rk_' + k + '_h');
+    if (!de) return;
+    const upd = () => {
+      if (!de.value){ RK_STATE[k] = null; document.getElementById('rk_' + k + '_bz').textContent = '（可不填）'; return; }
+      const [yy, mm, dd] = de.value.split('-').map(Number);
+      const bz = rkBazi(yy, mm, dd, +he.value);
+      const ul = rkLunarOf(yy, mm, dd);
+      RK_STATE[k] = { d: de.value, h: +he.value, ...bz, label: { bride:'新娘', groom:'新郎', owner:'事主', dead:'亡人' }[k],
+        lunar: ul,
+        show: `${bz.year}年 ${bz.month}月 ${bz.day}日 ${bz.hour}时`,
+        showLu: `农历 ${ul.gz}年（${ul.sx}）${ul.leapText}` };
+      document.getElementById('rk_' + k + '_bz').innerHTML = RK_STATE[k].show + '<br>' + RK_STATE[k].showLu;
+    };
+    de.onchange = upd; he.onchange = upd;
+    if (de.value) upd();
+  });
+}
+function rkRenderFactors(){
+  const T = RK_TYPES.find(t => t.key === RK_STATE.type);
+  const box = document.getElementById('rkFactors');
+  const groups = { A:'A 通用日辰层', B:'B 年神层', C:'C 月神层', D:'D 日神层', F:'F 八字合参层', G:'G 民俗层（《玉匣记》）' };
+  let html = '';
+  for (const g in groups){
+    const fs = RK_FACTORS.filter(f => f.layer === g && rkFactorVisible(f));
+    if (!fs.length) continue;
+    html += `<div class="rk-sec"><div style="font-weight:700; font-size:13px; margin-bottom:4px;">${groups[g]}</div><div class="rk-grid">`;
+    fs.forEach(f => {
+      const on = rkFactorOn(f.id);
+      const todo = f.impl ? '' : '<span class="rk-lv todo">待补</span>';
+      const lv = `<span class="rk-lv${f.core ? ' core' : ''}">${f.lv}</span>`;
+      html += `<label class="rk-f${on ? '' : ' off'}">
+        <input type="checkbox" data-f="${f.id}"${on ? ' checked' : ''}${f.impl ? '' : ' disabled'}>
+        <span><b>${f.name}</b>${lv}${todo}
+        <span class="rk-src">${f.src}</span>
+        <span class="rk-src">${f.desc}</span></span></label>`;
+    });
+    html += '</div></div>';
+  }
+  box.innerHTML = html;
+  box.querySelectorAll('input[data-f]').forEach(cb => {
+    cb.onchange = () => { RK_STATE.off[cb.dataset.f] = !cb.checked; cb.closest('.rk-f').classList.toggle('off', !cb.checked); };
+  });
+}
+function rkRenderAll(){
+  rkRenderTypes(); rkRenderInputs(); rkRenderFactors();
+  document.getElementById('rkSummary').textContent = '日课 · ' + rkCurType().name;
+}
+function rkRun(){
+  const T = RK_TYPES.find(t => t.key === RK_STATE.type);
+  const f = (RK_STATE.from || '').split('-').map(Number), t = (RK_STATE.to || '').split('-').map(Number);
+  if (f.length !== 3 || t.length !== 3){ toast('请先填写择日范围'); return; }
+  const d0 = new Date(f[0], f[1] - 1, f[2]), d1 = new Date(t[0], t[1] - 1, t[2]);
+  if (d1 < d0){ toast('结束日期须不早于起始日期'); return; }
+  if ((d1 - d0) / 86400000 > 400){ toast('范围过大，请控制在 400 天内'); return; }
+  const termMap = rkTermTable(d0.getFullYear() - 1, d1.getFullYear() + 1);
+  const rows = [];
+  for (let ms = d0.getTime(); ms <= d1.getTime(); ms += 86400000){
+    const dt = new Date(ms);
+    const row = rkComputeDay(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), termMap);
+    row.res = rkScore(row);
+    rows.push(row);
+  }
+  rows.sort((a, b) => b.res.score - a.res.score);
+  RK_STATE.rows = rows;
+  const on = [];
+  RK_FACTORS.forEach(x => { if (rkFactorOn(x.id)) on.push(x.name); });
+  const todo = RK_FACTORS.filter(x => (!x.types || x.types.includes(T.key)) && !x.impl).map(x => x.name);
+  document.getElementById('rkSummaryNote').innerHTML =
+    `共 ${rows.length} 日；口径：节气月＋干支日（月建以「节」为界，交节日叠两值日）；建除从「${RK_STATE.jcSchool === 'zongjing' ? '选择宗镜' : '考原'}」之说。<br>
+     启用因素：<b>${on.join('、') || '无'}</b>${todo.length ? `<br>未实现（不计分）：<b>${todo.join('、')}</b>` : ''}`;
+  const tb = document.getElementById('rkTbl');
+  tb.innerHTML = `<thead><tr><th>名次</th><th>公历</th><th>农历</th><th>日干支</th><th>月建</th><th>建除</th><th>黄黑道</th>
+    <th>吉神</th><th>凶煞</th><th>分</th><th>判定</th></tr></thead><tbody>` +
+    rows.slice(0, 120).map((r, i) => {
+      const cls = r.res.verdict === '忌' ? 'bad' : (r.res.score >= 5 ? 'best' : '');
+      const vc = r.res.verdict === '忌' ? 'b' : (r.res.score >= 5 ? 'g' : r.res.score >= 2 ? 'g' : 'm');
+      return `<tr class="rk-row ${cls}" data-i="${i}">
+        <td>${i + 1}</td><td>${r.m}/${r.d}</td>
+        <td>${r.lunar ? r.lunar.leapText + (r.lunar.leap ? '<span class="rk-src">闰</span>' : '') : '-'}</td>
+        <td><b>${r.gz}</b></td><td>${r.mon.gz}</td>
+        <td>${r.jc}${r.jcPrev ? '<span class="rk-src">叠' + r.jcPrev + '</span>' : ''}</td>
+        <td class="${r.hh.good ? 'rk-v g' : 'rk-v b'}">${r.hh.name}</td>
+        <td class="l">${r.res.good.slice(0, 4).map(x => `<span class="rk-tag g">${x}</span>`).join('')}</td>
+        <td class="l">${r.res.bad.slice(0, 4).map(x => `<span class="rk-tag b">${x}</span>`).join('')}</td>
+        <td><b>${r.res.score}</b></td>
+        <td class="rk-v ${vc}">${r.res.verdict}</td></tr>`;
+    }).join('') + '</tbody>';
+  tb.querySelectorAll('tr.rk-row').forEach(tr => {
+    tr.onclick = () => rkShowDetail(+tr.dataset.i);
+  });
+  document.getElementById('rkResultCard').style.display = '';
+  document.getElementById('rkDetail').innerHTML = '点选任一行，查看该日的逐项推算过程与出处。';
+  document.getElementById('rkResultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function rkShowDetail(i){
+  const r = RK_STATE.rows[i];
+  if (!r) return;
+  const T0 = RK_TYPES.find(t => t.key === RK_STATE.type);
+  const T = (T0 && T0.subs) ? (T0.subs.find(s => s.key === RK_STATE.sub) || T0.subs[0]) : T0;
+  const hitList = RK_FACTORS.filter(f => r.hit[f.id] && rkFactorOn(f.id))
+    .map(f => {
+      if (f.zt){
+        const h = r.hit[f.id];
+        return `<span class="rk-tag ${h.val < 0 ? 'b' : 'g'}">${f.name}·值「${h.pos}」（${h.lv}）</span>`;
+      }
+      return `<span class="rk-tag ${f.veto || f.lv === '忌' ? 'b' : 'g'}">${f.name}${typeof r.hit[f.id] === 'string' ? '·' + r.hit[f.id] : ''}</span>`;
+    }).join('') || '（无）';
+  document.getElementById('rkDetail').innerHTML =
+    `<div style="font-size:14px; font-weight:700; margin-bottom:6px;">
+       公历 ${r.y} 年 ${r.m} 月 ${r.d} 日 · 农历 ${r.lunar ? r.lunar.gz + '年（' + r.lunar.sx + '）' + r.lunar.leapText : '-'} ·
+       ${r.gz}日 · ${r.mon.gz}月 · 建除 ${r.jc} · ${r.hh.name}（${r.hh.good ? '黄道' : '黑道'}）
+       · 得分 <b>${r.res.score}</b> · <span class="rk-v ${r.res.verdict === '忌' ? 'b' : r.res.score >= 5 ? 'g' : 'm'}">${r.res.verdict}</span></div>
+     <div><b>命中神煞</b>：${hitList}</div>
+     <div style="margin-top:6px;"><b>逐项推算（可人工复核）</b>：<br>${r.why.map((w, k) => `${k + 1}. ${w}`).join('<br>')}</div>
+     <div style="margin-top:6px;"><b>本案用事宜忌</b>（《协纪辨方书》卷十一·用事）：<br>${T.verse}</div>
+     ${r.res.veto.length ? `<div style="margin-top:6px; color:var(--red);"><b>否决项</b>：${r.res.veto.join('、')}</div>` : ''}`;
+}
+function rkInit(){
+  document.getElementById('rkGo').onclick = rkRun;
+  document.getElementById('rkBack').onclick = () => showScreen('modules');
+  document.getElementById('rkResetF').onclick = () => { RK_STATE.off = {}; rkRenderFactors(); toast('已恢复该类型的默认因素'); };
+  rkRenderAll();
+}
+
+const APP_VER = 'v59 · 2026-09-20';
+['verTagHome', 'verTagCompass', 'verTagModules', 'verTagRike'].forEach(id => {
   const e = document.getElementById(id);
   if (e) e.textContent = '版本 ' + APP_VER;
 });
@@ -1956,7 +3127,11 @@ function renderModuleGrid(){
     cell.className = 'mod-cell' + (m.ready ? '' : ' mod-locked');
     cell.textContent = m.name;
     if (m.ready){
-      cell.onclick = () => { state.module = m.key; applyModuleDefaults(); buildRuleToggles(); enterInput(); };
+      cell.onclick = () => {
+        state.module = m.key;
+        if (m.key === 'rike'){ rkInit(); enterInput(); return; }   // 日课模块：独立界面，不走罗盘规则
+        applyModuleDefaults(); buildRuleToggles(); enterInput();
+      };
     } else {
       cell.onclick = () => toast('该模块敬请期待');
     }
@@ -1964,7 +3139,7 @@ function renderModuleGrid(){
   });
 }
 function enterInput(){
-  showScreen('home');
+  showScreen(state.module === 'rike' ? 'rike' : 'home');
 }
 function toast(msg){
   let t = document.getElementById('toast');
@@ -1973,7 +3148,7 @@ function toast(msg){
   clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove('show'), 1400);
 }
 function showScreen(name){
-  ['modules','home','compass'].forEach(n =>
+  ['modules','home','compass','rike'].forEach(n =>
     document.getElementById('screen' + n[0].toUpperCase() + n.slice(1))
       .classList.toggle('hidden', name !== n));
 }
@@ -1993,6 +3168,65 @@ if ('serviceWorker' in navigator &&
     (location.protocol === 'https:' || location.hostname === 'localhost')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
+</script>
+
+<!-- 日课类型·使用说明 modal -->
+<div class="rk-mask" id="rkHelpMask">
+  <div class="rk-modal">
+    <div class="rk-modal-hd">日课类型 · 使用说明<a href="javascript:void(0)" id="rkHelpClose" class="rk-modal-x">&times;</a></div>
+    <div class="rk-modal-bd" id="rkHelpBody">
+      <p class="rk-help-intro">日课类型依《协纪辨方书》卷十一·用事分类。下表将现代生活事项对应到具体类型 / 子项，便于快速选择。选定子项后，下方"参考因素"会自动仅列出与本子项相关者，无关者不再显示，避免误选。</p>
+
+      <h3 class="rk-help-h">一、现代事项 → 日课类型对应表</h3>
+      <table class="rk-help-tbl">
+        <thead><tr><th>现代生活事项</th><th>应选类型 / 子项</th><th>古法依据与说明</th></tr></thead>
+        <tbody>
+          <tr><td>拜见客户、商务拜访、谒见贵人</td><td>出行 / 会友 → <b>出行</b></td><td>《协纪》"出行（行幸遣使同）"含谒贵、遣使，商务拜访本属外出见贵，用出行；若另设宴请则改选"会友·宴请"。</td></tr>
+          <tr><td>签订商业合同、立契、交易</td><td>开业 → <b>立券交易</b></td><td>立券交易专司"立契券、交易"，最贴"签合同"。</td></tr>
+          <tr><td>仅仅出门办事、出差、远行、旅游</td><td>出行 / 会友 → <b>出行</b></td><td>纯外出办公 / 办事 / 旅行，无宴请、无签约，选出行。</td></tr>
+          <tr><td>店铺 / 公司开张、开市营业</td><td>开业 → <b>开市</b></td><td>开市专司开张营业。</td></tr>
+          <tr><td>收账、收款、纳资、入财</td><td>开业 → <b>纳财</b></td><td>纳财专司收纳财物。</td></tr>
+          <tr><td>搬家、迁入新居</td><td><b>入宅</b></td><td>移徙·入宅。</td></tr>
+          <tr><td>装修、动土、上梁、修造</td><td><b>修造</b></td><td>兴造动土；竖柱上梁同。</td></tr>
+          <tr><td>安葬、下葬、破土</td><td><b>丧葬</b></td><td>安葬。</td></tr>
+          <tr><td>走马上任、到职履职、临政亲民</td><td>赴任 → <b>上官赴任·临政亲民</b></td><td>上官赴任。</td></tr>
+          <tr><td>受奖、封官、袭爵、授职</td><td>赴任 → <b>施恩封拜·袭爵受封</b></td><td>施恩封拜（袭爵受封同）。</td></tr>
+          <tr><td>上奏、上表、上书、递呈</td><td>赴任 → <b>上表章</b></td><td>上表章。</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="rk-help-h">二、婚嫁三子项详解</h3>
+      <ul class="rk-help-ul">
+        <li><b>纳采问名</b>：男方请媒人向女家提亲（纳采），并问女方之名与生辰八字（问名）——即议婚、定亲之前的提亲环节。宜天德、月德、三合、六合、五合等；忌月破、八专、五离等。</li>
+        <li><b>结婚姻</b>：双方纳吉、纳征、请期后，择日举行"结两姓之好"的婚礼（订婚 / 成婚之礼，不含迎娶正日）。宜忌与纳采问名相近，唯不取"不将"（不将专系嫁娶）。</li>
+        <li><b>嫁娶</b>：亲迎之正日，新娘入门当日。婚嫁最重之日，独忌厌对、亥日，且必取"阴阳不将"（夫妇荣昌）。宜天德、月德、三合、六合、天喜、不将；忌月破、厌对、亥日、八专等。</li>
+      </ul>
+
+      <h3 class="rk-help-h">三、选择要点</h3>
+      <ul class="rk-help-ul">
+        <li>事项兼跨（如"出差兼签合同"）：以主目的为先——以签约为核心选"立券交易"，以出行为核心选"出行"；亦可分两次择日，或取二者皆宜之日（交集择日）。</li>
+        <li>会友·宴请 与 出行 之辨：只是"去"办事→出行；涉及"聚宴 / 会面宴请"→会友·宴请。</li>
+        <li>子项选定后，下方"参考因素"自动仅显示本子项相关者，无关者不再列出，避免误选。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<script>
+/* 使用说明 modal 开关：与 日课模块入口（rkInit）解耦，页面载入即绑定，确保任何进入方式都可点击 */
+(function(){
+  function wireRkHelp(){
+    var a = document.getElementById('rkTypeHelp');
+    var mask = document.getElementById('rkHelpMask');
+    var x = document.getElementById('rkHelpClose');
+    if (!a || !mask) return;
+    a.onclick = function(){ mask.classList.add('on'); };
+    if (x) x.onclick = function(){ mask.classList.remove('on'); };
+    mask.onclick = function(e){ if (e.target === mask) mask.classList.remove('on'); };
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') mask.classList.remove('on'); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireRkHelp);
+  else wireRkHelp();
+})();
 </script>
 </body>
 </html>
