@@ -138,12 +138,19 @@
   .rk-tip{font-size:12px; color:var(--muted); line-height:1.7; margin:8px 0 12px; white-space:normal;}
   /* 使用说明 modal */
   /* v84：遮罩层自身成为滚动容器，彻底截留移动端触摸滚动，杜绝穿透到主页。
-     align-items:flex-start + .rk-modal{margin:auto}：内容短时居中显示、内容高于视口时从顶部可滚动且不被裁切。 */
+     align-items:flex-start + .rk-modal{margin:auto}：内容短时居中显示、内容高于视口时从顶部可滚动且不被裁切。
+     v103：改为「遮罩不滚、弹窗独滚」。旧法 mask(overflow-y:auto) 与 modal(overflow:auto) 双层嵌套，
+       iOS WebKit 在 display:none→flex 的同帧切换中偶发不更新内层滚动范围：先渲染短内容（逐项推算），
+       再点开长内容（九十八项参考因素详情）时，内层 scrollHeight 仍按短内容计，遂「只见上几行、滑不下去」，
+       退出重进一次方复常——正是滚动范围迟滞之征。故遮罩改 overflow:hidden，滚动只由 .rk-modal 承担。 */
   .rk-mask{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:flex-start;
-    z-index:9999; padding:18px; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain;}
+    z-index:9999; padding:18px; overflow:hidden; overscroll-behavior:contain;}
   .rk-mask.on{display:flex;}
-  .rk-modal{background:#fff; border-radius:14px; max-width:660px; width:100%; max-height:84vh; overflow:auto; margin:auto;
-    box-shadow:0 12px 40px rgba(0,0,0,.25); overscroll-behavior:contain;}
+  /* v103：高度口径用 100%（＝视口 − 上下各 18px 遮罩留白），弃 84vh——iOS 的 vh 为「大视口」，
+     地址栏伸缩会令其抖动并把弹窗底部顶出屏外；min-height:0 使 flex 子项可被压低、溢出时正常滚。 */
+  .rk-modal{background:#fff; border-radius:14px; max-width:660px; width:100%; margin:auto;
+    max-height:100%; min-height:0; overflow-y:auto; overscroll-behavior:contain;
+    box-shadow:0 12px 40px rgba(0,0,0,.25);}
   .rk-modal-hd{position:sticky; top:0; background:var(--blue); color:#fff; padding:12px 16px; font-weight:700; font-size:15px;
     display:flex; justify-content:space-between; align-items:center;}
   .rk-modal-x{color:#fff; font-size:22px; text-decoration:none; line-height:1; padding:0 4px;}
@@ -349,6 +356,48 @@
     .opt-row .rule-item .rname{white-space:nowrap;}
     .btn-primary{letter-spacing:6px; text-indent:6px; padding:14px;}
     .btn-back{padding:6px 14px;}
+  }
+
+  /* ===== v102：统一日期选择器（替代原生 type="date"） =====
+     ① 原生控件宽度不可控，移动端「择日范围」一行折行 → 改自绘按钮，宽度随 Flex 收缩；
+     ② 部分 WebView 原生控件择年／月后点「完成」即收起、选不到日 → 改自研三列选择器；
+     ③ 原生控件只认公历 → 自研选择器可切农历。 */
+  .rk-date-wrap{display:inline-flex; align-items:center; min-width:0; flex:0 1 auto;}
+  .rk-date-btn{padding:6px 8px; border:1px solid var(--border); border-radius:8px; background:#fff;
+    font-size:13.5px; color:var(--ink); cursor:pointer; white-space:nowrap; overflow:hidden;
+    text-overflow:ellipsis; -webkit-appearance:none; appearance:none; font-family:inherit;}
+  .rk-date-btn.empty{color:#9aa3ad;}
+  .rk-seg{display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; background:#fff; flex:0 0 auto;}
+  .rk-seg button{border:none; background:#fff; padding:5px 11px; font-size:12.5px; color:#5b6472;
+    cursor:pointer; font-family:inherit; -webkit-appearance:none; appearance:none;}
+  .rk-seg button + button{border-left:1px solid var(--border);}
+  .rk-seg button.on{background:var(--blue); color:#fff; font-weight:600;}
+  .rk-dp-mask{position:fixed; inset:0; background:rgba(16,24,40,.42); z-index:120;
+    display:flex; align-items:flex-end; justify-content:center;}
+  .rk-dp-mask[hidden]{display:none;}
+  .rk-dp{width:100%; max-width:520px; background:#fff; border-radius:14px 14px 0 0;
+    padding-bottom:calc(6px + env(safe-area-inset-bottom)); box-shadow:0 -2px 18px rgba(20,30,50,.18);}
+  .rk-dp-head{display:flex; align-items:center; gap:10px; padding:11px 14px 9px; border-bottom:1px solid var(--border);}
+  .rk-dp-title{font-size:14px; font-weight:700;}
+  .rk-dp-cols{display:flex; gap:6px; padding:8px 10px;}
+  .rk-dp-col{flex:1 1 0; height:200px; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain; border:1px solid var(--border); border-radius:9px; background:#fafbfc;}
+  .rk-dp-col div{padding:8px 4px; text-align:center; font-size:14px; color:#4a5361; cursor:pointer;}
+  .rk-dp-col div.on{background:var(--blue); color:#fff; font-weight:700;}
+  .rk-dp-foot{display:flex; align-items:center; gap:8px; padding:9px 12px 5px;
+    border-top:1px solid var(--border); flex-wrap:wrap;}
+  .rk-dp-prev{flex:1 1 auto; min-width:0; font-size:12px; color:var(--muted);}
+  .rk-dp-btn{border:1px solid var(--border); background:#fff; border-radius:8px; padding:7px 14px;
+    font-size:13.5px; color:#3c4552; cursor:pointer; font-family:inherit; -webkit-appearance:none; appearance:none;}
+  .rk-dp-btn.pri{background:var(--blue); color:#fff; border-color:var(--blue); font-weight:600;}
+  @media (max-width: 720px){
+    /* v102：压缩「择日范围」等行，令 label＋起日＋至＋止日 同处一行 */
+    .row label.inline{min-width:56px !important;}
+    .rk-date-wrap{flex:1 1 0; min-width:0;}
+    .rk-date-btn{width:100%; font-size:13px; padding:6px 5px;}
+    .row > .rk-src.rk-nosm{display:none;}          /* 说明文字在窄屏隐去，避免挤走日期框 */
+    .row select.rk-hour{flex:0 0 78px; min-width:0; font-size:15px; padding:6px 4px;}
+    .row .rk-src.rk-bz{flex:1 1 100%; min-width:0;}
   }
 </style>
 </head>
@@ -2016,7 +2065,7 @@ function buildPanel(){
   // 统一「时间输入」模块：嵌入选项卡内、标题正下方第一位（驱动戊己都天、五黄三煞、九宫飞星等所有与时间相关的因素，共享 state.testMs）
   const tw = document.getElementById('timeInputBox');
   tw.innerHTML = `<span class="at-label">时间输入</span>` +
-    `<input type="date" id="testDate" class="at-input" title="手工输入公历年月日，统一驱动戊己都天、五黄三煞、九宫飞星等所有与时间相关的因素">` +
+    rkDateField('testDate', (function(d){ return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })(new Date(state.testMs)), '时间输入') +
     `<button id="testToday" class="at-btn" type="button">今天</button>` +
     `<span id="testResult" class="at-res" style="width:100%"></span>`;
 
@@ -2043,6 +2092,7 @@ function buildPanel(){
   }
   function refreshAll(){                // 同步时间输入框 + 综合读数 + 重绘盘面
     testDateEl.value = fmtDateInput(state.testMs);
+    rkRefreshDateBtns();
     updateTestResult();
     if (gMarkers) renderMarkers();     // 初始 buildPanel 阶段 gMarkers 尚未创建，跳过；运行期 change 时正常重绘
   }
@@ -2299,6 +2349,186 @@ function rkLunarOf(y, m, d){
     text: RK_LUNAR_M[mo.name - 1] + '月' + (RK_LUNAR_N[ld - 1] || (ld + '日')),
     leapText: (mo.leap ? '闰' : '') + RK_LUNAR_M[mo.name - 1] + '月' + (RK_LUNAR_N[ld - 1] || (ld + '日')) };
 }
+/* ================= v102：统一日期选择器 =================
+   缘起：① 移动端原生 <input type="date"> 宽度不可控，「择日范围」一行折行；
+        ② 部分 WebView 原生控件择年、月后点「完成」即收起，选不到日；
+        ③ 原生控件只认公历，无法直接按农历输入。
+   做法：以 <input type="hidden"> 承载 ISO 值（原有 onchange 绑定一律照旧），
+        可见按钮 + 底部三列（年／月／日）自研选择器；显示历法由 RK_CAL 控制（G 公历 / L 农历）。
+   农历→公历反向换算仍依本引擎朔望月表（rkLunarMonths），与 rkLunarOf 同一体系，不自起炉灶。 */
+let RK_CAL = 'G';
+const RK_DP = { id: null, y: 2026, m: 1, d: 1, leap: false };
+const RK_DP_Y0 = 1900, RK_DP_Y1 = 2100;
+
+function rkLunarYearSpan(ly){                 // 农历年 ly 之月序列（自正月起，含闰月）
+  const months = rkLunarMonths(ly - 1, ly + 1);
+  const zy = [];
+  months.forEach((mo, i) => { if (mo.name === 1 && !mo.leap) zy.push(i); });
+  let s = zy.find(i => rkBjDay(months[i].start).y === ly);   // 该农历年之正月（必在其公历年之内）
+  if (s === undefined) s = zy.length ? zy[0] : 0;
+  let e = months.length - 1;
+  for (const i of zy) if (i > s){ e = i - 1; break; }        // 至次年正月前一月止
+  return { months, s, e, list: months.slice(s, e + 1) };
+}
+function rkSolarFromLunar(ly, lm, leap, ld){   // 农历 → 公历 ISO；该年无此闰月则退回平月
+  const list = rkLunarYearSpan(ly).list;
+  let mo = list.find(m => m.name === lm && !!m.leap === !!leap);
+  if (!mo) mo = list.find(m => m.name === lm);               // 该年无此闰月
+  if (!mo) return null;
+  const max = mo.mdays || (mo.ed - mo.sd);
+  const dd = Math.min(Math.max(1, ld | 0), max);
+  const g = rkBjDay((mo.sd + dd - 1) * 86400000 - 8 * 3600000);
+  return g.y + '-' + String(g.m).padStart(2, '0') + '-' + String(g.d).padStart(2, '0');
+}
+function rkDateLabel(iso){                     // 依当前历法渲染日期框文字
+  if (!iso) return '选择日期';
+  if (RK_CAL !== 'L') return iso;
+  const p = iso.split('-').map(Number);
+  const u = rkLunarOf(p[0], p[1], p[2]);
+  return u.gz + '·' + u.leapText;              // 如：丙子·三月初九
+}
+function rkDateField(id, val, title){          // 统一字段：隐藏 input + 可见按钮
+  return `<span class="rk-date-wrap"><input type="hidden" id="${id}" value="${val || ''}">` +
+    `<button type="button" class="rk-inp rk-date-btn" data-dp="${id}" ` +
+    `onclick="rkPickDate('${id}', '${title || '选择日期'}')">${rkDateLabel(val || '')}</button></span>`;
+}
+function rkRefreshDateBtns(){
+  document.querySelectorAll('.rk-date-btn').forEach(b => {
+    const inp = document.getElementById(b.dataset.dp);
+    const v = inp ? inp.value : '';
+    b.textContent = rkDateLabel(v);
+    b.classList.toggle('empty', !v);
+  });
+}
+function rkSetCal(cal){
+  RK_CAL = (cal === 'L') ? 'L' : 'G';
+  document.querySelectorAll('.rk-seg button[data-cal]').forEach(b =>
+    b.classList.toggle('on', b.dataset.cal === RK_CAL));
+  rkRefreshDateBtns();
+  if (document.getElementById('rkDP') && !document.getElementById('rkDP').hidden) rkDPColsRender();
+}
+function rkDPMonthMax(){                       // 当前所选年月之日数
+  const list = rkLunarYearSpan(RK_DP.y).list;
+  const mo = list.find(m => m.name === RK_DP.m && !!m.leap === !!RK_DP.leap) || list.find(m => m.name === RK_DP.m);
+  return (RK_CAL !== 'L') ? new Date(RK_DP.y, RK_DP.m, 0).getDate() : (mo ? (mo.ed - mo.sd) : 30);
+}
+function rkDPNorm(){                           // 年历切换后校正月／日，使其在该年确实存在
+  if (RK_CAL !== 'L'){ RK_DP.leap = false; RK_DP.m = Math.min(12, Math.max(1, RK_DP.m)); }
+  else {
+    const list = rkLunarYearSpan(RK_DP.y).list;
+    let mo = list.find(m => m.name === RK_DP.m && !!m.leap === !!RK_DP.leap);
+    if (!mo) mo = list.find(m => m.name === RK_DP.m) || list[0];
+    if (!mo) return;                                        // 年表缺该月则保持原值
+    RK_DP.m = mo.name; RK_DP.leap = !!mo.leap;
+  }
+  RK_DP.d = Math.min(RK_DP.d, rkDPMonthMax());
+}
+function rkDPISO(){
+  if (RK_CAL !== 'L')
+    return RK_DP.y + '-' + String(RK_DP.m).padStart(2, '0') + '-' +
+           String(Math.min(RK_DP.d, new Date(RK_DP.y, RK_DP.m, 0).getDate())).padStart(2, '0');
+  return rkSolarFromLunar(RK_DP.y, RK_DP.m, RK_DP.leap, RK_DP.d);
+}
+function rkDPPreview(){
+  const el = document.getElementById('rkDPPrev'); if (!el) return;
+  const iso = rkDPISO(); if (!iso){ el.textContent = ''; return; }
+  const p = iso.split('-').map(Number), u = rkLunarOf(p[0], p[1], p[2]);
+  el.textContent = iso + '　农历' + u.gz + '·' + u.leapText;
+}
+function rkDPColsRender(){
+  const dp = document.getElementById('rkDP'); if (!dp) return;
+  const G = RK_CAL !== 'L';
+  document.querySelectorAll('.rk-seg button[data-cal]').forEach(b =>
+    b.classList.toggle('on', b.dataset.cal === RK_CAL));
+  let h = '';
+  for (let y = RK_DP_Y0; y <= RK_DP_Y1; y++){
+    const gz = STEMS[((y - 4) % 10 + 10) % 10] + BRANCHES[((y - 4) % 12 + 12) % 12];
+    h += `<div data-y="${y}" class="${y === RK_DP.y ? 'on' : ''}">${G ? (y + '年') : (y + ' ' + gz + '年')}</div>`;
+  }
+  const yEl = document.getElementById('rkDPY'); yEl.innerHTML = h;
+  h = '';
+  if (G){
+    for (let m = 1; m <= 12; m++) h += `<div data-m="${m}" class="${(m === RK_DP.m) ? 'on' : ''}">${m}月</div>`;
+  } else {
+    rkLunarYearSpan(RK_DP.y).list.forEach(mo => {
+      const sel = (mo.name === RK_DP.m && !!mo.leap === !!RK_DP.leap);
+      h += `<div data-m="${mo.name}" data-leap="${mo.leap ? 1 : 0}" class="${sel ? 'on' : ''}">` +
+           `${mo.leap ? '闰' : ''}${RK_LUNAR_M[mo.name - 1]}月</div>`;
+    });
+  }
+  const mEl = document.getElementById('rkDPM'); mEl.innerHTML = h;
+  const max = rkDPMonthMax(); RK_DP.d = Math.min(RK_DP.d, max);
+  h = '';
+  for (let d = 1; d <= max; d++)
+    h += `<div data-d="${d}" class="${d === RK_DP.d ? 'on' : ''}">${G ? (d + '日') : RK_LUNAR_N[d - 1]}</div>`;
+  const dEl = document.getElementById('rkDPD'); dEl.innerHTML = h;
+  /* 定位优先scrollTop赋值（scrollIntoView 会连带滚动页面本体） */
+  [yEl, mEl, dEl].forEach(el => {
+    const c = el.querySelector('.on');
+    if (c) el.scrollTop = c.offsetTop - el.clientHeight / 2 + c.clientHeight / 2;
+  });
+  rkDPPreview();
+}
+function rkDPApply(iso){
+  const inp = RK_DP.id ? document.getElementById(RK_DP.id) : null;
+  if (inp && iso){ inp.value = iso; inp.dispatchEvent(new Event('change')); }
+  rkDPClose(); rkRefreshDateBtns();
+}
+function rkDPClose(){
+  const dp = document.getElementById('rkDP');
+  if (dp) dp.hidden = true;
+  RK_DP.id = null;
+}
+function rkPickDate(id, title){
+  const inp = document.getElementById(id); if (!inp) return;
+  const dp = (function ensure(){
+    let el = document.getElementById('rkDP');
+    if (el) return el;
+    el = document.createElement('div');
+    el.id = 'rkDP'; el.className = 'rk-dp-mask'; el.hidden = true;
+    el.innerHTML =
+      '<div class="rk-dp"><div class="rk-dp-head"><span class="rk-dp-title" id="rkDPTitle">选择日期</span>' +
+      '<span class="rk-seg" style="margin-left:auto" id="rkDPSeg">' +
+      '<button type="button" data-cal="G" class="on">公历</button>' +
+      '<button type="button" data-cal="L">农历</button></span></div>' +
+      '<div class="rk-dp-cols"><div class="rk-dp-col" id="rkDPY"></div>' +
+      '<div class="rk-dp-col" id="rkDPM"></div><div class="rk-dp-col" id="rkDPD"></div></div>' +
+      '<div class="rk-dp-foot"><button type="button" class="rk-dp-btn" id="rkDPToday">今天</button>' +
+      '<span class="rk-dp-prev" id="rkDPPrev"></span>' +
+      '<button type="button" class="rk-dp-btn" id="rkDPCancel">取消</button>' +
+      '<button type="button" class="rk-dp-btn pri" id="rkDPOk">确定</button></div></div>';
+    document.body.appendChild(el);
+    el.addEventListener('click', e => { if (e.target === el) rkDPClose(); });
+    const pick = (box, attr, fn) => box.addEventListener('click', e => {
+      const t = e.target.closest('[' + attr + ']'); if (!t) return;
+      fn(t); rkDPNorm(); rkDPColsRender();
+    });
+    pick(document.getElementById('rkDPY'), 'data-y', t => { RK_DP.y = +t.dataset.y; });
+    pick(document.getElementById('rkDPM'), 'data-m', t => { RK_DP.m = +t.dataset.m; RK_DP.leap = t.dataset.leap === '1'; });
+    pick(document.getElementById('rkDPD'), 'data-d', t => { RK_DP.d = +t.dataset.d; });
+    document.getElementById('rkDPCancel').onclick = rkDPClose;
+    document.getElementById('rkDPToday').onclick = () => { const n = new Date();
+      rkDPApply(n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0')); };
+    document.getElementById('rkDPOk').onclick = () => rkDPApply(rkDPISO());
+    document.addEventListener('click', e => {
+      const b = e.target.closest('.rk-seg button[data-cal]');
+      if (b) rkSetCal(b.dataset.cal);
+    });
+    return el;
+  })();
+  const v = inp.value;
+  const p = v ? v.split('-').map(Number) : (() => { const n = new Date(); return [n.getFullYear(), n.getMonth() + 1, n.getDate()]; })();
+  const u = rkLunarOf(p[0], p[1], p[2]);
+  RK_DP.id = id; RK_DP.y = RK_CAL === 'L' ? u.ly : p[0]; RK_DP.m = RK_CAL === 'L' ? u.lm : p[1];
+  RK_DP.d = RK_CAL === 'L' ? u.ld : p[2]; RK_DP.leap = RK_CAL === 'L' ? !!u.leap : false;
+  rkDPNorm();
+  document.getElementById('rkDPTitle').textContent = title || '选择日期';
+  dp.hidden = false;
+  document.querySelectorAll('.rk-seg button[data-cal]').forEach(b =>
+    b.classList.toggle('on', b.dataset.cal === RK_CAL));
+  rkDPColsRender();
+}
+
 function rkMonthGZ(ms){
   const k = rkMonthIdx(ms), b = RK_MONTHS[k], y = ganzhiYearOf(ms);
   const s0 = STEMS.indexOf(WUHU_FIRST[y.stem]);
@@ -2400,7 +2630,13 @@ function rkBazi(y, m, d, h){                   // 排四柱（时辰 0–23；�
     dayStem: g.stem, dayBranch: g.branch, yearBranch: gy.branch };
 }
 /* 坐山论冲：仅地支山直接取其支（八干四维无「支」可冲，故不论，详见文档） */
-function rkPalaceBranch(m){ return BRANCHES.includes(m) ? m : null; }
+/* v101：二十四山归支——依双山三合（壬子·癸丑·艮寅·甲卯·乙辰·巽巳·丙午·丁未·坤申·庚酉·辛戌·乾亥）。
+   旧版只认十二地支山，八干四维（甲庚壬丙、乙辛丁癸、乾坤艮巽）一律返回 null，
+   致「日冲坐山」在二十四山中之十二山（半数坐向）全年零命中、形同漏调。 */
+const RK_SHAN_BRANCH = {'壬':'子','子':'子','癸':'丑','丑':'丑','艮':'寅','寅':'寅','甲':'卯','卯':'卯',
+  '乙':'辰','辰':'辰','巽':'巳','巳':'巳','丙':'午','午':'午','丁':'未','未':'未','坤':'申','申':'申',
+  '庚':'酉','酉':'酉','辛':'戌','戌':'戌','乾':'亥','亥':'亥'};
+function rkPalaceBranch(m){ return RK_SHAN_BRANCH[m] || (BRANCHES.includes(m) ? m : null); }
 
 /* ---------- 3b. 补入神煞起例（皆录《协纪辨方书》原文，不参臆说） ---------- */
 /* 阴阳不将·历例（卷四）：按月十二组干支日；按语「惟六月戊午为逐阵不可用」，故六月表中剔除戊午 */
@@ -2594,6 +2830,44 @@ const RK_XING    = {'寅':['巳','申'],'巳':['寅','申'],'申':['寅','巳'],
                     '丑':['戌','未'],'戌':['丑','未'],'未':['丑','戌'],
                     '子':['卯'],'卯':['子'],'辰':['辰'],'午':['午'],'酉':['酉'],'亥':['亥']};
 const RK_GANHE5  = {'甲':'己','己':'甲','乙':'庚','庚':'乙','丙':'辛','辛':'丙','丁':'壬','壬':'丁','戊':'癸','癸':'戊'};
+/* v104：造命层——补龙·相主（《协纪辨方书》卷三十三·利用·论补龙／论相主） */
+const RK_SHENG = {'木':'火','火':'土','土':'金','金':'水','水':'木'};   // 五行相生（木生火·火生土·土生金·金生水·水生木）
+const RK_SANHE_WX = { '申':'水','子':'水','辰':'水','亥':'木','卯':'木','未':'木','寅':'火','午':'火','戌':'火','巳':'金','酉':'金','丑':'金' }; // 三合局五行（来龙山脉之五行）
+const RK_YIMA = {'申':'寅','子':'寅','辰':'寅','寅':'申','午':'申','戌':'申','亥':'巳','卯':'巳','未':'巳','巳':'亥','酉':'亥','丑':'亥'}; // 驿马（三合局长生位之对冲）
+const RK_CHANG_START = {'甲':'亥','乙':'午','丙':'寅','丁':'酉','戊':'寅','己':'酉','庚':'巳','辛':'子','壬':'申','癸':'卯'}; // 天干十二长生起位
+function rkChangsheng(stem){            // 返回本命天干十二长生各支（阳顺阴逆）
+  const yang = (STEMS.indexOf(stem) % 2 === 0);
+  const seq = []; const i0 = BRANCHES.indexOf(RK_CHANG_START[stem]);
+  for (let k = 0; k < 12; k++) seq.push(BRANCHES[(i0 + k) % 12]);
+  if (!yang) seq.reverse();
+  const names = ['长生','沐浴','冠带','临官','帝旺','衰','病','死','墓','绝','胎','养'];
+  const m = {}; names.forEach((nm, k) => { m[nm] = seq[k]; }); return m;
+}
+function rkMaster(){                    // 取当前用事的「主命」对象（生年干支等）
+  const t = RK_STATE.type;
+  if (t === 'hunjia') return RK_STATE.bride || RK_STATE.groom || null;  // 嫁娶：新娘（无则新郎）
+  if (t === 'sangzang') return RK_STATE.dead || null;                   // 丧葬：亡命
+  return RK_STATE.owner || null;        // 修造/入宅/开业/赴任/出行/入学：事主（宅长）
+}
+function rkMasterActive(){              // 相主层是否在当前档位／用事下生效
+  const strict = (RK_STATE.mode === 'strict');
+  /* 标准档：相主仅对修造（宅长命）／丧葬（亡命）开放（原建议逻辑）；
+     严选档：所有用事皆须考虑相主（《协纪》造命·相主，用户拍板，不限于修造/丧葬） */
+  const open = strict ? true : (RK_STATE.type === 'xiuzao' || RK_STATE.type === 'sangzang');
+  return open ? rkMaster() : null;
+}
+function rkXiangzhuJi(who, dayS, dayB){  // 相主吉格（《协纪》卷三十三·论相主）
+  const out = [], wwx = RK_WUXING[who.dayStem], dwx = RK_WUXING[dayS];
+  if (dayS === who.dayStem) out.push('比肩');                                   // 比肩
+  if (RK_GANHE5[who.dayStem] === dayS) out.push((STEMS.indexOf(who.dayStem) % 2 === 0) ? '合财' : '合官'); // 天干五合（阳干受合为财、阴干受合为官）
+  if (RK_SHENG[dwx] === wwx) out.push('印绶');                                 // dayS 五行生 who 五行＝生我者印
+  if (RK_LU[who.dayStem] === dayB) out.push('命禄');                            // 本命禄支到课日支（最吉）
+  if (RK_GUIY[who.dayStem] === dayB || RK_GUIN[who.dayStem] === dayB) out.push('命贵人'); // 本命阳贵/阴贵到课日支（最吉）
+  const cs = rkChangsheng(who.dayStem);
+  if (['长生','沐浴','冠带','临官','帝旺'].some(k => cs[k] === dayB)) out.push('四长生'); // 生旺五位到课日支
+  if (RK_YIMA[who.yearBranch] === dayB) out.push('驿马');                       // 驿马到课日支（次之）
+  return out;
+}
 /* 逐时推算：返回十二时辰的干支、十二时神、吉凶神、以及与「当事人 + 年月日」的合参结果 */
 function rkHours(row){
   const dS = row.stem, dB = row.branch, monB = row.mon.branch, yB = row.mon.yearBranch, who = row.who || null;
@@ -2708,6 +2982,7 @@ function rkOpenHours(r){
   document.getElementById('rkHourHd').textContent = '当日吉时　·　' + row.y + '-' + String(row.m).padStart(2,'0') + '-' + String(row.d).padStart(2,'0') + '（' + row.gz + '日）';
   document.getElementById('rkHourBody').innerHTML = rkHoursHtml(row);
   document.getElementById('rkHourMask').classList.add('on');
+  rkFixModalScroll('rkHourMask');            /* v103：同上，十二时辰表内容亦长 */
 }
 function rkCloseHours(){ document.getElementById('rkHourMask').classList.remove('on'); }
 
@@ -2815,12 +3090,30 @@ const RK_FACTORS = [
    desc:'五黄所临之方忌动土；需坐向方可判是否犯。' },
  { id:'chongshan', types:['sangzang','ruzhai','xiuzao'], layer:'B', name:'日冲坐山', impl:true, need:'sit', weight:'ji',
    src:'修造通例（日辰不可冲坐山）', lv:'忌', desc:'课日支冲坐山所在宫支，修造、安葬、入宅忌。' },
- { id:'benchong', types:null, layer:'F', name:'本命冲', impl:true, need:'bazi', veto:true, weight:'veto',
-   src:'后世合参法（非《协纪辨方书》正文）', lv:'重忌',
-   desc:'课日支冲当事人（事主/新娘/亡人）生年地支。属「八字合参层」之一票否决，凡本用事提供当事人生辰输入者即应参与，v67 起一律默认勾选（此前丧葬·赴任·修造三处漏列忌单，致该否决项竟不参与评判，v67 已补）。' },
- { id:'tianke', types:null, layer:'F', name:'天克地冲', impl:true, need:'bazi', weight:'ji',
-   src:'后世合参法（非《协纪辨方书》正文）；与「本命冲」同为课日—当事人之合参层', lv:'忌',
-   desc:'课日干克当事人日干，且课日支冲当事人日支（如甲寅日柱之人遇庚申日）。属「八字合参层」，凡本用事提供当事人生辰输入者（婚嫁·丧葬·赴任·开业·出行会友·入宅·修造皆有）即应参与，v67 起一律默认勾选；无生辰输入则不判。' },
+ { id:'benchong', types:null, layer:'F', name:'日冲本命', impl:true, need:'benming', veto:true, weight:'veto',
+   src:'《协纪》卷三十三·利用·论相主（出《选择宗镜》）：「一本命地支切忌四柱地支冲之」「一太岁冲命最凶，月次之，日又次之时为轻」', lv:'重忌',
+   desc:'课日支冲当事人（事主/新娘新郎/亡人）生年地支。属「本命冲」日级。两档全开（犯本命之年月日时，对一切用事皆不利本命，属年份硬约束，不受用事类型与标准/严选档位限制；须填主命生辰方生效）。' },
+ { id:'tianke', types:null, layer:'F', name:'天克地冲', impl:true, need:'master', weight:'ji',
+   src:'后世合参法（非《协纪辨方书》正文）；与「本命冲」同为相主层', lv:'忌',
+   desc:'课日干克当事人日干，且课日支冲当事人日支（如甲寅日柱之人遇庚申日）。属「相主层」：严选档对所有用事开放；标准档仅修造／丧葬开放。' },
+ { id:'xiangzhu', types:null, layer:'E', name:'相主·吉格', impl:true, need:'master', good:true, weight:'yi',
+   src:'《协纪辨方书》卷三十三·利用·论相主', lv:'吉',
+   desc:'以课日四柱扶相本命（当事人/新娘新郎/亡命）。吉格：比肩、天干五合（合官/合财）、印绶（生我）、命禄（本命禄支到课日）、命贵人（阳贵/阴贵到课日）、四长生（生旺五位到课日）、驿马（三合局长生对冲到课日）。「命禄与命贵人最吉，马次之」。严选档对所有用事开放；标准档仅修造（宅长命）／丧葬（亡命）开放。' },
+ { id:'taichong', types:null, layer:'F', name:'太岁冲命（年冲本命）', impl:true, need:'benming', veto:true, weight:'veto',
+   src:'《协纪》卷三十三·利用·论相主（出《选择宗镜》）：「一太岁冲命最凶，月次之，日又次之时为轻」', lv:'重忌',
+   desc:'用事之年太岁地支冲当事人（事主/新娘新郎/亡人）生年地支。属「本命冲」年（太岁）级，最凶，一票否决。两档全开（犯太岁之年对一切用事皆不利本命，属年份硬约束）。' },
+ { id:'yuechong', types:null, layer:'F', name:'月冲命（月冲本命）', impl:true, need:'benming', veto:true, weight:'veto',
+   src:'《协纪》卷三十三·利用·论相主：「一太岁冲命最凶，月次之……」', lv:'重忌',
+   desc:'课月支冲当事人生年地支。属「本命冲」月级，次之，一票否决。两档全开（年份硬约束）。' },
+ { id:'shichong', types:null, layer:'F', name:'时冲命（时冲本命）', impl:true, need:'benming', weight:'ji',
+   src:'《协纪》卷三十三·利用·论相主：「……日又次之时为轻」', lv:'忌',
+   desc:'课时支冲当事人生年地支。属「本命冲」时级，轻，仅提示（不否决）；于择时层（吉时查看）判定——时辰列表已以「冲XX本命」呈现。两档全开。' },
+ { id:'bulong', types:['xiuzao','sangzang'], layer:'E', name:'补龙（吉）', impl:true, need:'sit', good:true, weight:'yi',
+   src:'《协纪辨方书》卷三十三·利用·论补龙', lv:'吉',
+   desc:'日课年/月/日三柱五行生扶来龙山脉三合五行（印比）则吉，扶龙运也。需坐向方可判；两档皆仅对修造／丧葬。' },
+ { id:'longsha', types:['xiuzao','sangzang'], layer:'E', name:'龙煞（凶）', impl:true, need:'sit', weight:'ji',
+   src:'《协纪辨方书》卷三十三·利用·论补龙（犯龙煞）', lv:'重忌',
+   desc:'日课三柱五行克泄来龙山脉三合五行则犯龙煞，凶。需坐向方可判；两档皆仅对修造／丧葬。' },
  { id:'bujiang', layer:'D', name:'阴阳不将', impl:true, good:true, types:['hunjia'], weight:'yi',
    src:'《协纪辨方书》卷四·义例「天宝历曰……厌前干配厌后枝者为阴阳不将也」＋「历例曰」十二组干支', lv:'上吉',
    desc:'月建为阳建（正月起寅顺行）、月厌为阴建（正月起戌逆行）；厌前之干配厌后之枝者为不将，「阴阳不将，夫妇荣昌」。本版直取卷四「历例」所载十二组干支，并按语「六月戊午为逐阵不可用」剔除之。' },
@@ -2915,25 +3208,25 @@ const RK_FACTORS = [
    src:'《协纪辨方书》卷十·月厌（一名地火）「忌……几于诸事皆忌，止不忌祭祀、覃恩、肆赦……」；忌单见卷十一·用事诸条', lv:'忌',
    desc:'正月起戌逆行十二辰（寅月戌、卯月酉……丑月亥）。其忌极广，几于诸事不宜；其对冲即「厌对」（已另立）。程序现只判「是否值月厌」，协纪所载重出并临条款未实现。' },
  /* —— 赴任·会友·开业专属神煞：已取得《协纪》卷十一·用事原文，起例待实现，暂不计入（标待补） —— */
-{ id:'tianyuan', layer:'D', name:'天愿', impl:true, good:true, types:['furen','chuxing','kaiye'], weight:'yi',
+{ id:'tianyuan', layer:'D', name:'天愿', impl:true, good:true, types:['furen','chuxing','kaiye','hunjia','sangzang','ruzhai','xiuzao'], weight:'yi',
   src:'《协纪辨方书》卷十一·用事', lv:'上吉', desc:'月中善神。协纪卷十一：宜上官赴任、会亲友、立券、纳财、开市、嫁娶、敦睦亲族。起例（按月建取干支日）：正甲午、二甲戌、三乙酉、四丙子、五丁丑、六戊午、七甲寅、八丙辰、九辛卯、十戊辰、十一甲子、十二癸未。' },
-{ id:'yueen', layer:'D', name:'月恩', impl:true, good:true, types:['furen','chuxing','kaiye'], weight:'yi',
+{ id:'yueen', layer:'D', name:'月恩', impl:true, good:true, types:['furen','chuxing','kaiye','hunjia','ruzhai','xiuzao'], weight:'yi',
   src:'《协纪辨方书》卷六·义例', lv:'吉', desc:'阳建所生之干（按月建取日干）：正丙、二丁、三庚、四己、五戊、六辛、七壬、八癸、九庚、十乙、十一甲、十二辛。宜上官、会亲友、立券、纳财。' },
-{ id:'sixiang', layer:'D', name:'四相', impl:true, good:true, types:['furen','chuxing','kaiye'], weight:'yi',
+{ id:'sixiang', layer:'D', name:'四相', impl:true, good:true, types:['furen','chuxing','kaiye','hunjia','ruzhai','xiuzao'], weight:'yi',
   src:'《协纪辨方书》卷六·义例', lv:'吉', desc:'四时王相之辰（按本季取日干）：春丙丁、夏戊己、秋壬癸、冬甲乙。宜上官、会亲友、立券、纳财。' },
-{ id:'shide', layer:'D', name:'时德', impl:true, good:true, types:['furen','chuxing','kaiye'], weight:'yi',
+{ id:'shide', layer:'D', name:'时德', impl:true, good:true, types:['furen','chuxing','kaiye','hunjia','ruzhai','xiuzao'], weight:'yi',
   src:'《协纪辨方书》卷六·义例', lv:'吉', desc:'四时阳辰（按本季取日支）：春午、夏辰、秋子、冬寅。宜上官、会亲友、立券、纳财。' },
 { id:'wangri', layer:'D', name:'王日', impl:true, good:true, types:['furen','chuxing'], weight:'yi',
   src:'《协纪辨方书》卷十一·用事', lv:'吉', desc:'月内视事之神（按本季取日支）：春寅、夏巳、秋申、冬亥。宜上官赴任、会亲友。' },
-{ id:'guanri', layer:'D', name:'官日', impl:true, good:true, types:['furen'], weight:'yi',
+{ id:'guanri', layer:'D', name:'官日', impl:true, good:true, types:['furen','chuxing'], weight:'yi',
   src:'《协纪辨方书》卷五·义例 / 卷十一·用事', lv:'吉', desc:'官守相临四神之一。官日：本季官星得位之日（春卯、夏午、秋酉、冬子），主得官执政，尤宜上官赴任。' },
 { id:'shouri', layer:'D', name:'守日', impl:true, good:true, types:['furen'], weight:'yi',
   src:'《协纪辨方书》卷五·义例 / 卷十一·用事', lv:'吉', desc:'官守相临四神之一。守日：本季阳辰（春酉、夏子、秋卯、冬午），主官守得安、政令得守，尤宜上官赴任。' },
-{ id:'xiangri', layer:'D', name:'相日', impl:true, good:true, types:['furen'], weight:'yi',
+{ id:'xiangri', layer:'D', name:'相日', impl:true, good:true, types:['furen','chuxing'], weight:'yi',
   src:'《协纪辨方书》卷五·义例 / 卷十一·用事', lv:'吉', desc:'官守相临四神之一。相日：本季相旺之辰（春巳、夏申、秋亥、冬寅），主官相得助、事得相成，尤宜上官赴任。' },
-{ id:'linri', layer:'D', name:'临日', impl:true, good:true, types:['furen'], weight:'yi',
+{ id:'linri', layer:'D', name:'临日', impl:true, good:true, types:['furen','chuxing'], weight:'yi',
   src:'《协纪辨方书》卷五·义例 / 卷十一·用事', lv:'吉', desc:'官守相临四神之一。临日：本月建之临官支（寅月午、卯月亥、辰月申、巳月丑、午月戌、未月卯、申月子、酉月巳、戌月寅、亥月未、子月辰、丑月酉），主官临其位，尤宜上官赴任。' },
-{ id:'tianxi', layer:'D', name:'天喜', impl:true, good:true, types:['furen','chuxing'], weight:'yi',
+{ id:'tianxi', layer:'D', name:'天喜', impl:true, good:true, types:['furen','chuxing','hunjia'], weight:'yi',
   src:'《协纪辨方书》卷四·义例二·建除', lv:'吉', desc:'日值「成」日（月建三合，协纪卷四：成日天喜吉）。宜上官、会亲友。' },
 { id:'tianshi', types:['hunjia','sangzang','furen','kaiye','chuxing','ruzhai','xiuzao'], layer:'D', name:'大时（咸池）', impl:true, weight:'ji',
   src:'《协纪辨方书》卷六·义例', lv:'忌', desc:'月中凶神，协纪卷六：月建三合五行沐浴之辰，最凶（神枢经有忌无宜）。起例（正月起卯逆行四仲，按月建取日支）：正卯、二子、三酉、四午、五卯、六子、七酉、八午、九卯、十子、十一酉、十二午。上官、出行、会亲、开市、立券、纳财皆忌。' },
@@ -2945,9 +3238,9 @@ const RK_FACTORS = [
   src:'《协纪辨方书》卷五·义例', lv:'吉', desc:'春亥子、夏寅卯、秋辰戌丑未、冬申酉（按本季取日支）；协纪另列「土王后巳午」子句，暂按季节集处理。宜纳财、养育、栽植。' },
 { id:'tiancang', layer:'D', name:'天仓', impl:true, good:true, types:['kaiye'], weight:'yi',
   src:'《协纪辨方书》卷六·义例', lv:'吉', desc:'天库之神，正月起寅逆行十二辰（按月建取日支）：正寅、二丑、三子、四亥、五戌、六酉、七申、八未、九午、十巳、十一辰、十二卯。宜纳财、修仓、牧养。' },
-{ id:'minri', layer:'D', name:'民日', impl:true, good:true, types:['chuxing','kaiye'], weight:'yi',
+{ id:'minri', layer:'D', name:'民日', impl:true, good:true, types:['chuxing','kaiye','ruzhai'], weight:'yi',
   src:'《协纪辨方书》卷十一·用事', lv:'吉', desc:'月内视事之神（按本季取日支）：春午、夏酉、秋子、冬卯。宜会亲友、开市、立券、纳财。' },
-{ id:'fude', layer:'D', name:'福德', impl:true, good:true, types:['chuxing'], weight:'yi',
+{ id:'fude', layer:'D', name:'福德', impl:true, good:true, types:['chuxing','furen'], weight:'yi',
   src:'《协纪辨方书》卷四·义例二·建除', lv:'吉', desc:'日值「满」日（满日叠福德星，协纪卷四：满为天富小吉）。宜会亲友。' },
 { id:'xiaohao', types:['kaiye','xiuzao'], layer:'D', name:'小耗', impl:true, weight:'ji',
   src:'《协纪辨方书》卷四·义例二·建除·执日', lv:'忌', desc:'月内耗神，协纪卷四：本月闭日之冲是小耗（月建顺推五辰）。起例（按月建取日支）：正未、二申、三酉、四戌、五亥、六子、七丑、八寅、九卯、十辰、十一巳、十二午。立券、纳财所忌。' },
@@ -3062,7 +3355,7 @@ const RK_FACTORS = [
   src:'后世通书（未核到原书）；《协纪辨方书》不收',
   plain:'甲子日起坎宫顺飞九宫，每九日一转，飞到中五宫者为戊辰、丁丑、丙戌、乙未、甲辰、癸丑、壬戌共七日，谓白虎占中宫，百事不宜（原说忌嫁娶、入宅、修造，后世扩为百事皆忌）。',
   desc:'「甲子常将坎上亲，九宫顺走教君轮。假如戊辰居中五，即是大煞占中庭。」七日固定，不随年月而移。网络通行本首日多误作「戊寅」，据九宫顺飞复算当为戊辰，本引擎从戊辰。' },
- { id:'jianchu_chengkai', layer:'D', name:'建除·成日·开日', impl:true, good:true, types:['kekao'], weight:'yi',
+ { id:'jianchu_chengkai', layer:'D', name:'建除·成日·开日', impl:true, good:true, types:['kekao','furen','kaiye','chuxing','ruzhai','xiuzao'], weight:'yi',
    src:'《协纪辨方书》卷十一·用事·入学；同书卷十·宜忌·成日/开日按语；《御定星历考原》卷六·用事宜忌', lv:'吉',
    desc:'入学之宜。《协纪》卷十一「入学：宜成日、开日。忌无。」卷十·成日按语：「成为合局之终，开为生气之始，故其日宜入学，原始要终之义也。」《星历考原》卷六：「凡尊师传经等事，宜孟、仲月成、开日。」——故入学为《协纪》正式收录之条目，非后世俗忌；惟其义为「入师门受业、尊师传经」，非行政注册入学。' }
 ];
@@ -3144,8 +3437,12 @@ const RK_JI_ZHONG = {
   sansha:{sangzang:'重忌',ruzhai:'忌',xiuzao:'重忌'},
   wuhuang:{sangzang:'忌',ruzhai:'忌',xiuzao:'重忌'},
   chongshan:{sangzang:'重忌',ruzhai:'重忌',xiuzao:'重忌'},
+  bulong:{xiuzao:'吉',sangzang:'吉'},
+  longsha:{xiuzao:'重忌',sangzang:'重忌'},
   benchong:{nacai:'重忌',jiehun:'重忌',jiahun:'重忌',sangzang:'重忌',shangguan:'重忌',shien:'重忌',shangbiao:'重忌',kaishi:'重忌',liquan:'重忌',nacai_money:'重忌',chuxing_x:'重忌',huiyou:'重忌',ruzhai:'重忌',xiuzao:'重忌',ruxue:'重忌',yingshi:'重忌'},
   tianke:{nacai:'重忌',jiehun:'重忌',jiahun:'重忌',sangzang:'重忌',shangguan:'重忌',shien:'重忌',shangbiao:'重忌',kaishi:'重忌',liquan:'重忌',nacai_money:'重忌',chuxing_x:'重忌',huiyou:'重忌',ruzhai:'重忌',xiuzao:'重忌',ruxue:'重忌',yingshi:'重忌'},
+  taichong:{nacai:'重忌',nacai_money:'重忌',jiehun:'重忌',jiahun:'重忌',sangzang:'重忌',shangguan:'重忌',shien:'重忌',shangbiao:'重忌',kaishi:'重忌',liquan:'重忌',chuxing_x:'重忌',huiyou:'重忌',ruzhai:'重忌',xiuzao:'重忌',ruxue:'重忌',yingshi:'重忌'},
+  yuechong:{nacai:'重忌',nacai_money:'重忌',jiehun:'重忌',jiahun:'重忌',sangzang:'重忌',shangguan:'重忌',shien:'重忌',shangbiao:'重忌',kaishi:'重忌',liquan:'重忌',chuxing_x:'重忌',huiyou:'重忌',ruzhai:'重忌',xiuzao:'重忌',ruxue:'重忌',yingshi:'重忌'},
   tiangang:{nacai:'重忌',jiehun:'重忌',jiahun:'重忌',sangzang:'重忌',shangguan:'重忌',shien:'重忌',shangbiao:'重忌',kaishi:'重忌',liquan:'重忌',nacai_money:'重忌',chuxing_x:'重忌',huiyou:'重忌',ruzhai:'重忌',xiuzao:'重忌',ruxue:'重忌',yingshi:'重忌'},
   tiangu:{nacai:'重忌',jiehun:'重忌',jiahun:'重忌',ruzhai:'忌'},
   digua:{nacai:'重忌',jiehun:'重忌',jiahun:'重忌',ruzhai:'忌'},
@@ -3193,6 +3490,9 @@ const RK_PLAIN = {
  'wuhuang':'五黄廉贞（都天太岁）星所到之方。这是最凶的方位煞（中宫寄八，随年随月飞布）。在该方修造、动土、安门，主重病、横祸、人口损伤。择日须避开坐向是否落五黄。',
  'chongshan':'日支冲克宅或坟的坐山（如子日冲午山）。修造、安葬、入宅当日忌冲坐山，等于冲撞宅神、风水根基，主人口不安、家宅不宁。',
  'benchong':'日支冲事主（当事人）的生肖（如属鼠子命忌午日）。犯本命冲犹如当面冲撞自身，主行事多阻、身体不安。标注为重忌。',
+ 'taichong':'用事之年太岁（流年）地支冲当事人生肖（生年支）。《协纪》卷三十三·论相主：「太岁冲命最凶」，属本命冲年（太岁）级，最凶，诸事不宜。两档全开。',
+ 'yuechong':'课月支冲当事人生肖（生年支）。《协纪》论相主：「太岁冲命最凶，月次之」，属本命冲月级，重忌。两档全开。',
+ 'shichong':'课时支冲当事人生肖（生年支）。《协纪》论相主：「……日又次之时为轻」，属本命冲时级，轻，仅提示；于择时层（吉时查看）判定。两档全开。',
  'tianke':'日干支与事主年干支既天干相克又地支相冲（如甲子年生人遇庚午日）。比本命冲更重，主大凶，诸事不宜，尤忌出行、赴任、兴造。',
  'bujiang':'嫁娶专用之上吉日。阴阳不将指日干支阴阳相配得宜（不在阳将、阴将、阴阳俱将之列），无将兵之患、无孤寡之嫌。嫁娶取不将日，诸凶可避，是最核心的嫁娶吉日标准。',
  'wangwang':'每月特定几日（依节气数推）。往而亡失之意，主去而不返。忌出行、迁徙、嫁娶、赴任，用了容易事多阻碍、有去无回。',
@@ -3249,7 +3549,10 @@ const RK_PLAIN = {
  'zt_qizao':'盖房动土起造周堂图，值凶则忌兴工。只论月之大小，不论节气。属民俗层，v66 起默认勾选参与，欲排除可取消勾选。',
  'zt_xianghuo':'安奉祖先香火神位周堂图，值凶则忌。只论月之大小，不论节气。属民俗层，v66 起默认勾选参与，欲排除可取消勾选。',
  'zt_ruzhai':'搬家入宅周堂，含十六神轮值，值凶神则忌入宅。只论月之大小，不论节气。属民俗层，v66 起默认勾选参与，欲排除可取消勾选。',
- 'zt_anchuang':'安床、移床周堂图，值凶则忌安床。只论月之大小，不论节气。属民俗层，v66 起默认勾选参与，欲排除可取消勾选。'
+ 'zt_anchuang':'安床、移床周堂图，值凶则忌安床。只论月之大小，不论节气。属民俗层，v66 起默认勾选参与，欲排除可取消勾选。',
+ 'xiangzhu':'相主吉格（《协纪》卷三十三·利用·论相主）：以课日四柱扶相本命（事主/新娘新郎/亡命）。命禄（本命禄支到课日）、命贵人（阳贵/阴贵到课日）最吉，驿马次之；另有比肩、天干五合（合官/合财）、印绶（生我）、四长生（生旺五位到课日）。严选档对所有用事开放，标准档仅修造（宅长命）/丧葬（亡命）开放；须填生辰方生效。',
+ 'bulong':'补龙吉格（《协纪》卷三十三·利用·论补龙）：日课年/月/日三柱五行生扶来龙山脉三合五行（印比）则吉，扶龙运也。须填坐向方可判；两档皆仅修造/丧葬。',
+ 'longsha':'龙煞（犯龙煞，《协纪》卷三十三·论补龙）：日课三柱五行克泄来龙山脉三合五行则凶。须填坐向方可判；两档皆仅修造/丧葬。'
 };
 RK_FACTORS.forEach(f => { if (RK_PLAIN[f.id]) f.plain = RK_PLAIN[f.id]; });
 
@@ -3261,26 +3564,26 @@ const RK_TYPES = [
    subs:[
      { key:'nacai', name:'纳采问名',
       verse:'纳采问名：宜天德、天德合、月德、月德合、天赦、天愿、月恩、四相、时德、三合、六合、五合；忌月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月害、月厌、大时、天吏、四废、四忌、四穷、五墓、往亡、八专。',
-      yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','wuhe5'],
+      yi:['liuhe','sanhe','shide','sixiang','tiande','tiandehe','tianshe','tianyuan','wuhe5','yuede','yuedehe','yueen'],
       ji:['baihu_dasha','baihu_leiting','bazhuan','benchong','digua','hongsha','jiesha','jiuchou','pima','renge','sifei','sihao','siji','silijue','suipo','tiangang','tiangu','tianke','tianli','tianshi','wangwang','wuli','wulu','wumu','xingjia_benshen','xingjia_fumu','xingjia_fuzhu','xingjia_wenggu','xingjia_xiaoli','yandui','yincuo','yuehai','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] },
      { key:'jiehun', name:'结婚姻',
       verse:'结婚姻：宜天德、天德合、月德、月德合、天赦、天愿、月恩、四相、时德、三合、六合、五合；忌月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月害、月厌、大时、天吏、四废、四忌、四穷、五墓、往亡、八专。',
-      yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','wuhe5'],
+      yi:['liuhe','sanhe','shide','sixiang','tiande','tiandehe','tianshe','tianyuan','wuhe5','yuede','yuedehe','yueen'],
       ji:['baihu_dasha','baihu_leiting','bazhuan','benchong','digua','hongsha','jiesha','jiuchou','pima','renge','sifei','sihao','siji','silijue','suipo','tiangang','tiangu','tianke','tianli','tianshi','wangwang','wuli','wulu','wumu','xingjia_benshen','xingjia_fumu','xingjia_fuzhu','xingjia_wenggu','xingjia_xiaoli','yandui','yincuo','yuehai','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] },
      { key:'jiahun', name:'嫁娶',
        verse:'嫁娶：宜天德、天德合、月德、月德合、天赦、天愿、三合、天喜、六合、不将；忌月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月害、月厌、厌对、大时、天吏、四废、四忌、四穷、五墓、往亡、八专、亥日。',
-       yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','bujiang','wuhe5','xingjia_dali'],
+       yi:['bujiang','liuhe','sanhe','tiande','tiandehe','tianshe','tianxi','tianyuan','wuhe5','xingjia_dali','yuede','yuedehe'],
        ji:['baihu_dasha','baihu_leiting','bazhuan','benchong','digua','haizi','hongsha','jiesha','jiuchou','pima','renge','sifei','sihao','siji','silijue','suipo','tiangang','tiangu','tianke','tianli','tianshi','wangwang','wuli','wulu','wumu','xingjia_benshen','xingjia_fumu','xingjia_fuzhu','xingjia_wenggu','xingjia_xiaoli','yandui','yincuo','yuehai','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] }
    ]},
  { key:'sangzang', name:'丧葬', fields:['range','dead','sit','quan','ting'],
    verse:'安葬：宜天德、天德合、月德、月德合、天赦、天愿、六合、鸣吠；忌月建、月破、平日、收日、劫煞、灾煞、月煞、月刑、月厌、月害、四废、四忌、四穷、五墓、复日、重日。',
-   yi:['tiande','tiandehe','yuede','yuedehe','tianshe','liuhe','mingfei'],
+   yi:['liuhe','mingfei','tiande','tiandehe','tianshe','tianyuan','yuede','yuedehe'],
    ji:['benchong','chongsang','chongshan','dinang','furi','fusang','hongsha','jiesha','sansang','sansha','sifei','siji','silijue','suipo','tiangang','tianke','tianli','tianshi','tufu','tuwang','wangwang','wuhuang','wulu','wumu','yincuo','yuehai','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] },
  { key:'furen', name:'赴任', fields:['range','owner','dir'],
    subs:[
      { key:'shangguan', name:'上官赴任·临政亲民',
        verse:'上官赴任·临政亲民：宜天德、月德、天德合、月德合、天赦、天愿、月恩、四相、时德、王日、官日、守日、相日、临日、建日、天喜、开日；忌月破、平日、收日、满日、闭日、劫煞、灾煞、月煞、月刑、月厌、大时、天吏、四废、五墓、往亡。',
-       yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','wangri','guanri','shouri','xiangri','linri','tianxi','tianyuan'],
+       yi:['guanri','jianchu_chengkai','linri','liuhe','sanhe','shide','shouri','sixiang','tiande','tiandehe','tianshe','tianxi','tianyuan','wangri','xiangri','yuede','yuedehe','yueen'],
        ji:['benchong','hongsha','jiesha','sifei','silijue','suipo','tiangang','tianke','tianli','tianshi','wangwang','wulu','wumu','yincuo','yuehai','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] },
      { key:'shien', name:'施恩封拜·袭爵受封',
        verse:'施恩封拜（袭爵受封同）：宜王日、建日、吉期、天喜、开日（注：官日、守日、相日止宜袭爵受封）；忌月破、平日、收日、满日、闭日、劫煞、灾煞、月煞、月刑、月厌、大时、天吏、四废、五墓、往亡。',
@@ -3288,14 +3591,14 @@ const RK_TYPES = [
        ji:['benchong','hongsha','jiesha','sifei','silijue','suipo','tiangang','tianke','tianli','tianshi','wangwang','wulu','wumu','yincuo','yuehai','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] },
      { key:'shangbiao', name:'上表章',
        verse:'上表章：宜天德、月德、天德合、月德合、天赦、天愿、月恩、四相、时德、临日、福德、开日、解神；忌月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月厌、大时、天吏、四废、往亡。',
-       yi:['tiande','tiandehe','yuede','yuedehe','tianshe','fude','tianyuan','yueen','shide','linri'],
+       yi:['fude','jianchu_chengkai','linri','shide','sixiang','tiande','tiandehe','tianshe','tianyuan','yuede','yuedehe','yueen'],
        ji:['benchong','hongsha','jiesha','sifei','silijue','suipo','tiangang','tianke','tianli','tianshi','wangwang','wulu','wumu','yincuo','yuehai','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] }
    ]},
  { key:'kaiye', name:'开业', fields:['range','owner','sit'],
    subs:[
      { key:'kaishi', name:'开市',
        verse:'开市：宜天愿、民日、满日、成日、开日、五富；忌月破、大耗、小耗、平日、收日、劫煞、灾煞、月煞、月刑、月害、月厌、大时、天吏、四耗、四穷、五墓、九空。',
-       yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','wufu','minri','tianyuan'],
+       yi:['jianchu_chengkai','minri','sanhe','tiande','tiandehe','tianshe','tianyuan','wufu','yuede','yuedehe'],
        ji:['benchong','hongsha','jiesha','jiukong','sifei','sihao','siji','silijue','suipo','tiangang','tianke','tianli','tianshi','wangwang','wuli','wulu','wumu','wuxu','xiaohao','yincuo','yuehai','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] },
      { key:'liquan', name:'立券交易',
        verse:'立券交易：宜天愿、民日、三合、满日、六合、五富、五合；忌月破、大耗、小耗、平日、收日、劫煞、灾煞、月煞、月刑、月害、月厌、大时、天吏、四耗、四穷、五墓、九空、五离。',
@@ -3314,16 +3617,16 @@ const RK_TYPES = [
        ji:['bafeng','benchong','guiji','hongsha','jiesha','qiwang','siday','sifei','silijue','suipo','tiangang','tianke','tianli','tianshi','tianzei','wangwang','wulu','wumu','yincuo','yuehai','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] },
      { key:'huiyou', name:'会友·宴请',
        verse:'会友（宴会·会亲友同）：宜天德、月德、天德合、月德合、天恩、天赦、天愿、月恩、四相、时德、王日、民日、三合、福德、天喜、开日、六合、五合；忌月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月害、月厌、四废、五离、酉日。',
-       yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','wuhe5','minri','fude','tianxi','tianyuan','yueen','shide','wangri'],
+       yi:['fude','jianchu_chengkai','liuhe','minri','sanhe','shide','sixiang','tiande','tiandehe','tianshe','tianxi','tianyuan','wangri','wuhe5','yuede','yuedehe','yueen'],
        ji:['baihu_dasha','baihu_leiting','benchong','hongsha','jiesha','sifei','silijue','suipo','tiangang','tianke','tianli','tianshi','wangwang','wuli','wulu','wumu','yincuo','youri','yuehai','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] }
    ]},
  { key:'ruzhai', name:'入宅', fields:['range','owner','sit'],
    verse:'搬移（移徙·入宅）：宜天德、天德合、月德、月德合、天赦、天愿、月恩、四相、时德、民日、驿马、天马、成日、开日；忌月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月厌、大时、天吏、四废、五墓、归忌、往亡。',
-   yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe'],
+   yi:['jianchu_chengkai','liuhe','minri','sanhe','shide','sixiang','tiande','tiandehe','tianshe','tianyuan','yuede','yuedehe','yueen'],
    ji:['baihu_dasha','baihu_leiting','benchong','chongshan','digua','guiji','hongsha','jiesha','jiuchou','pima','qiwang','sansha','shenri','sifei','silijue','suipo','tiangang','tiangu','tianke','tianli','tianshi','wangwang','wuhuang','wulu','wumu','yincuo','yuehai','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] },
  { key:'xiuzao', name:'修造', fields:['range','owner','sit','item'],
    verse:'兴造动土：宜天德、天德合、月德、月德合、天赦、天愿、月恩、四相、时德、三合、开日；忌月建、土符、月破、平日、收日、闭日、劫煞、灾煞、月煞、月刑、月厌、大时、天吏、四废、五墓、地囊、土王用事后。竖柱上梁同。',
-   yi:['tiande','tiandehe','yuede','yuedehe','tianshe','sanhe'],
+   yi:['jianchu_chengkai','sanhe','shide','sixiang','tiande','tiandehe','tianshe','tianyuan','yuede','yuedehe','yueen'],
    ji:['baihu_dasha','baihu_leiting','benchong','chongshan','dinang','hongsha','jiesha','jiuchou','jiukong','sansha','sifei','silijue','suipo','tiangang','tianke','tianli','tianshi','tufu','tuwang','wangwang','wuhuang','wulu','wumu','xiaohao','yincuo','yuehai','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] },
  { key:'kekao', name:'赴考 / 入学', fields:['range','owner'],
    subs:[
@@ -3333,7 +3636,7 @@ const RK_TYPES = [
       ji:['benchong','hongsha','jiesha','sifei','silijue','suipo','tiangang','tianke','wulu','wumu','yincuo','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] },
      { key:'yingshi', name:'赴举应试（通书·非协纪）',
       verse:'《协纪辨方书》无「赴举/应试」条（据《四库全书总目》提要：「依托许真君《玉匣记》之说者，悉皆删削」）。此据《臞仙肘后经》卷下·蒞政类·赴举：「宜黄道、天官、天成、贵人、吉人、上官、玉堂、荣官、旺日、天月二德、三合；忌黑道、官符、死炁、灭没、十恶无禄、天休废、四不祥、猖鬼败亡、阴错阳差。」《增补玉匣记·民俗吉凶日篇》另有「应试赴举吉日」逐月干支表（无神煞说明）。——属通书层，非《协纪》正说。远行赴考之路途另参《协纪》「出行（行幸遣使）」条。本引擎取可用者：十恶无禄→十恶大败、阴错阳差→阴阳不足之辰；官符、死炁、灭没、天休废、四不祥、猖鬼败亡诸煞本引擎未立，从略。',
-      yi:['jianchu_chengkai','tiande','tiandehe','yuede','yuedehe','tianshe','sanhe','liuhe','wangri','guanri','shouri','xiangri','linri','tianyuan','tianxi','minri','fude'],
+      yi:['fude','guanri','huanghei','jianchu_chengkai','linri','liuhe','minri','sanhe','shouri','tiande','tiandehe','tianshe','tianxi','tianyuan','wangri','xiangri','yuede','yuedehe'],
       ji:['benchong','hongsha','jiesha','sifei','silijue','suipo','tiangang','tianke','wulu','wumu','yincuo','yuepo','yuesha','yuexing','yueyan','yuxia','zaisha'] }
    ]}
 ];
@@ -3383,6 +3686,29 @@ const RK_VERSE_JI = {
   '黑道':'huanghei', '十恶无禄':'wulu', '阴错阳差':'yincuo',
   '大耗':null, '官符':null, '死炁':null, '灭没':null, '天休废':null, '四不祥':null, '猖鬼败亡':null, '无':null
 };
+/* v101：建除十二值之主条直列集——卷十一各用事主条「忌」单直书「平日／收日／闭日／满日／建日」者，
+   皆本条直列，标准档（从宽）亦当重忌。旧版建除分支只认严选档，致此一类直列形同漏调。 */
+const RK_JC_NAMES = ['建','除','满','平','定','执','破','危','成','收','开','闭'];
+function rkDirectJC(){
+  const cur = rkCurType(), out = {};
+  const v = (cur && cur.verse) ? String(cur.verse) : '';
+  const m = v.match(/忌([^；。]*)/);
+  if (!m) return out;
+  String(m[1]).split(/[、,]/).forEach(t => {
+    const x = String(t).trim().replace(/日$/, '');
+    if (RK_JC_NAMES.indexOf(x) >= 0) out[x] = true;
+  });
+  return out;
+}
+/* v101：黄黑道之主条直列——如《肘后经》「赴举应试：宜黄道、忌黑道」，黑道即本条直列 */
+function rkDirectHH(){
+  const cur = rkCurType(), out = {};
+  const v = (cur && cur.verse) ? String(cur.verse) : '';
+  const mj = v.match(/忌([^；。]*)/), my = v.match(/宜([^；。]*)/);
+  if (mj && String(mj[1]).indexOf('黑道') >= 0) out.ji = true;
+  if (my && String(my[1]).indexOf('黄道') >= 0) out.yi = true;
+  return out;
+}
 /* 取当前用事主条「忌」单直列之因素 id 集合（标准档据此定重忌） */
 function rkDirectJiIds(){
   const cur = rkCurType(), out = {};
@@ -3438,6 +3764,7 @@ function rkComputeDay(y, m, d, termMap){
   const hit = {};                                                    // 命中的神煞
   const why = [];                                                    // 起例过程（人工可复核）
   const mon = mg.branch, dayS = g.stem, dayB = g.branch, dayGZ = g.gz;
+  const who = rkMaster();                          // 当事人对象（供 rkHours 时课合参「冲/合本命·日支」；日课八字合参在 rkScore 内另取 whoB/whoA，v105 修 who 未声明回归）
   const season = rkSeason(mon);
 
   /* 农历（择日最基础一层：公历 → 农历。凡以农历日期定者如《玉匣记》诸条，皆由此出） */
@@ -3509,14 +3836,38 @@ function rkComputeDay(y, m, d, termMap){
     }
     const sb = rkPalaceBranch(sitM);
     if (sb && BRANCHES.includes(sb) && RK_CHONG[dayB] === sb){ hit.chongshan = true; why.push(`日冲坐山：坐山 ${sitM}（${sb}）被日支 ${dayB} 冲 → 犯`); }
-  }
-  /* 八字合参 */
-  const who = RK_STATE.type === 'hunjia' ? RK_STATE.bride : (RK_STATE.type === 'sangzang' ? RK_STATE.dead : RK_STATE.owner);
-  if (who){
-    if (RK_CHONG[dayB] === who.yearBranch){ hit.benchong = true; why.push(`本命冲：当事人 ${who.label} 生年支 ${who.yearBranch} 被日支 ${dayB} 冲 → 犯（重忌）`); }
-    if (RK_KE[RK_WUXING[dayS]] === RK_WUXING[who.dayStem] && RK_CHONG[dayB] === who.dayBranch){
-      hit.tianke = true; why.push(`天克地冲：课日干 ${dayS}（${RK_WUXING[dayS]}）克事主日干 ${who.dayStem}（${RK_WUXING[who.dayStem]}），且日支 ${dayB} 冲其日支 ${who.dayBranch} → 犯`);
+    /* v104：造命·补龙（需坐山：来龙三合五行，课年/月/日干生扶则吉、克泄则凶） */
+    const longWX = RK_SANHE_WX[sb];
+    if (longWX){
+      const yG = ganzhiYearOf(bjEnd).stem;
+      const pillars = [yG, mg.stem, dayS];   // 年/月/日 三柱之干
+      let fu = 0, sha = 0;
+      pillars.forEach(gx => {
+        const wx = RK_WUXING[gx];
+        if (wx === longWX || RK_SHENG[wx] === longWX) fu++;            // 比/生 → 扶龙（印比）
+        if (RK_KE[wx] === longWX || RK_SHENG[longWX] === wx) sha++;     // 克/泄 → 犯龙煞
+      });
+      if (fu > 0 && sha === 0){ hit.bulong = `扶龙（${longWX}）`; why.push(`补龙：坐山 ${sitM}（${sb}）来龙属${longWX}，课年/月/日干五行生扶 → 补龙吉`); }
+      else if (sha > 0){ hit.longsha = `犯龙煞（${longWX}）`; why.push(`龙煞：坐山 ${sitM}（${sb}）来龙属${longWX}，课年/月/日干五行克泄来龙 → 犯`); }
     }
+  }
+  /* 八字合参 / 造命层（v104 相主吉格·天克地冲；v105 本命冲四级） */
+  /* —— 本命冲（年/月/日）三级：刚性本命约束，两档全开（v105，用户拍板） —— */
+  /*     时不另列日级：时冲本命于择时层（吉时查看）以「冲XX本命」呈现（rkHours） */
+  const whoB = rkMaster();                         // 有主命即生效，不受档位/用事类型限制
+  if (whoB){
+    if (RK_CHONG[yB] === whoB.yearBranch){ hit.taichong = true; why.push(`太岁冲命（年冲本命）：用事年太岁 ${yB} 冲当事人 ${whoB.label} 生年支 ${whoB.yearBranch} → 犯（最凶·重忌，v105）`); }
+    if (RK_CHONG[mg.branch] === whoB.yearBranch){ hit.yuechong = true; why.push(`月冲命：课月支 ${mg.branch} 冲生年支 ${whoB.yearBranch} → 犯（重忌，v105）`); }
+    if (RK_CHONG[dayB] === whoB.yearBranch){ hit.benchong = true; why.push(`日冲本命：日支 ${dayB} 冲生年支 ${whoB.yearBranch} → 犯（重忌，v105）`); }
+  }
+  /* —— 相主吉格 / 天克地冲：跟随档位开放（v104） —— */
+  const whoA = rkMasterActive();
+  if (whoA){
+    if (RK_KE[RK_WUXING[dayS]] === RK_WUXING[whoA.dayStem] && RK_CHONG[dayB] === whoA.dayBranch){
+      hit.tianke = true; why.push(`天克地冲（相主）：课日干 ${dayS}（${RK_WUXING[dayS]}）克事主日干 ${whoA.dayStem}（${RK_WUXING[whoA.dayStem]}），且日支 ${dayB} 冲其日支 ${whoA.dayBranch} → 犯`);
+    }
+    const jg = rkXiangzhuJi(whoA, dayS, dayB);
+    if (jg.length){ hit.xiangzhu = jg.join('、'); why.push(`相主·吉格：课日四柱扶相本命 ${whoA.label}（${whoA.year}年 ${whoA.dayStem}${whoA.dayBranch}）→ ${jg.join('、')}`); }
   }
   /* ---- 补入神煞（皆依上列起例原文） ---- */
   if ((RK_BUJIANG[mon] || []).includes(dayGZ)){
@@ -3772,7 +4123,9 @@ function rkScore(row){
   const jPush = (id, t) => { ji.push(t); JI.push(id); };
   const mode = RK_STATE.mode || 'std';
   const STRICT = (mode === 'strict');                 /* v97：严选档＝从严；标准档＝从宽 */
-  const directJi = STRICT ? null : rkDirectJiIds();   /* 标准档：本用事主条忌单直列集 */
+  const directJi = STRICT ? null : rkDirectJiIds();   /* 标准档：本用事主条忌单直列集（因素 id） */
+  const directJC = STRICT ? null : rkDirectJC();      /* v101：同上，建除十二值直列集 */
+  const directHH = STRICT ? null : rkDirectHH();      /* v101：同上，黄道／黑道直列 */
   /* v97 口径（用户定）：两档（标准／严选）皆只论「吉」与「重忌」——
      重忌 zhong：否决级，命中即判「择优采纳」（宜择他日），排序沉底；
      忌   ji   ：提示级，只计算、显示，不参与否决、不影响排序；
@@ -3785,7 +4138,8 @@ function rkScore(row){
     /* v96：建除凶日（建、满、平、收、闭）「诸事不宜程度轻于诸煞」（协纪卷四·义例）→ 列「忌」只作提示；
        「破」与月破同辰，已由「月破」独立因素判重忌，此处不重复计。 */
     if (eh.val > 0) gPush('jianchu', '建除·' + row.jc + tail);
-    else if (STRICT && !eh.special) zPush('jianchu', '建除·' + row.jc + tail);   /* 严选：凶日入重忌（专用除外） */
+    /* v101：严选修「凶日入重忌」；标准档则仅当本用事主条「忌」单直列该值日（如嫁娶忌平·收·闭）方入重忌 */
+    else if ((STRICT || (directJC && directJC[row.jc])) && !eh.special) zPush('jianchu', '建除·' + row.jc + tail);
     else jPush('jianchu', '建除·' + row.jc + tail);
   }
   if (rkFactorOn('huanghei')){
@@ -3793,7 +4147,8 @@ function rkScore(row){
     const tail = eh.special ? '·' + eh.special : (eh.val > 0 ? '·本用事宜' : '·本用事忌');
     /* v96：黑道「古法各有所宜，未至诸事不宜」（协纪卷七·义例）→ 列「忌」只作提示 */
     if (eh.val > 0) gPush('huanghei', eh.name + '（' + (eh.good ? '黄道' : '黑道') + '）' + tail);
-    else if (STRICT && !eh.special) zPush('huanghei', eh.name + '（黑道）' + tail);   /* 严选：黑道入重忌（专用除外） */
+    /* v101：严选修「黑道入重忌」；标准档则仅当本用事主条明言「忌黑道」方入重忌（如赴举应试） */
+    else if ((STRICT || (directHH && directHH.ji)) && !eh.special) zPush('huanghei', eh.name + '（黑道）' + tail);
     else jPush('huanghei', eh.name + '（' + (eh.good ? '黄道' : '黑道') + '）' + tail);
   }
   /* 二十八宿 v91：以基本吉凶为准，值凶宿即入重忌（否决）；吉宿不为忌。
@@ -3825,7 +4180,7 @@ function rkScore(row){
     if (f.veto){ veto.push(label); zPush(f.id, label + '（一票否决）'); }        /* 岁破、四离四绝：两档皆重忌 */
     else if (lv === '重忌'){
       /* 严选：一律重忌；标准：仅「主条忌单直列」与「需坐向之方位煞」仍重忌，余者降「忌」只作提示 */
-      if (STRICT || f.need === 'sit' || directJi[f.id]) zPush(f.id, label);
+      if (STRICT || f.need === 'sit' || f.need === 'master' || directJi[f.id]) zPush(f.id, label);
       else jPush(f.id, label + '（提示）');
     }
     else if (lv === '吉' || lv === '上吉' || f.good) gPush(f.id, label);
@@ -3857,6 +4212,10 @@ function rkFactorVisible(f){
   /* 需坐向方能判定的方位煞（年三煞方、五黄方、日冲坐山）：
      本用事若不提供坐山输入，则无对象可论 → 一律隐藏，避免以默认子山妄判。 */
   if (f.need === 'sit' && !rkTypeHas('sit')) return false;
+  /* v104：相主层（need:'master'）——未在该档位/用事生效（或无主命）则隐藏 */
+  if (f.need === 'master' && !rkMasterActive()) return false;
+  /* v105：本命冲四级（need:'benming'）——刚性本命约束，两档全开，有主命即生效（不论档位/用事） */
+  if (f.need === 'benming' && !rkMaster()) return false;
   /* v88：需新娘生辰方能判定的因素（行嫁大小利月）——未填则隐藏，不以默认值妄判 */
   if (f.need === 'bride' && !RK_STATE.bride) return false;
   if (f.types && !f.types.includes(T0.key)) return false;   // 错大类：隐藏
@@ -3871,6 +4230,8 @@ function rkFactorVisible(f){
 function rkFactorOn(id){
   const f = RK_FACTORS.find(x => x.id === id);
   if (f.need === 'sit' && !rkTypeHas('sit')) return false;                // 无坐向输入 → 不参与评判
+  if (f.need === 'master' && !rkMasterActive()) return false;             // v104：相主层未生效 → 不参与评判
+  if (f.need === 'benming' && !rkMaster()) return false;                  // v105：本命冲四级，两档全开 → 不参与评判
   if (f.need === 'bride' && !RK_STATE.bride) return false;                // v88：无新娘生辰 → 不参与评判
   /* v67：默认勾选＝「本用事下『可见』且『已实现』」。
      理据：rkFactorVisible 已按 types、子项宜忌清单、方位煞输入条件过滤，
@@ -3935,18 +4296,23 @@ function rkRenderInputs(){
   const pz = (label, who, key) => `
     <div class="row" style="gap:6px;">
       <label class="inline" style="min-width:74px;">${label}</label>
-      <input type="date" class="rk-inp" id="rk_${key}_d" value="${who ? who.d : ''}">
-      <select class="rk-inp" id="rk_${key}_h">
+      ${rkDateField('rk_' + key + '_d', who ? who.d : '', label + '（生辰）')}
+      <select class="rk-inp rk-hour" id="rk_${key}_h">
         ${Array.from({length:24}, (_, i) => `<option value="${i}"${who && who.h === i ? ' selected' : ''}>${i}时</option>`).join('')}
       </select>
-      <span id="rk_${key}_bz" class="rk-src" style="min-width:130px;">${who ? who.show : '（可不填）'}</span>
+      <span id="rk_${key}_bz" class="rk-src rk-bz" style="min-width:130px;">${who ? who.show : '（可不填）'}</span>
     </div>`;
   L.push(`<div class="row" style="gap:6px;">
       <label class="inline" style="min-width:74px;">择日范围</label>
-      <input type="date" class="rk-inp" id="rk_from" value="${RK_STATE.from}">
+      ${rkDateField('rk_from', RK_STATE.from, '起日')}
       <span class="rk-src">至</span>
-      <input type="date" class="rk-inp" id="rk_to" value="${RK_STATE.to}">
-      <span class="rk-src">（默认自今天起 90 天，可自行调整）</span></div>
+      ${rkDateField('rk_to', RK_STATE.to, '止日')}
+      <span class="rk-src rk-nosm">（默认自今天起 90 天，可自行调整）</span></div>
+    <div class="row" style="gap:6px;">
+      <label class="inline" style="min-width:74px;">历法输入</label>
+      <span class="rk-seg" id="rk_cal_seg">
+        <button type="button" data-cal="G"${RK_CAL !== 'L' ? ' class="on"' : ''}>公历</button><button type="button" data-cal="L"${RK_CAL === 'L' ? ' class="on"' : ''}>农历</button></span>
+      <span class="rk-src rk-nosm">按此历法显示并选取全部日期框（择日范围、生辰等）</span></div>
     <div class="row"><label class="inline" style="min-width:74px;">农历核对</label>
       <span class="rk-src" id="rk_range_lu" style="color:var(--blue);"></span></div>`);
   if (T.fields.includes('bride')) L.push(pz('新娘生辰', RK_STATE.bride, 'bride'));
@@ -3995,6 +4361,7 @@ function rkRenderInputs(){
       <option value="zongjing"${RK_STATE.jcSchool === 'zongjing' ? ' selected' : ''}>选择宗镜（平成开危最吉）</option>
     </select><span class="rk-src">两说并存，不强行归一</span></div>`);
   box.innerHTML = L.join('');
+  rkRefreshDateBtns();
   const bind = (id, fn) => { const e = document.getElementById(id); if (e) e.onchange = fn; };
   bind('rk_from', e => { RK_STATE.from = e.target.value; rkUpdateRangeLu(); });
   bind('rk_to', e => { RK_STATE.to = e.target.value; rkUpdateRangeLu(); });
@@ -4019,6 +4386,7 @@ function rkRenderInputs(){
         show: `${bz.year}年 ${bz.month}月 ${bz.day}日 ${bz.hour}时`,
         showLu: `农历 ${ul.gz}年（${ul.sx}）${ul.leapText}` };
       document.getElementById('rk_' + k + '_bz').innerHTML = RK_STATE[k].show + '<br>' + RK_STATE[k].showLu;
+      rkRefreshDateBtns();
     };
     de.onchange = upd; he.onchange = upd;
     if (de.value) upd();
@@ -4027,7 +4395,7 @@ function rkRenderInputs(){
 function rkRenderFactors(){
   const T = RK_TYPES.find(t => t.key === RK_STATE.type);
   const box = document.getElementById('rkFactors');
-  const groups = { A:'A 通用日辰层', B:'B 年神层', C:'C 月神层', D:'D 日神层', F:'F 八字合参层', G:'G 民俗层' };
+  const groups = { A:'A 通用日辰层', B:'B 年神层', C:'C 月神层', D:'D 日神层', E:'E 造命层（补龙·相主）', F:'F 八字合参层', G:'G 民俗层' };
   /* v83：各层内按「重忌→忌→上吉→吉→中性」排序（核心/民俗各居其专属层），忌项排前、吉项排后 */
   const LV_ORDER = { '重忌':0, '忌':1, '上吉':2, '吉':3, '中性':4, '核心':5, '民俗':6 };
   const LV_CLS = { '重忌':'zhongji', '忌':'ji', '上吉':'shangji', '吉':'good', '中性':'zhongxing', '核心':'core', '民俗':'minsu' };
@@ -4190,7 +4558,7 @@ function rkFactorStatus(f, r){
   }
   return { txt: good ? '本日未得' : '本日无犯', cls: 'n' };
 }
-const RK_FACTOR_DOC = {"jianchu":{"name":"建除十二神","cat":"一、日辰总纲","nature":"核心（吉凶随值日而异）","meaning":"从月建上起「建」，顺行十二辰，每月交节则叠两值日。十二值：建、除、满、平、定、执、破、危、成、收、开、闭。《考原》以除危定执成开为吉、建破平收满闭为凶；《选择宗镜》以平成开危最吉、定除次吉、破大凶。","plain":"古人给每一天贴的「宜动／宜静」标签，是择日的第一道基本面。破日最凶（正冲月建），闭、收主收敛，开、成主成就。看日子先看建除，再论其他神煞。","usecase":"先看当日值哪一神：吉六（除·危·定·执·成·开）通过，凶六（建·满·平·收·闭·破）取重忌；遇开市、立券交易、纳财、出行等特别用事时，须再查「专宜／专忌」——如建日出行、满日开市、收日纳财属「虽凶但用」，开日安葬属「吉而不用」。","src":"《协纪辨方书》卷四·义例二·建除","basis":"凶日（建、满、平、收、闭）诸事不宜程度轻于诸煞，故列「忌」；其中「破」与月破同辰，已另立为重忌。","zhuan":{"name":"建除十二神","note":"建除以「基本吉凶」为常理——吉六（除·危·定·执·成·开）通过，凶六（建·满·平·收·闭·破）重忌。以下为《协纪》卷十一·用事明列之「反向专条」，属常理之外的特别用事，界面逐案特标提示。","yi":[["建日","出行","《协纪辨方书》卷十一·用事「出行」条「宜」列：宜建日","建日（基本凶）遇出行 → 「虽凶但用」，通过并标记，不入忌单"],["满日","开市","《协纪辨方书》卷十一·用事「开市」条「宜」列：宜满日","满日（基本凶）遇开市 → 「虽凶但用」"],["满日","立券交易","《协纪辨方书》卷十一·用事「立券交易」条「宜」列：宜满日","满日（基本凶）遇立券交易 → 「虽凶但用」"],["满日","纳财","《协纪辨方书》卷十一·用事「纳财」条「宜」列：宜满日","满日（基本凶）遇纳财 → 「虽凶但用」"],["收日","纳财","《协纪辨方书》卷十一·用事「纳财」条「宜」列：宜收日","收日（基本凶）遇纳财 → 「虽凶但用」"]],"ji":[["开日","安葬","《玉匣记》及民间通书（民俗层）。《协纪》卷十一·安葬条不列；卷三十六《辨讹》辨斥、四库提要「依托许真君《玉匣记》之说者，悉皆删削」","开日（基本吉）遇安葬 → 「吉而不用」，取重忌并标记；属民俗，协纪不载"]]}},"huanghei":{"name":"黄道黑道","cat":"一、日辰总纲","nature":"核心（黑道凶）","meaning":"以月建分六组起青龙顺行十二辰：寅申月起子、卯酉起寅、辰戌起辰、巳亥起午、子午起申、丑未起戌。青龙、明堂、金匮、天德、玉堂、司命为黄道六神，余六神为黑道。","plain":"民间「黄道吉日」的正式出处。黄道主吉、黑道主凶，但黑道并非诸事皆废（如白虎日古法反宜出师），故只作减分之忌，不作一票否决。","usecase":"看当日所值是黄道六神还是黑道六神：黄道通过、黑道取重忌，作每日吉凶底色。本程序所列 16 用事中，黄黑道暂无「专宜／专忌」之特别用事（框架已备，日后纳入出师、畋猎、祭祀等再激活）。","src":"《协纪辨方书》卷四·义例二·黄道黑道","basis":"黑道为日辰之凶，然古法各有所宜，未至诸事不宜，列「忌」。","zhuan":{"name":"黄道黑道","note":"黄道六神（青龙·明堂·金匮·天德·玉堂·司命）值日则吉、黑道六神（天刑·朱雀·白虎·天牢·玄武·勾陈）值日则凶，是每日吉凶底色。《协纪》卷十一·用事之宜忌列根本不列黄黑道十二神；卷七·神枢经所载黑道神专宜（天刑宜出师、白虎宜畋猎祭祀、朱雀宜教兵安营、金匮宜修兵兴工、天牢宜执凶禁盗、玄武宜伏兵潜水）均不在本程序所列 16 用事之内。故当前无活跃例外，框架已就位（RK_HUANGHEI_YIJI 十二用事全空）；日后纳入出师/畋猎/祭祀等用事，填表即可激活「虽凶但用／吉而不用」标记，判定逻辑无需改动。","yi":[],"ji":[]}},"ershiba":{"name":"二十八宿值日（宿曜）","cat":"一、日辰总纲","nature":"值凶宿则重忌（吉宿不为忌；两例之外）","meaning":"七元甲子起例：一元起虚、二元起奎、三元起毕、四元起鬼、五元起翼、六元起氐、七元起箕，420 日一周，每日轮值一宿。基本吉凶据《玉匣记》「二十八宿值日吉凶歌」通行本，吉宿十四：角房尾箕斗室壁娄胃毕参井张轸；凶宿十四：亢氐心牛女虚危奎昴觜鬼柳星翼（奎凶、娄吉，v90 已正名录）。","plain":"把天上二十八宿轮流「值班」排到每一天，老黄历上写的「角木蛟、亢金龙」就是它。v91 口径：先看这一宿本身是吉是凶——值凶宿即作重忌不用；值吉宿则不为忌。只有两种例外，且都在界面上特标：①「吉而不用」＝虽是吉宿，歌诀却明言不宜本用事（如角宿「惟有葬埋不可用」→ 安葬仍忌）；②「虽凶但用」＝虽是凶宿，歌诀却明言宜本用事（如鬼宿「埋葬此日官禄至」→ 安葬反可用）。","usecase":"先看当日值哪一宿：吉宿十四通过、凶宿十四取重忌。遇安葬、修造、嫁娶时须再查「专宜／专忌」——如鬼宿安葬、星宿昴宿修造属「虽凶但用」，角宿参宿井宿安葬、参宿嫁娶属「吉而不用」。入学、赴举无专条，只从基本吉凶。","src":"《协纪辨方书》卷一·本原一（载起例而云「载在时宪书而无所用」）；各宿吉凶歌出《玉匣记》通行本","basis":"按用户所定 v91 口径：以基本吉凶为准，值凶宿即标重忌（百事不宜之列），值吉宿不为忌；歌诀明言本用事者为唯一两类例外（吉而不用 / 虽凶但用），皆须逐案注明出处原句。歌诀无一字及「赴举/应试/入学」，故此二用事亦只从基本吉凶，不立专条。","zhuan":{"name":"二十八宿值日（宿曜）","note":"二十八宿以「基本吉凶」为常理——吉宿十四通过、凶宿十四即重忌（据《玉匣记》二十八宿值日吉凶歌通行本）。唯两类例外属常理之外、须逐案特标：①「吉而不用」＝吉宿而歌诀明言不宜本用事；②「虽凶但用」＝凶宿而歌诀明言宜本用事。歌诀无一字及「赴举／应试／入学」，故此二用事只从基本吉凶，不立专条。","yi":[["鬼宿","安葬","《玉匣记》鬼宿值日歌：「埋葬此日官禄至」","鬼（凶宿）遇安葬 → 「虽凶但用」，通过并标记，不入忌单"],["星宿","修造","《玉匣记》星宿值日歌：「好造新房」，明言宜造作","星（凶宿）遇修造 → 「虽凶但用」"],["昴宿","修造","《玉匣记》昴宿值日歌：「造作进田牛」，明言宜造作","昴（凶宿）遇修造 → 「虽凶但用」"]],"ji":[["角宿","安葬","《玉匣记》角宿值日歌：「惟有葬埋不可用」","角（吉宿）遇安葬 → 「吉而不用」，取重忌并标记"],["参宿","安葬","《玉匣记》参宿值日歌明言不宜安葬","参（吉宿）遇安葬 → 「吉而不用」，取重忌并标记"],["参宿","嫁娶","《玉匣记》参宿值日歌明言不宜嫁娶","参（吉宿）遇嫁娶 → 「吉而不用」，取重忌并标记"],["井宿","安葬","《玉匣记》井宿值日歌明言不宜安葬","井（吉宿）遇安葬 → 「吉而不用」，取重忌并标记"]]}},"yuepo":{"name":"月破","cat":"二、百事不宜·诸事大忌","nature":"正统重忌（一票否决）","meaning":"日支冲月建之支，即建除之「破」日，一名大耗。《协纪》卷四：「月破者，月建所冲之日也，与岁破义同。」","plain":"这个月的「当家地支」被当天的地支正面冲撞，等于硬碰硬。古书直说诸事大忌，是择日里最凶的日子之一，凡办大事都不该选。","usecase":"本因素属凶煞（正统重忌（一票否决））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷四·义例二（建除「破」同位·大耗）","basis":"「诸事大忌」，七用事主条皆直列，全列重忌。"},"suipo":{"name":"岁破日","cat":"二、百事不宜·诸事大忌","nature":"正统重忌（一票否决）","meaning":"日支冲当年太岁所居之支，即太岁所冲之辰，与大耗同辰。《协纪》卷十「大耗」条：「与德合并犹忌。」","plain":"太岁是一年的「值年太岁」，当天正冲太岁，等于当面冒犯年神。主破败耗散，诸事不宜。","usecase":"本因素属凶煞（正统重忌（一票否决））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷四「月破者……与岁破义同」；卷十·大耗","basis":"「诸事不宜」，一票否决，全列重忌。"},"silijue":{"name":"四离·四绝","cat":"二、百事不宜·诸事大忌","nature":"正统重忌（一票否决）","meaning":"春分、秋分、夏至、冬至前一日为四离；立春、立夏、立秋、立冬前一日为四绝。《协纪》卷十一：「上朔、四离、四绝、晦日：除整理修饰外皆忌。」","plain":"四季交替、阴阳转换的「接缝日」，古人认为气场驳杂不稳，除打扫修整外，办什么事都不妥。","usecase":"本因素属凶煞（正统重忌（一票否决））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷十一·用事","basis":"原文「除整理修饰外皆忌」，兴造动土属之，全列重忌（仅「修饰垣墙」不忌，已注于含义）。"},"sifei":{"name":"四废","cat":"二、百事不宜·诸事大忌","nature":"正统重忌（一票否决）","meaning":"春庚申辛酉、夏壬子癸亥、秋甲寅乙卯、冬丙午丁巳——四时旺气与日干支相战，五行无气之日。《协纪》卷十：「与德合并犹忌。」","plain":"当令的五行与这一天的干支互相「打架」，谁也不服谁，五行之气废而不用。古书说即便碰到天德月德也救不回来，是硬忌。","usecase":"本因素属凶煞（正统重忌（一票否决））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷六·义例·四废；卷十·宜忌","basis":"七用事主条皆直列且「与德合并犹忌」，全列重忌。"},"yincuo":{"name":"阴阳不足之辰（阳错·阴错等）","cat":"二、百事不宜·诸事大忌","nature":"正统重忌","meaning":"《协纪》卷四立成十九目：行狠、了戾、孤辰、单阴、纯阴、孤阳、岁薄、逐阵、阴阳交破、阴阳击冲、阳破阴冲、阴道冲阳、阴位、三阴、阳错、阴错、阴阳俱错、绝阴、绝阳。按月建取所值干支日。","plain":"阴阳二气搭配失衡的日子——孤阳不长、纯阴不生，或阴阳互冲。原文直说「百事不宜」，是《协纪》里明文的全凶日。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷四·义例·阴阳不足之辰（引《堪舆经》＋立成）","basis":"原文「忌兴造、嫁娶、上官赴任、入宅迁移、出行、交易、合药问病，百事不宜」，全列重忌。"},"hongsha":{"name":"红砂（红沙）","cat":"二、百事不宜·诸事大忌","nature":"民俗重忌（《协纪》引而不列正条）","meaning":"孟月（寅巳申亥）酉日、仲月（子午卯酉）巳日、季月（辰戌丑未）丑日。口诀：「四孟金鸡四仲蛇，四季丑日是红砂。」","plain":"民间最怕的凶日之一，俗谓「诸事不宜，起造犯红砂，百日火焚家；嫁娶犯红砂，夫死嫁别家」。虽《协纪》不列正条，但民间奉为硬忌。","usecase":"本因素属凶煞（民俗重忌（《协纪》引而不列正条））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷三十六·辨讹引《转神历》《袪疑说》","basis":"通书明言「诸事不宜，极凶」，属明确不利，全列重忌；《协纪》采其说入《辨讹》而未入正条，性质标民俗。"},"wulu":{"name":"十恶大败","cat":"二、百事不宜·诸事大忌","nature":"正统忌（通书升为重忌）","meaning":"无禄十日：甲辰、乙巳、庚辰、辛巳、丙申、戊戌、丁亥、己丑、壬申、癸亥——十日禄皆落空。通书一名「十恶大败」。","plain":"「禄」是养命之源，这一天禄落空亡，等于财禄无着。《五行精纪》说「国家用兵须大忌……仓库金银化作尘」，忌出行、赴任、兴造、开市及一切喜庆之事。","usecase":"本因素属凶煞（正统忌（通书升为重忌））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷五·义例·无禄；《三命通会》论十恶大败；《五行精纪》","basis":"通书明列「忌出行、赴任、兴造、开市及喜庆之事」，覆盖面遍及七类用事，全列重忌。"},"yueyan":{"name":"月厌（地火）","cat":"二、百事不宜·诸事大忌","nature":"正统重忌","meaning":"月厌（一名地火），正月起戌逆行十二辰（寅月戌、卯月酉……丑月亥）。其对冲即「厌对」（一名河魁，坊间称妨姑日）。《协纪》卷十：「忌……几于诸事皆忌，止不忌祭祀、覃恩、肆赦。」","plain":"月中的阴气极盛之地，忌讳极广——古书说几乎什么事都忌，只不忌祭祀和朝廷大赦。是覆盖面最宽的凶煞之一。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷十·月厌（一名地火）；卷十一·用事诸条","basis":"原文「几于诸事皆忌」，全列重忌。"},"jiesha":{"name":"劫煞","cat":"三、月建凶煞","nature":"正统重忌","meaning":"月建三合五行之「绝」位：寅午戌月（火局）在亥、亥卯未月（木局）在申、申子辰月（水局）在巳、巳酉丑月（金局）在寅。十一月起巳，巳寅亥申循环。","plain":"月中三合局的「绝地」，气势断绝之处。主盗劫、伤损，是《协纪》用事各条几乎都直列的凶煞。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷九·月神·劫煞；忌单见卷十一·用事诸条","basis":"七用事主条皆直列，全列重忌。"},"zaisha":{"name":"灾煞（天火）","cat":"三、月建凶煞","nature":"正统重忌","meaning":"劫煞顺一位（三合五行之「胎」位），一名天火：寅午戌月在子、亥卯未月在酉、申子辰月在午、巳酉丑月在卯。午卯子酉循环。","plain":"紧接劫煞之后的凶位，主灾病、火厄。与劫煞、月煞合称「三煞」之流，同属《协纪》用事条直列之忌。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷九·月神·灾煞（一名天火）；卷十一·用事诸条","basis":"七用事主条皆直列，全列重忌。"},"yuesha":{"name":"月煞（月虚）","cat":"三、月建凶煞","nature":"正统重忌","meaning":"劫煞顺二位（三合五行之「养」位），一名月虚：寅午戌月在丑、亥卯未月在戌、申子辰月在未、巳酉丑月在辰。未辰丑戌循环。","plain":"三合局的「养地」逢煞，气势未成而先损，主虚耗、耗散。与劫煞、灾煞同列《协纪》用事诸条之忌。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷九·月神·月煞（一名月虚）；卷十一·用事诸条","basis":"七用事主条皆直列，全列重忌。"},"yuexing":{"name":"月刑","cat":"三、月建凶煞","nature":"正统重忌","meaning":"正月巳、二月子、三月辰、四月申、五月午、六月丑、七月寅、八月酉、九月未、十月亥、十一月卯、十二月戌；日月同支者亦犯（如辰月辰日）。《协纪》：「月刑为月建刑伤之地，故所忌与三煞同。」","plain":"本月地支刑伤其他地支的位置，主刑伤、争讼、官非。古书说它所忌的严重程度与三煞相同。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷九·月神·月刑；卷十「按月刑……所忌与三煞同」","basis":"「所忌与三煞同」，七用事主条皆直列，全列重忌。"},"yuehai":{"name":"月害","cat":"三、月建凶煞","nature":"正统重忌（嫁娶·安葬·开市尤重）","meaning":"取本月支之六合、再取其冲：子月害未、丑月害午、寅月害巳、卯月害辰、辰月害卯、巳月害寅、午月害丑、未月害子、申月害亥、酉月害戌、戌月害酉、亥月害申。《协纪》：「月害为六合之冲。」","plain":"把本月的「好朋友」（六合）给冲散了，主暗中损害、亲人之间有隔阂，古称「害」。","usecase":"本因素属凶煞（正统重忌（嫁娶·安葬·开市尤重））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、开市、立券交易、纳财——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：上官赴任、施恩封拜、上表章、出行、会友宴请、入宅、修造——犯之可酌情配吉神化解或改期。其余用事（入学受业、赴举应试）一般不涉及本因素。","src":"《协纪辨方书》卷十·月害；忌单见卷十一·用事诸条","basis":"嫁娶、安葬、开市类主条直列 → 重忌；出行、赴任、般移、修造条不直列 → 忌。"},"yandui":{"name":"厌对","cat":"三、月建凶煞","nature":"正统重忌（嫁娶独重）","meaning":"月厌之对冲，一名河魁：正月起辰逆行十二辰（正辰、二卯、三寅……）。《协纪》卷四引《历例》：「阳建之月，前三辰为天罡，后三辰为河魁；阴建之月反是」——天罡即月厌、河魁即厌对，坊间称「妨翁日／妨姑日」。卷十：「忌嫁娶，与德并则不忌；子午月与月破并尤忌。」","plain":"月厌的正对面，是嫁娶条明文直列的忌神。民间说的「妨翁妨姑」，正源就是这一对神煞。","usecase":"本因素属凶煞（正统重忌（嫁娶独重））。「重忌」用事：嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：纳采问名、结婚姻——犯之可酌情配吉神化解或改期。其余 13 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·厌对；卷四引《历例》天罡河魁；卷十·宜忌","basis":"唯嫁娶条直列 → 嫁娶重忌；结婚姻、纳采问名条不直列 → 忌；余类无涉。"},"wangwang":{"name":"往亡","cat":"三、月建凶煞","nature":"正统重忌（上任·远行·嫁娶·般移）","meaning":"《堪舆经》：「往者去也，亡者无也。」历例：正月在寅、二月在巳……寅午戌月顺行寅卯辰、亥卯未月顺行巳午未、申子辰月顺行申酉戌、巳酉丑月顺行亥子丑。忌拜官上任、远行归家、出军征讨、嫁娶寻医。","plain":"字面就是「去了回不来」，主出行不归、上任不利、出师不返。古人最忌在这一天出门远行或赴任。","usecase":"本因素属凶煞（正统重忌（上任·远行·嫁娶·般移））。「重忌」用事：纳采问名、结婚姻、嫁娶、上官赴任、出行、入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：安葬、施恩封拜、上表章、开市、立券交易、纳财、会友宴请、修造——犯之可酌情配吉神化解或改期。其余用事（入学受业、赴举应试）一般不涉及本因素。","src":"《协纪辨方书》卷六·往亡（引《堪舆经》＋历例）","basis":"嫁娶、上官赴任、出行、般移主条直列且「与德合、赦愿并，犹忌」→ 重忌；他类他处论及 → 忌。"},"qiwang":{"name":"气往亡","cat":"三、月建凶煞","nature":"正统重忌（出行·般移）","meaning":"自交节之日起数：立春 7、惊蛰 14、清明 21、立夏 8、芒种 16、小暑 24、立秋 9、白露 18、寒露 27、立冬 10、大雪 20、小寒 30 日，取三合化象之成数。","plain":"与往亡同类的「节气版」，按交节日数推算，同样主出门不归、搬迁不利。","usecase":"本因素属凶煞（正统重忌（出行·般移））。「重忌」用事：出行、入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 14 项用事一般不涉及本因素。","src":"《协纪辨方书》卷六·气往亡「历例曰……皆自交节日数之」","basis":"出行、般移所忌，本引擎限出行·入宅两类登记，列重忌。"},"guiji":{"name":"归忌","cat":"三、月建凶煞","nature":"正统重忌（般移·远回）","meaning":"孟月（寅巳申亥）忌丑、仲月（卯午酉子）忌寅、季月（辰未戌丑）忌子。《广圣历》忌远行归家、移徙。《协纪》按：「汉注『并忌嫁娶』之说他书所无，应止忌般移远回，不忌嫁娶。」","plain":"专门管「回家、搬家」的凶日：出了门回不来，或搬了家不安稳。**注意：古籍明言它不忌嫁娶**，民间误传忌嫁娶，《协纪》特别纠正过。","usecase":"本因素属凶煞（正统重忌（般移·远回））。「重忌」用事：入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：出行——犯之可酌情配吉神化解或改期。其余 14 项用事一般不涉及本因素。","src":"《协纪辨方书》卷六·归忌（引《广圣历》＋历例＋按语）","basis":"般移（入宅）主条直列 → 重忌；远回（出行）论及 → 忌；**嫁娶依《协纪》按语不忌**，故婚嫁三子项标「—」。"},"tufu":{"name":"土符","cat":"三、月建凶煞","nature":"正统重忌（动土）","meaning":"土神，正月丑、二月巳、三月酉、四月寅、五月午、六月戌、七月卯、八月未、九月亥、十月辰、十一月申、十二月子。忌破土穿井、开渠筑墙。","plain":"土里的凶神当值，动土就是惊动它。凡破土、打井、挖渠、砌墙都该避开。","usecase":"本因素属凶煞（正统重忌（动土））。「重忌」用事：安葬、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 14 项用事一般不涉及本因素。","src":"《协纪辨方书》卷六·土符「历例曰：正月丑，二月巳，三月酉……」","basis":"兴造动土、破土诸条直列，修造、丧葬（破土）列重忌。"},"dinang":{"name":"地囊","cat":"三、月建凶煞","nature":"正统重忌（动土）","meaning":"四时三合卦之纳甲：正庚子庚午、二乙未癸丑、三甲子壬午、四己卯己酉、五壬戌甲辰、六丙辰丙戌、七丁巳丁亥、八丙寅丙申、九辛丑辛未、十戊寅戊申、十一辛卯辛酉、十二癸酉乙卯。《协纪》奏议：「地囊乃四时三合卦之纳甲……今俱应改正。」","plain":"与土符同类的动土之忌，按卦纳甲推算。历代通书多传抄讹误，《协纪》专门更正过，本表从《协纪》改正之例。","usecase":"本因素属凶煞（正统重忌（动土））。「重忌」用事：安葬、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 14 项用事一般不涉及本因素。","src":"《协纪辨方书》卷六·奏议（四库本改正之例）","basis":"兴造动土、破土诸条直列，修造、丧葬列重忌。"},"tuwang":{"name":"土王用事后","cat":"三、月建凶煞","nature":"正统重忌（动土）","meaning":"四立（立春、立夏、立秋、立冬）前十八日为土王用事，土气方旺而不可犯。《协纪》兴造动土、开渠穿井、破土诸条皆直列「土王用事后」为忌。","plain":"四季交替前土气最旺的十八天，土「正当年」不能动。凡破土、动工、安葬都要避开这四段日子。","usecase":"本因素属凶煞（正统重忌（动土））。「重忌」用事：安葬、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 14 项用事一般不涉及本因素。","src":"《协纪辨方书》卷十一·用事·兴造动土／破土／开渠穿井","basis":"兴造动土、破土诸条直列，修造、丧葬列重忌。"},"tianzei":{"name":"天贼","cat":"三、月建凶煞","nature":"正统重忌（远行）","meaning":"月中盗神，正月在丑逆行十二辰（正丑、二子、三亥、四戌、五酉、六申、七未、八午、九巳、十辰、十一卯、十二寅）。《协纪》：「其日忌远行。」","plain":"月中「盗神」当值，出门容易遭偷盗、遗失、受骗。故专忌远行。","usecase":"本因素属凶煞（正统重忌（远行））。「重忌」用事：出行——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷六·天贼","basis":"原文「忌远行」，出行列重忌；余类无明文，不列。"},"xiaohao":{"name":"小耗","cat":"三、月建凶煞","nature":"正统重忌（立券·纳财）","meaning":"月内耗神，本月闭日之冲即小耗（月建顺推五辰）：正未、二申、三酉、四戌、五亥、六子、七丑、八寅、九卯、十辰、十一巳、十二午。立券、纳财所忌。","plain":"小号「漏财神」，主钱财耗散。签合同、收钱、开仓这类与财物有关的事最忌。","usecase":"本因素属凶煞（正统重忌（立券·纳财））。「重忌」用事：开市、立券交易、纳财——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：修造——犯之可酌情配吉神化解或改期。其余 12 项用事一般不涉及本因素。","src":"《协纪辨方书》卷四·义例二·建除·执日","basis":"开市、立券、纳财主条直列 → 重忌；修造条论及 → 忌。"},"bafeng":{"name":"八风·触水龙","cat":"四、日辰杂煞","nature":"正统重忌（涉水）","meaning":"春丁丑己酉、夏甲申甲辰、秋辛未丁未、冬甲戌甲寅。一名触水龙。《协纪》：「忌乘船渡水、涉江河。」","plain":"专管水上的凶日：坐船渡河、下江涉水都忌。古人出行常走水路，此煞最关人命。","usecase":"本因素属凶煞（正统重忌（涉水））。「重忌」用事：出行——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·八风·触水龙","basis":"原文「忌乘船渡水、涉江河」，出行列重忌；余类无涉。"},"bazhuan":{"name":"八专","cat":"四、日辰杂煞","nature":"正统重忌（嫁娶）","meaning":"八专：丁未、己未、庚申、甲寅、癸丑五日（《协纪》卷五）；坊本另有八日之说。卷十：「忌安抚边境、选将训兵、出师、结婚姻、纳采问名、嫁娶，与德合并犹忌。」按语：「八专之忌婚嫁，取阴阳同居而无别为义。」","plain":"干支同气、阴阳不分家，古人认为「男女无别」之日不宜成婚——**这是《协纪》明文写定忌嫁娶的，婚嫁一大硬忌**。","usecase":"本因素属凶煞（正统重忌（嫁娶））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·八专；卷十·宜忌；卷五引《曾门经》","basis":"结婚姻、纳采问名、嫁娶三条皆直列，且「与德合并犹忌」→ 婚嫁三子项重忌（本引擎 v87 前此处疏漏，已改）。"},"siji":{"name":"四忌·四穷","cat":"四、日辰杂煞","nature":"正统重忌","meaning":"四忌＝本令阳干加于辰首（春甲子、夏丙子、秋庚子、冬壬子）；四穷＝本令阴干加于辰尾（春乙亥、夏丁亥、秋辛亥、冬癸亥）。二者相合即八龙、七鸟、九虎、六蛇，「其日皆不可迎婚嫁娶」。","plain":"一季里最「穷尽」的两个日子：阳气不得伸、阴气无所归。古书说这几天绝不可迎亲嫁娶，德神也化解不了。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、开市、立券交易、纳财——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 9 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·四忌·四穷（引《神煞起例》《总要历》）","basis":"嫁娶、安葬、开市类主条直列 → 重忌；余类不直列，本引擎限三类登记。"},"wumu":{"name":"五墓","cat":"四、日辰杂煞","nature":"正统重忌","meaning":"四旺之墓辰：正二月乙未、四五月丙戌、七八月辛丑、十、十一月壬辰、四季月（三六九十二）戊辰。《广圣历》：「忌营造起土、嫁娶、出军。」","plain":"五行「入库」之地，气势收敛入墓。凡动工、嫁娶、出兵都不宜——七类用事主条全部直列，覆盖面极广。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷五·五墓（引《广圣历》＋历例）","basis":"嫁娶、安葬、赴任、开市、出行、般移/安床、兴造/竖柱皆直列，全列重忌。"},"jiukong":{"name":"九空","cat":"四、日辰杂煞","nature":"正统重忌（财货·仓库）","meaning":"月内杀神，正月在辰逆行四季（辰丑戌未循环）。《广圣历》：「忌修造仓库、出入货财。」墓库破散之神：库破则空、冲则散。","plain":"库破了、财散了。修仓库、进出货物钱财都忌，主一场空。","usecase":"本因素属凶煞（正统重忌（财货·仓库））。「重忌」用事：开市、立券交易、纳财——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：修造——犯之可酌情配吉神化解或改期。其余 12 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·九空（引《广圣历》＋历例）","basis":"开市、立券、纳财主条直列 → 重忌；修造条论及 → 忌。"},"sihao":{"name":"四耗","cat":"四、日辰杂煞","nature":"正统重忌（财货·亲姻）","meaning":"四时休干临分至之辰：春壬子、夏乙卯、秋戊午、冬辛酉。《总圣历》：「忌会亲姻、出师、开仓库、施债负。」","plain":"四季休气遇上二分二至，主耗散。开仓放债、会亲结姻都忌，钱粮出去回不来。","usecase":"本因素属凶煞（正统重忌（财货·亲姻））。「重忌」用事：开市、立券交易、纳财——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：纳采问名、结婚姻、嫁娶——犯之可酌情配吉神化解或改期。其余 10 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·四耗（引《总圣历》＋历例）","basis":"开市、立券、纳财主条直列 → 重忌；「会亲姻」论及婚嫁 → 忌。"},"wuxu":{"name":"五虚","cat":"四、日辰杂煞","nature":"正统重忌（财货）","meaning":"四时绝辰：春巳酉丑、夏申子辰、秋亥卯未、冬寅午戌。《协纪》：「忌开仓库、营种莳、出财宝、施债负。」","plain":"四季气绝之日，仓库空虚之象。开仓、出货、放债都忌。","usecase":"本因素属凶煞（正统重忌（财货））。「重忌」用事：开市、立券交易、纳财——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·五虚","basis":"开市、立券、纳财主条皆涉财货，列重忌。"},"wuli":{"name":"五离（除神）","cat":"四、日辰杂煞","nature":"正统重忌（婚嫁·交关）","meaning":"月中离神，申、酉日是也。《协纪》：「忌结婚姻、会亲友、作交关、立契券。」同理寅、卯日为「五合」，宜结婚会亲、立券交易。","plain":"主「分离、散伙」的日子。结婚、约亲友、订契约都忌——与之相对，寅卯日是「五合」，正宜这些事。","usecase":"本因素属凶煞（正统重忌（婚嫁·交关））。「重忌」用事：纳采问名、结婚姻、嫁娶、开市、立券交易、纳财、会友宴请——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 9 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·五离（除神）·五合","basis":"结婚姻、会亲友、立契券原文明列 → 婚嫁三子项、立券、开市、会友重忌。"},"jiuchou":{"name":"九丑","cat":"四、日辰杂煞","nature":"正统重忌（嫁娶·移徙·筑室）","meaning":"乙、戊、己、辛、壬五干临子午卯酉四仲，凡十日：乙卯、乙酉、戊子、戊午、己卯、己酉、辛卯、辛酉、壬子、壬午。《金匮经》：「其日不可出军、嫁娶、移徙、筑室。」","plain":"五干配四仲，阴阳交战「丑而不正」，古书点名：出兵、嫁娶、搬家、盖房都不能用。","usecase":"本因素属凶煞（正统重忌（嫁娶·移徙·筑室））。「重忌」用事：纳采问名、结婚姻、嫁娶、入宅、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 11 项用事一般不涉及本因素。","src":"《协纪辨方书》卷七·九丑（引《金匮经》）","basis":"《金匮经》明列嫁娶、移徙、筑室 → 婚嫁三子项、入宅、修造重忌；余类未列。"},"furi":{"name":"复日·重日","cat":"四、日辰杂煞","nature":"正统重忌（凶事）","meaning":"复日以日干论（正七月甲庚、二八月乙辛、四十月丙壬、五十一月丁癸、三九六十二戊己）；重日即巳、亥二日。《协纪》：「忌为凶事，利为吉事」，故忌破土、安葬、启攒；与天德、月德、天赦、六合并则不忌。","plain":"专管「凶事」的凶日——办丧葬、破土这类阴事最忌；反过来办喜事反而有利。民俗所称「重丧」其实与它同一起例，只是换了个民间叫法。","usecase":"本因素属凶煞（正统重忌（凶事））。「重忌」用事：安葬——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·复日·重日","basis":"安葬条直列（条件忌：鸣吠遇之则忌，德/赦/六合遇之则不忌）→ 丧葬重忌。"},"tianshi":{"name":"大时（咸池）","cat":"四、日辰杂煞","nature":"正统重忌（安葬除外）","meaning":"月建三合五行沐浴之辰，一名咸池。正月起卯逆行四仲（正卯、二子、三酉、四午，循环）。《神枢经》有忌无宜。上官、出行、会亲、开市、立券、纳财皆忌。","plain":"月中桃花败地，主淫佚、败事、口舌。古书说它只有忌、没有宜，是少见的全凶之神；唯安葬不忌。","usecase":"本因素属凶煞（正统重忌（安葬除外））。「重忌」用事：纳采问名、结婚姻、嫁娶、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：安葬——犯之可酌情配吉神化解或改期。其余用事（入学受业、赴举应试）一般不涉及本因素。","src":"《协纪辨方书》卷六·义例·大时（咸池）","basis":"除安葬外六类主条皆直列 → 重忌；安葬条不列 → 忌。"},"tianli":{"name":"天吏（致死）","cat":"四、日辰杂煞","nature":"正统重忌（安葬除外）","meaning":"三合五行死气之位，一名致死。正月起酉逆行四仲（正酉、二午、三卯、四子，循环）。临官赴任、远行、开市、词讼皆忌。","plain":"月中「死气」所在，主阻滞、官非、上司不喜。赴任、远行、开市、打官司都忌；唯安葬不忌。","usecase":"本因素属凶煞（正统重忌（安葬除外））。「重忌」用事：纳采问名、结婚姻、嫁娶、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：安葬——犯之可酌情配吉神化解或改期。其余用事（入学受业、赴举应试）一般不涉及本因素。","src":"《协纪辨方书》卷六·义例·天吏（致死）","basis":"除安葬外六类主条皆直列 → 重忌；安葬条不列 → 忌。"},"siday":{"name":"巳日","cat":"四、日辰杂煞","nature":"正统重忌（出行）","meaning":"日支属巳之日。《协纪》卷十一·出行条：「忌……巳日。」","plain":"巳为「地户」，出行忌之，主出门不顺、中途有阻。","usecase":"本因素属凶煞（正统重忌（出行））。「重忌」用事：出行——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷十一·用事·出行","basis":"出行主条直列，出行列重忌。"},"youri":{"name":"酉日","cat":"四、日辰杂煞","nature":"正统重忌（会友·宴请）","meaning":"日支属酉之日。《协纪》卷十一·宴会条（会亲友同）：「忌……酉日。」酉主离散。","plain":"酉有「分离」之象，请客吃饭、聚会约见都忌，主宾主不欢而散。","usecase":"本因素属凶煞（正统重忌（会友·宴请））。「重忌」用事：会友宴请——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷十一·用事·宴会（会亲友同）","basis":"宴会（会亲友同）主条直列，会友·宴请列重忌。"},"haizi":{"name":"亥日","cat":"四、日辰杂煞","nature":"正统重忌（嫁娶独忌）","meaning":"日支属亥之日。《协纪》卷十一·嫁娶条：「忌……亥日。」纳采问名、结婚姻不忌。","plain":"亥为「天门」亦是阴极之地，《协纪》独独在嫁娶一条点名忌亥日，纳采、结婚姻反而不忌——**专忌迎亲正日**。","usecase":"本因素属凶煞（正统重忌（嫁娶独忌））。「重忌」用事：嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷十一·用事·嫁娶","basis":"嫁娶条独列，「嫁娶」子项重忌；纳采问名、结婚姻不忌。"},"shenri":{"name":"申日（安床所忌）","cat":"四、日辰杂煞","nature":"正统重忌（安床）","meaning":"日支属申之日。《协纪》卷十一·安床条：「忌……申日。」","plain":"安床（铺床、安置床铺）独忌申日，属《协纪》本条明文。","usecase":"本因素属凶煞（正统重忌（安床））。「重忌」用事：入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷十一·用事·安床","basis":"安床条直列，入宅（含安床）列重忌。"},"pima":{"name":"披麻（批麻）","cat":"四、日辰杂煞","nature":"民俗忌（主孝服）","meaning":"寅午戌月子日、亥卯未月酉日、申子辰月午日、巳酉丑月卯日（月支三合胎位，与《协纪》灾煞同位）。《鳌头通书》披麻煞诗例，主孝服，忌嫁娶、入宅。","plain":"名字就说明问题——「披麻」即披麻戴孝。主家有丧服之事，办喜事、搬新家最忌讳。","usecase":"本因素属凶煞（民俗忌（主孝服））。「重忌」用事：纳采问名、结婚姻、嫁娶、入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 12 项用事一般不涉及本因素。","src":"《鳌头通书》披麻煞诗例（《协纪》视同灾煞）","basis":"通书明言「主孝服，忌嫁娶、入宅」，属明确不利 → 婚嫁三子项、入宅重忌；性质标民俗（与《协纪》灾煞同位）。"},"renge":{"name":"人隔","cat":"四、日辰杂煞","nature":"民俗忌（嫁娶·纳婿）","meaning":"寅月酉、卯月未、辰月巳、巳月卯、午月丑、未月亥、申月酉、酉月未、戌月巳、亥月卯、子月丑、丑月亥。忌嫁娶、纳婿、进人口。","plain":"「人隔」即人与人之间隔阂不和，主进门之人（新娘、入赘、新增人口）与家主不睦。","usecase":"本因素属凶煞（民俗忌（嫁娶·纳婿））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉历碎金赋》《造福堂择日》","basis":"通书明言「忌嫁娶、纳婿、进人口」→ 婚嫁三子项重忌。"},"taisui":{"name":"太岁日","cat":"五、年煞与方位","nature":"中性（协纪不忌）","meaning":"日支同当年岁支。《协纪》卷三：太岁为年神，非日之凶煞；岁德、岁德合等吉神皆自此出，故本不忌。","plain":"民间常说「太岁当头坐」，但那是**方位**上的太岁方不宜动土；日辰上逢太岁日，《协纪》明言不忌，只记录不扣分。","usecase":"本因素属凶煞（中性（协纪不忌））。其余 16 项用事一般不涉及本因素。本因素在各用事中不单列忌，按当日所值随宜取舍。","src":"《协纪辨方书》卷三·义例（太岁）","basis":"《协纪》不以为忌，全列「—」；真正的「太岁之忌」在岁破日与三煞方两条。"},"sansha":{"name":"年三煞（方）","cat":"五、年煞与方位","nature":"正统重忌（动土）","meaning":"申子辰年煞南方（巳午未）、寅午戌年煞北方（亥子丑）、亥卯未年煞西方（申酉戌）、巳酉丑年煞东方（寅卯辰）。日支落入当年三煞方即犯，兼犯坐山尤忌。","plain":"一年中最凶的三个方位，向这三个方向动土是大忌。日辰地支若落在三煞方，等于踩了年煞的尾巴。","usecase":"本因素属凶煞（正统重忌（动土））。「重忌」用事：安葬、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：入宅——犯之可酌情配吉神化解或改期。其余 13 项用事一般不涉及本因素。","src":"《协纪辨方书》卷三·三煞（申子辰煞南、寅午戌煞北、亥卯未煞西、巳酉丑煞东）","basis":"修造动土、破土主条所忌 → 修造、丧葬重忌；入宅兼论 → 忌。"},"wuhuang":{"name":"年·月五黄（方）","cat":"五、年煞与方位","nature":"正统忌（动土）","meaning":"洛书九宫顺飞：年五黄自 2022 年入中顺飞逐年移一位；月五黄依月家紫白诀（寅月八白入中、卯月七赤……申月二黑），五黄所临之方忌动土。","plain":"九宫飞星里最凶的一颗「五黄廉贞」，所到之方主灾病横祸。该方忌动土、忌开门、忌安床。","usecase":"本因素属凶煞（正统忌（动土））。「重忌」用事：修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：安葬、入宅——犯之可酌情配吉神化解或改期。其余 13 项用事一般不涉及本因素。","src":"洛书九宫顺飞（年：2022 入中顺飞；月：月家紫白诀，寅八白入中）","basis":"主忌动土 → 修造重忌；安葬破土、入宅兼论 → 忌。"},"chongshan":{"name":"日冲坐山","cat":"五、年煞与方位","nature":"正统重忌（坐山所忌）","meaning":"课日地支冲坐山所在宫支（如子山午向遇午日）。修造通例：日辰不可冲坐山。","plain":"房子的「靠山」被日辰冲撞，等于根基动摇。修造、安葬、入宅凡有坐向的，都必须避开。","usecase":"本因素属凶煞（正统重忌（坐山所忌））。「重忌」用事：安葬、入宅、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"修造通例（日辰不可冲坐山）","basis":"修造、安葬、入宅三条皆以坐山为本，列重忌。"},"benchong":{"name":"本命冲","cat":"六、八字合参","nature":"合参重忌（一票否决）","meaning":"课日地支冲当事人（事主／新娘／亡人）生年地支。属「八字合参层」之一票否决项，凡本用事提供当事人生辰输入者即应参与。","plain":"办这件事的日子，正冲办事人（或新娘、亡人）的生肖。好比本命年被当面冲撞，是最硬的个人化禁忌——无论哪一类用事，只要填了生辰就该避开。","usecase":"本因素属凶煞（合参重忌（一票否决））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"后世合参法（非《协纪辨方书》正文）","basis":"冲本命为择日通例之最忌，本引擎设为一票否决，全列重忌。"},"tianke":{"name":"天克地冲","cat":"六、八字合参","nature":"合参重忌","meaning":"课日天干克当事人日干、且课日地支冲当事人日支（如甲寅日柱之人遇庚申日）。与「本命冲」同为课日—当事人之合参层。","plain":"不只是生肖相冲，连日柱的干也被克——天克地冲，双重冲克。对当事人而言是最不利的组合，凡填了完整生辰者皆当避。","usecase":"本因素属凶煞（合参重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"后世合参法（非《协纪辨方书》正文）","basis":"干支双冲克，属明确不利当事人，全列重忌；性质标「合参」，示其非《协纪》正文。"},"tiangang":{"name":"天罡四煞（坊本·三合死位）","cat":"六、八字合参","nature":"坊本忌（与《协纪》天罡非一物）","meaning":"年支三合死位：寅午戌命忌酉日、申子辰命忌卯日、巳酉丑命忌子日、亥卯未命忌午日。★辨名：《协纪辨方书》卷四之天罡＝月厌、河魁＝厌对（按月建起，见「月厌」「厌对」二条）；此系坊本以年支三合死位别立「天罡四煞」之名，二者非一物。","plain":"按当事人生肖推出的「死位日」，坊间通书认为造葬、婚嫁、出行、入宅都忌。**注意它和《协纪》正说里的「天罡」不是同一个东西**，不可混为一谈。","usecase":"本因素属凶煞（坊本忌（与《协纪》天罡非一物））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"坊间通行版（年支三合死位）；《协纪辨方书》卷四之天罡别为一物","basis":"坊本明言「造葬、婚嫁、出行、入宅皆忌」，覆盖面及七类 → 全列重忌；性质标坊本，需当事人生辰方判。"},"tiangu":{"name":"天孤（孤辰）","cat":"六、八字合参","nature":"命理忌（孤辰）","meaning":"天孤（孤辰）：年支三会进前一辰——亥子丑年寅、寅卯辰年巳、巳午未年申、申酉戌年亥。男命孤辰，主婚姻不顺。婚嫁查新郎年支，其余查事主年支。","plain":"命理上的「孤辰」，主孤单、缘分淡薄。婚嫁首忌——男方命带孤辰之日成婚，古人认为不利夫妻偕老。","usecase":"本因素属凶煞（命理忌（孤辰））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：入宅——犯之可酌情配吉神化解或改期。其余 12 项用事一般不涉及本因素。","src":"《三命通会》《协纪》命理（年支三会进前一辰）","basis":"通书明言「主婚姻不顺」，嫁娶明确不利 → 婚嫁三子项重忌；入宅论及 → 忌。"},"digua":{"name":"地寡（寡宿）","cat":"六、八字合参","nature":"命理忌（寡宿）","meaning":"地寡（寡宿）：年支三会退后一辰——亥子丑年戌、寅卯辰年丑、巳午未年辰、申酉戌年未。女命寡宿，主孤寡。婚嫁查新娘年支，其余查事主年支。","plain":"命理上的「寡宿」，与孤辰是一对，主孤单独守。婚嫁首忌——女方命带寡宿之日成婚，古人视为大不利。","usecase":"本因素属凶煞（命理忌（寡宿））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：入宅——犯之可酌情配吉神化解或改期。其余 12 项用事一般不涉及本因素。","src":"《三命通会》《协纪》命理（年支三会退后一辰）","basis":"通书明言「主孤寡」，嫁娶明确不利 → 婚嫁三子项重忌；入宅论及 → 忌。"},"zt_hunjia":{"name":"嫁娶周堂","cat":"七、民俗周堂","nature":"民俗重忌（值夫·值妇）","meaning":"《协纪》卷三十五·附录·嫁娶周堂：「凡选择嫁娶日，大月从夫顺数，小月从妇逆数，遇第、堂、厨、灶日用之；如遇翁、姑而无翁、姑者亦可用。」环序：夫→姑→堂→翁→第→灶→妇→厨。按语：「周堂图，乾为翁、坎为第、艮为灶、震为妇、巽为厨、离为夫、坤为姑、兑为堂……而要谓遇翁姑夫妇则凶，殊为非理。因载在时宪书，故存其旧，第勿拘忌可耳。」","plain":"一张按农历月大月小、初一数到出嫁日的循环表，落到哪一位就管哪一位：值「夫」「妇」古谓断不可用；值「翁」「姑」只要翁姑回避一下即可。**民间说的「妨夫、妨妇、妨翁姑」，日级推算就是这张表。**","usecase":"本因素属凶煞（民俗重忌（值夫·值妇））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《协纪辨方书》卷三十五·附录·嫁娶周堂；《玉匣记》嫁娶周堂图同","basis":"《玉匣记》定「值夫、值妇断不可用」→ 婚嫁三子项重忌；值翁姑仅须少避，已注于含义。"},"zt_baihu":{"name":"行嫁白虎","cat":"七、民俗周堂","nature":"民俗忌（可禳）","meaning":"《玉匣记》行嫁白虎图：「大月从灶向堂顺行，小月从厨向路逆行。如值死、睡、厨、灶大吉；如值门、床、堂、路宜斩牲禳之。」环序：灶→堂→床→死→睡→门→路→厨。禳法：黄纸朱书「麒麟在此」贴于门、床、堂；值路则轿内挂碰头肉，遇岔路弃之。","plain":"婚嫁专用的第二张周堂表。值死、睡、厨、灶大吉；值门、床、堂、路虽不利，但可以「禳解」（贴符、挂肉化解），所以不算硬忌。","usecase":"本因素属凶煞（民俗忌（可禳））。「忌」用事：纳采问名、结婚姻、嫁娶——犯之可酌情配吉神化解或改期。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》行嫁白虎图","basis":"原文「宜斩牲禳之」——可禳解者非断不可用，故列「忌」而非「重忌」。"},"zt_naxu":{"name":"纳婿周堂","cat":"七、民俗周堂","nature":"民俗重忌（入赘方用）","meaning":"《玉匣记》纳婿周堂图：「只论月分大小，不论节气。大月从夫向姑顺数，小月从户向厨逆数，遇户、厨、灶、门可用；遇公、姑、夫、弟不用。」环序：夫→姑→第→厨→户→灶→翁→门。","plain":"男方入赘女家时专用的周堂表，与嫁娶周堂并行。值公（翁）、姑、夫、弟（第）四位明言「不用」。","usecase":"本因素属凶煞（民俗重忌（入赘方用））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》纳婿周堂图","basis":"原文「遇公、姑、夫、弟不用」，属明确不可用 → 婚嫁三子项重忌（男方入赘方用之）。"},"zt_chuling":{"name":"出灵周堂","cat":"七、民俗周堂","nature":"民俗忌（可避）","meaning":"《玉匣记》安葬日周堂图：「其图只论月分大小，不论节气。大月初一，从父向男顺数；小月初一，从母向女逆数，一日一位数。值亡人则吉；如值人，则出外少避，惟停丧在外，则不论。」环序：父→男→孙→亡→客→妇→婿→母。","plain":"出殡专用的周堂表。值「亡人」位最吉；值其他活人位（父、男、孙、客、妇、婿、母），只要那个人出殡时回避一下就行。","usecase":"本因素属凶煞（民俗忌（可避））。「忌」用事：安葬——犯之可酌情配吉神化解或改期。其余 15 项用事一般不涉及本因素。","src":"《玉匣记》安葬日周堂图","basis":"原文「出外少避」即可，属可避而非不可用 → 列「忌」。"},"zt_qizao":{"name":"起造周堂","cat":"七、民俗周堂","nature":"民俗重忌（起造）","meaning":"《玉匣记》起灶（起造）周堂图：「大月从王向艮顺行，小月从败向富逆行，择吉：富、君、图、王、臣」；图本作「大月从坎王向艮图顺数，小月从离败向巽富逆数；值震君、巽富、艮图、坎王吉，兑臣半吉」。环序：坎王→艮图→震君→巽富→离败→坤绝→兑臣→乾破。","plain":"盖房、砌灶专用的周堂表。值坎王、艮图、震君、巽富吉；值离败、坤绝、乾破凶——「败、绝、破」三位字面就凶，不可用。","usecase":"本因素属凶煞（民俗重忌（起造））。「重忌」用事：修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《玉匣记》起造周堂图","basis":"原文「离败、坤绝、乾破」凶，属明确不利 → 修造重忌。"},"zt_xianghuo":{"name":"安香火周堂","cat":"七、民俗周堂","nature":"民俗重忌（安香火）","meaning":"《玉匣记》安香火周堂图：「大月从安向利顺数，小月从天向利逆数；值天、利、安、师、富吉，能与神在日合之大吉。」环序：安→利→天→灾→害→师→富→煞。","plain":"安放神位、祖宗牌位专用的周堂表。值安、利、天、师、富吉；值灾、害、煞三位凶——安神位是敬神之事，逢灾煞最忌。","usecase":"本因素属凶煞（民俗重忌（安香火））。「重忌」用事：入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《玉匣记》安香火周堂图","basis":"原文「值灾、害、煞凶」，属明确不利 → 入宅重忌。"},"zt_ruzhai":{"name":"入宅周堂","cat":"七、民俗周堂","nature":"民俗重忌（入宅）","meaning":"《玉匣记》入宅周堂图：「大月从玉清（一作月清）起初一顺行，小月从玉堂起初一逆行。」十六位：吉八（玉堂、三财、月清、昌盛、台阶、天良、天福、月福）、凶八（五离、三刑、六道、三徒、家亡、五严、地耗、玄武）。环序：月清→六道→台阶→三徒→昌盛→家亡→天福→五严→月福→地耗→玄武→天良→玉堂→五离→三财→三刑。","plain":"搬家入宅专用的周堂表，共十六位。落在「五离、三刑、六道、三徒、家亡、五严、地耗、玄武」这八位上，字字不吉（家亡、地耗尤其凶），不可用。","usecase":"本因素属凶煞（民俗重忌（入宅））。「重忌」用事：入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《玉匣记》入宅周堂图","basis":"凶八位原文列为不吉（家亡、五离、地耗、玄武等），属明确不利 → 入宅重忌。"},"zt_anchuang":{"name":"安床周堂","cat":"七、民俗周堂","nature":"民俗重忌（安床）","meaning":"《玉匣记》安床周堂图：「大月从平向富顺行，小月从地向凶逆行；值平、富、地、安用之大吉，值疾、病、凶、倒则凶。」环序：平→富→疾→凶→地→倒→安→病。","plain":"安床（铺床）专用的周堂表。值平、富、地、安大吉；值疾、病、凶、倒四位凶——床是一生安寝之所，逢「疾病凶倒」最忌。**婚嫁铺床、入宅安床都要看它。**","usecase":"本因素属凶煞（民俗重忌（安床））。「重忌」用事：纳采问名、结婚姻、嫁娶、入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 12 项用事一般不涉及本因素。","src":"《玉匣记》安床周堂图","basis":"原文「值疾、病、凶、倒则凶」，属明确不利 → 入宅、婚嫁（铺床）重忌。"},"yuxia":{"name":"杨公忌日","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》辨驳）","meaning":"杨公忌十三日：正月十三、二月十一、三月初九、四月初七、五月初五、六月初三、七月初一、七月廿九、八月廿七、九月廿五、十月廿三、十一月廿一、十二月十九；另有月忌日（初五、十四、二十三）。皆以农历日期为准。《协纪》卷三十六《辨伪》：「世俗多畏杨公忌……皆因未悉其原委，故为所惑耳」，并指出其推法乃「室火猪日」。","plain":"民间流传最广的十三个「百事不宜」日，老黄历几乎家家忌避。**但《协纪辨方书》专列《辨伪》驳斥它**，指出不过是「室火猪」值日，世人不知原委才被唬住。","usecase":"本因素属凶煞（民俗重忌（《协纪》辨驳））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《玉匣记》（四库列存目、不录正文，托名许逊）；《协纪辨方书》卷三十六·辨伪（驳斥方）","basis":"民间奉为「诸事不宜」，按「明确不利即重忌」之口径全列重忌；**《协纪》卷三十六《辨伪》已驳，性质标民俗**，守正统者可取消勾选。"},"chongsang":{"name":"重丧（民俗）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》不收）","meaning":"按月建取日干：寅月甲、卯月乙、辰月戊、巳月丙、午月丁、未月己、申月庚、酉月辛、戌月戊、亥月壬、子月癸、丑月己；又每月巳、亥日为「天地大重丧」。其起例与《协纪》正神「复日」全同。《协纪》卷五按语：「俗则以为犯此则致重丧，益无是理。」","plain":"民间最怕的安葬凶日，谓犯之则家中再死一人。**它与《协纪》正神「复日」的推算方法完全一样，只是换了个民间叫法**——古书早已说「无是理」。","usecase":"本因素属凶煞（民俗重忌（《协纪》不收））。「重忌」用事：安葬——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"明清通书口诀；《协纪辨方书》不收，卷三十六《辨讹》「依托许真君《玉匣记》之说者……则从删削」","basis":"通书明言犯之致重丧，属明确不利 → 丧葬重忌；**与「复日·重日」重复计数，二者取其一即可**，性质标民俗。"},"fusang":{"name":"复丧·复伤（民俗）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》未见）","meaning":"按月建取日支，逐月表恰为各月月破之日（寅月申、卯月酉……丑月未），疑即「月破」在丧葬语境下之异名。","plain":"「复丧」即丧事再来一次，民间安葬大忌。**它的逐月表与各月「月破」之日一模一样**，很可能是月破在丧葬里的别名，与月破重复计数。","usecase":"本因素属凶煞（民俗重忌（《协纪》未见））。「重忌」用事：安葬——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"民间通书；《协纪辨方书》未见此条目（未核到典籍原文）","basis":"通书明言不利丧葬 → 丧葬重忌；**与「月破」重复计数**，且未核到典籍原文，姑存备查。"},"sansang":{"name":"三丧（民俗）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》不收）","meaning":"按季取墓库支：春（寅卯辰月）辰日、夏（巳午未月）未日、秋（申酉戌月）戌日、冬（亥子丑月）丑日。口诀：「春龙滚滚夏羊肥，秋犬冬牛是三丧。」","plain":"与重丧、复丧并称的第三个丧葬凶日，按季节取墓库之辰。民间谓犯之则丧事连三。","usecase":"本因素属凶煞（民俗重忌（《协纪》不收））。「重忌」用事：安葬——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"民间通书；《协纪辨方书》不收","basis":"通书明言不利丧葬 → 丧葬重忌；性质标民俗。"},"xingjia_dali":{"name":"行嫁大利月（民俗·协纪奏删）","cat":"八、民俗俗忌","nature":"民俗吉（《协纪》奏删）","meaning":"起例歌：「阳前阴后一吉辰，正七首子及媒人，二八月妨翁与姑，三九女之父母身，四十乃妨夫主身，五十一月妨自身，子午寅申辰戌顺，丑未卯酉巳亥逆。」以女命年支之本命月为基，阳年顺推、阴年逆推，第一位为大利月，每位取对冲月配成两月。《协纪》卷三十六：「行嫁大利月则举世用之而不辨其非……固术士之捏造而无理之甚者也……今已奏准删除。」","plain":"按女方生肖推出的「最适合出嫁的月份」，民间几乎人人遵用。**但《协纪辨方书》卷三十六专文辨斥，并已「奏准删除」**，理由是阴阳五行、九宫八卦、建除丛辰无一可通。","usecase":"本因素属凶煞（民俗吉（《协纪》奏删））。其余 16 项用事一般不涉及本因素。本因素在各用事中不单列忌，按当日所值随宜取舍。","src":"《玉匣记·民俗吉凶日篇》；《类编历法通书大全》卷七；《协纪辨方书》卷三十六·辨讹（辨斥方）","basis":"属吉神（得之则宜），不构成忌，全列「—」；《协纪》已奏准删除，性质标民俗，本引擎设为默认不勾选。"},"xingjia_xiaoli":{"name":"小利月·妨媒氏首子（民俗·协纪奏删）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》奏删）","meaning":"承大利月顺／逆推第二位，并取对冲月。即行嫁月表第二栏「妨媒氏、首子」。《类编历法通书大全》卷七原注：「若得行嫁大利月，是遇吉期，无诸禁忌……若用余月，各防其咎。如女无所忌之人，用之无害。」","plain":"大小利月体系第二栏：此月出嫁，妨媒人与头生子。按通书说，若女方家中无所谓「媒氏、首子」之人，用了也无妨。","usecase":"本因素属凶煞（民俗重忌（《协纪》奏删））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》女命行嫁月表第二栏；《协纪辨方书》卷三十六·辨讹（辨斥方）","basis":"通书明言「妨媒氏、首子」→ 嫁娶明确不利，婚嫁三子项重忌；《协纪》已奏准删除，性质标民俗（本引擎默认不勾选）。"},"xingjia_wenggu":{"name":"妨翁姑月（民俗·协纪奏删）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》奏删）","meaning":"承大利月顺／逆推第三位，并取对冲月。即行嫁月表第三栏「妨翁姑」。★此为**月级**之妨，与日级之嫁娶周堂值翁姑、《协纪》正神月厌（一名天罡，通书称妨翁日）层级不同，非一物。","plain":"大小利月体系第三栏：此月出嫁，妨男方父母（翁姑）。这是**按月份**算的，与按日子算的嫁娶周堂「值翁值姑」不是一回事。","usecase":"本因素属凶煞（民俗重忌（《协纪》奏删））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》女命行嫁月表第三栏「翁姑」；《协纪辨方书》卷三十六·辨讹（辨斥方）","basis":"通书明言「妨翁与姑」→ 嫁娶明确不利，婚嫁三子项重忌；《协纪》已奏准删除，性质标民俗（本引擎默认不勾选）。"},"xingjia_fumu":{"name":"妨女父母月（民俗·协纪奏删）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》奏删）","meaning":"承大利月顺／逆推第四位，并取对冲月。即行嫁月表第四栏「父母」。《协纪》卷三十六按语：「第一月利矣，以次而推，何由而妨媒氏？何由而妨翁姑？何由而妨父母？……求之阴阳五行、九宫八卦、堪舆、建除、丛辰之说，无一可通。」","plain":"大小利月体系第四栏：此月出嫁，妨女方自己父母。","usecase":"本因素属凶煞（民俗重忌（《协纪》奏删））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》女命行嫁月表第四栏「父母」；《协纪辨方书》卷三十六·辨讹（辨斥方）","basis":"通书明言「妨女之父母身」→ 嫁娶明确不利，婚嫁三子项重忌；《协纪》已奏准删除，性质标民俗（本引擎默认不勾选）。"},"xingjia_fuzhu":{"name":"妨夫主月（民俗·协纪奏删）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》奏删）","meaning":"承大利月顺／逆推第五位，并取对冲月。即行嫁月表第五栏「夫主」。","plain":"大小利月体系第五栏：此月出嫁，妨丈夫本人。","usecase":"本因素属凶煞（民俗重忌（《协纪》奏删））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》女命行嫁月表第五栏「夫主」；《协纪辨方书》卷三十六·辨讹（辨斥方）","basis":"通书明言「乃妨夫主身」→ 嫁娶明确不利，婚嫁三子项重忌；《协纪》已奏准删除，性质标民俗（本引擎默认不勾选）。"},"xingjia_benshen":{"name":"妨本身月·妨妇（民俗·协纪奏删）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》奏删）","meaning":"承大利月顺／逆推第六位，并取对冲月。即行嫁月表第六栏「本身」，恰为女命本命月与其对冲月。《协纪》卷三十六：「夫第十二月为女本命，第六月为本命之冲，虽选择无忌地支一字之理，而犹有可言。」","plain":"大小利月体系第六栏：此月出嫁，妨新娘自己——正好是她本命月与相冲月。","usecase":"本因素属凶煞（民俗重忌（《协纪》奏删））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》女命行嫁月表第六栏「本身」；《协纪辨方书》卷三十六·辨讹（辨斥方）","basis":"通书明言「五十一月妨自身」→ 嫁娶明确不利，婚嫁三子项重忌；《协纪》已奏准删除，性质标民俗（本引擎默认不勾选）。"},"baihu_leiting":{"name":"雷霆白虎占中宫（民俗）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》不收）","meaning":"起例歌：「甲己顺坤走，乙庚逆马游，丙辛从乾逆（一作震上逆），丁壬顺巽求，戊癸从兑顺，皆将甲子周，飞宫到本日，白虎坐星头。」九宫序：坎1坤2震3巽4中5乾6兑7艮8离9。丙辛月起例古籍自相歧异，本引擎从《肘后经》并书。《选择要略》：「右雷霆白虎入中宫日，忌入宅、嫁娶、会亲友、大宴、起工、拆屋、修造、起屋，并忌从中间起手。」","plain":"把「雷霆白虎」按日飞布九宫，落到中宫就是占中宫——中宫是一家之主位，白虎占了主位最凶。忌入宅、嫁娶、会客、动工修造。","usecase":"本因素属凶煞（民俗重忌（《协纪》不收））。「重忌」用事：纳采问名、结婚姻、嫁娶、会友宴请、入宅、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 10 项用事一般不涉及本因素。","src":"《选择要略·上》引《肘后经》；《道法会元》雷霆白虎煞方；《协纪辨方书》不收","basis":"《选择要略》明列「忌入宅、嫁娶、会亲友、大宴、起工、拆屋、修造」→ 婚嫁三子项、入宅、修造、会友重忌；性质标民俗。"},"baihu_dasha":{"name":"大煞白虎占中宫（民俗）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》不收）","meaning":"「甲子常将坎上亲，九宫顺走教君轮。假如戊辰居中五，即是大煞占中庭。」七日固定，不随年月而移。网络通行本首日多误作「戊寅」，据九宫顺飞复算当为戊辰，本引擎从戊辰。","plain":"雷霆白虎之外的另一支「大煞白虎」，同样以入中宫为凶。七日一轮，固定不变。","usecase":"本因素属凶煞（民俗重忌（《协纪》不收））。「重忌」用事：纳采问名、结婚姻、嫁娶、会友宴请、入宅、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 10 项用事一般不涉及本因素。","src":"后世通书（未核到原书）；《协纪辨方书》不收","basis":"与雷霆白虎同例，通书明言忌入宅、嫁娶、修造等 → 婚嫁三子项、入宅、修造、会友重忌；性质标民俗。"},"tiande":{"name":"天德","cat":"九、吉神","nature":"上吉","meaning":"正丁、二坤（申）、三壬、四辛、五乾（亥）、六甲、七癸、八艮（寅）、九丙、十乙、十一巽（巳）、十二庚。月中德神。《协纪》卷五·义例。","plain":"一年十二个月各自的「德神」，最能化解凶煞——古书说「逢凶化吉」多半靠它。喜事办在天德日，凶煞也减三分。","usecase":"本因素为吉神（上吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·天德","basis":"《协纪辨方书》卷五·义例·天德：为月建三合之气所映之干（正月丁、二月申、三月壬、四月辛、五月亥、六月甲、七月癸、八月寅、九月丙、十月乙、十一月巳、十二月庚），「百福之元，万善所聚」，故为上吉，诸事皆宜、百无禁忌。"},"tiandehe":{"name":"天德合","cat":"九、吉神","nature":"吉","meaning":"天德在干则取五合之干（丁→壬），在支则取六合之支（申→巳）。","plain":"天德的「搭档」，力量次于天德，同属解凶之吉神。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·天德合","basis":"《协纪辨方书》卷五·义例：天德之五合干（甲己、乙庚、丙辛、丁壬、戊癸），与天德同气相亲，故为吉，可次天德一等。"},"yuede":{"name":"月德","cat":"九、吉神","nature":"上吉","meaning":"寅午戌月丙日、申子辰月壬日、亥卯未月甲日、巳酉丑月庚日（三合局之阳干）。月中之德，与天德并为两大解凶之神。","plain":"与天德齐名的大吉神，按月三合局取阳干。俗语「天德月德，百事吉庆」，凡凶煞遇之可减。","usecase":"本因素为吉神（上吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·月德","basis":"《协纪辨方书》卷五·义例·月德：月建三合五行之旺气（寅午戌月丙、申子辰月壬、亥卯未月甲、巳酉丑月庚），与天德并号三合旺气所聚，故为上吉，百事皆宜。"},"yuedehe":{"name":"月德合","cat":"九、吉神","nature":"吉","meaning":"月德之五合干：丙→辛、壬→丁、甲→己、庚→乙。","plain":"月德的搭档，力量次于月德。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·月德合","basis":"《协纪辨方书》卷五·义例：月德之五合干（丙→辛、壬→丁、甲→己、庚→乙），与月德同气，故为吉。"},"tianshe":{"name":"天赦","cat":"九、吉神","nature":"上吉","meaning":"春戊寅、夏甲午、秋戊申、冬甲子（四季以月建分：寅卯辰为春）。《协纪》谓天赦为「天地合德、赦过宥罪」之日。","plain":"老天爷「大赦」的日子，一年仅四天。古人认为这一天百无禁忌，连凶煞也让三分，是择日里最上等的吉日。","usecase":"本因素为吉神（上吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·天赦","basis":"《协纪辨方书》卷五·义例·天赦：春戊寅、夏甲午、秋戊申、冬甲子，为天地四时之气和合之日，故为上吉，百事皆宜，古谓罪过可赦、冤抑得伸。"},"sanhe":{"name":"三合日","cat":"九、吉神","nature":"吉","meaning":"日支与月建三合（寅午戌、申子辰、亥卯未、巳酉丑）。三合主人和、事成。","plain":"日子的地支与当月地支「三合」，主和气成事，是嫁娶、合作一类喜事最爱用的吉象。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·三合","basis":"《协纪辨方书》卷五·义例·三合：日支与月建三合（寅午戌、申子辰、亥卯未、巳酉丑），得月建旺气相助，故为吉，百事皆宜。"},"liuhe":{"name":"六合日","cat":"九、吉神","nature":"吉","meaning":"日支与月建六合（子丑、寅亥、卯戌、辰酉、巳申、午未）。六合主亲和、情投。","plain":"日子的地支与当月地支「六合」，主人缘和顺，婚嫁尤为相宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·六合","basis":"《协纪辨方书》卷五·义例·六合：日支与月建六合（子丑、寅亥、卯戌、辰酉、巳申、午未），阴阳和合、情气相投，故为吉，百事皆宜。"},"bujiang":{"name":"阴阳不将","cat":"九、吉神","nature":"上吉（嫁娶专吉）","meaning":"月建为阳建（正月起寅顺行）、月厌为阴建（正月起戌逆行）；厌前之干配厌后之枝者为不将。《天宝历》：「阴阳不将，夫妇荣昌。」本引擎直取《协纪》卷四「历例」十二组干支，并按语「六月戊午为逐阵不可用」剔除之。","plain":"嫁娶第一吉神——阴阳交会而不相将就，夫妇和顺、子孙昌盛。**择婚日先看不将**，是《协纪》为嫁娶专设的最高标准。","usecase":"本因素为吉神（上吉（嫁娶专吉））。凡办吉事遇之皆沾吉气、百无禁忌，于嫁娶尤宜优先选用；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷四·义例·阴阳不将（引《天宝历》＋历例十二组）","basis":"《协纪辨方书》卷六·义例·阴阳不将：「天宝历曰……厌前干配厌后枝者为阴阳不将也」，为嫁娶之专吉（卷十一·嫁娶条所宜），故标上吉（嫁娶专吉）。"},"mingfei":{"name":"鸣吠·鸣吠对","cat":"九、吉神","nature":"上吉（安葬专吉）","meaning":"鸣吠十三日（甲午、甲申、丙午、丙申、庚午、庚申、壬午、壬申＋乙酉、丁酉、己酉、辛酉、癸酉）宜安葬；鸣吠对十一日（丙子、庚子、壬子＋甲寅、丙寅、庚寅、壬寅＋乙卯、丁卯、辛卯、癸卯）宜启攒破土。酉为西方入地之门，故用午申酉、子寅卯，避戌未土不用。","plain":"安葬专用的吉日，取金鸡鸣吠、亡人安息之象。**鸣吠日宜安葬、鸣吠对日宜启攒破土**，是丧葬择日的首要吉神。","usecase":"本因素为吉神（上吉（安葬专吉））。凡办吉事遇之皆沾吉气、百无禁忌，于安葬尤宜优先选用；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷六·鸣吠·鸣吠对（「应依起例改正」）","basis":"《协纪辨方书》卷十一·用事·安葬条所列鸣吠、鸣吠对之日，为安葬之专吉，故标上吉（安葬专吉）。"},"wuhe5":{"name":"五合","cat":"九、吉神","nature":"吉","meaning":"寅、卯日。《协纪》卷五：「五合者月内良辰也，宜结婚、会亲友、立券交易。」与「五离」（申酉日）相对。","plain":"主「和合」的日子，与「五离」正好相反。结婚、会友、订契约都宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·五合","basis":"《协纪辨方书》卷五·义例：月建与日干五合（甲己、乙庚、丙辛、丁壬、戊癸），阴阳相合、情专而无争，故为吉。"},"tianyuan":{"name":"天愿","cat":"九、吉神","nature":"上吉","meaning":"月中善神，按月建取干支日：正甲午、二甲戌、三乙酉、四丙子、五丁丑、六戊午、七甲寅、八丙辰、九辛卯、十戊辰、十一甲子、十二癸未。宜上官赴任、会亲友、立券、纳财、开市、嫁娶、敦睦亲族。","plain":"「天遂人愿」之神，覆盖面很宽——上任、会友、订约、收钱、开张、嫁娶、和亲族都宜。","usecase":"本因素为吉神（上吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷十一·用事","basis":"《协纪辨方书》卷五·义例·天愿：月建所生之干支（寅月乙亥、卯月甲戌之类），天心所愿、万物向荣，故为上吉，百事皆宜。"},"yueen":{"name":"月恩","cat":"九、吉神","nature":"吉","meaning":"阳建所生之干，按月建取日干：正丙、二丁、三庚、四己、五戊、六辛、七壬、八癸、九庚、十乙、十一甲、十二辛。宜上官、会亲友、立券、纳财。","plain":"当月生出的「恩气」，主得上司、长辈照应，宜上任、会友、交易。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷六·义例·月恩","basis":"《协纪辨方书》卷五·义例·月恩：月建所生之支（寅月亥、卯月戌之类），恩泽所被，故为吉，百事皆宜。"},"sixiang":{"name":"四相","cat":"九、吉神","nature":"吉","meaning":"四时王相之辰，按本季取日干：春丙丁、夏戊己、秋壬癸、冬甲乙。宜上官、会亲友、立券、纳财。","plain":"当季得令的干日，主气运相生，办文书、财务一类事宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷六·义例·四相","basis":"《协纪辨方书》卷五·义例·四相：春亥子、夏寅卯、秋巳午、冬申酉，四时生旺之气所在，故为吉，百事皆宜。"},"shide":{"name":"时德","cat":"九、吉神","nature":"吉","meaning":"四时阳辰，按本季取日支：春午、夏辰、秋子、冬寅。宜上官、会亲友、立券、纳财。","plain":"当季阳和之辰，主时机得宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷六·义例·时德","basis":"《协纪辨方书》卷五·义例·时德：月建三合五行所生之辰，得时之德，故为吉，百事皆宜。"},"wangri":{"name":"王日","cat":"九、吉神","nature":"吉","meaning":"月内视事之神，按本季取日支：春寅、夏巳、秋申、冬亥。宜上官赴任、会亲友。","plain":"「王日」即当旺之日，主得位得势，上任会友皆宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷十一·用事","basis":"《协纪辨方书》卷五·义例·王日：春甲乙、夏丙丁、秋庚辛、冬壬癸，四时当旺之干，故为吉，百事皆宜。"},"guanri":{"name":"官日","cat":"九、吉神","nature":"吉","meaning":"官守相临四神之一。官日：取本季官星得位之日（春卯、夏午、秋酉、冬子），依月建顺行取日支。《协纪》卷五·义例列官日、守日、相日、临日四神，并为上官赴任所宜。","plain":"上任做官专用吉神之一，主得官执政、仕途顺遂。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·官日／卷十一·用事","basis":"《协纪辨方书》卷五·义例·官日：本季官星得位之日（春卯、夏午、秋酉、冬子），官星得位、政令以行，故为吉，尤宜上官赴任。"},"shouri":{"name":"守日","cat":"九、吉神","nature":"吉","meaning":"官守相临四神之一。守日：取本季阳辰（春酉、夏子、秋卯、冬午），依本季取日支。主官守得安、政令得守，上官赴任所宜。","plain":"上任做官专用吉神之一，主职守安稳。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·守日／卷十一·用事","basis":"《协纪辨方书》卷五·义例·守日：本季阳辰（春酉、夏子、秋卯、冬午），与官日、相日、临日并称「官守相临」四神，主官守得安、政令得守，故为吉，尤宜上官赴任。"},"xiangri":{"name":"相日","cat":"九、吉神","nature":"吉","meaning":"官守相临四神之一。相日：取本季相旺之辰（春巳、夏申、秋亥、冬寅），依本季取日支。主官相得助、事得相成，上官赴任所宜。","plain":"上任做官专用吉神之一，主得助成事。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·相日／卷十一·用事","basis":"《协纪辨方书》卷五·义例·相日：本季相旺之辰（春巳、夏申、秋亥、冬寅），与官日、守日、临日并称「官守相临」四神，主官相得助、事得相成，故为吉，尤宜上官赴任。"},"linri":{"name":"临日","cat":"九、吉神","nature":"吉","meaning":"官守相临四神之一。临日：取本月建之临官支（寅月午、卯月亥、辰月申、巳月丑、午月戌、未月卯、申月子、酉月巳、戌月寅、亥月未、子月辰、丑月酉），依月建取日支。主官临其位，上官赴任所宜。","plain":"上任做官专用吉神之一，主官临其位、事得临成。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·临日／卷十一·用事","basis":"《协纪辨方书》卷五·义例·临日：本月建之临官支（寅月午、卯月亥、辰月申、巳月丑、午月戌、未月卯、申月子、酉月巳、戌月寅、亥月未、子月辰、丑月酉），与官日、守日、相日并称「官守相临」四神，主官临其位、事得临成，故为吉，尤宜上官赴任。"},"tianxi":{"name":"天喜","cat":"九、吉神","nature":"吉","meaning":"日值「成」日（月建三合）。《协纪》卷四：「成日天喜吉。」宜上官、会亲友。","plain":"成日自带天喜，主事情能成、有喜庆。上任会友都宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷四·义例二·建除","basis":"《协纪辨方书》卷五·义例·喜神：喜神方位所值之日，欢悦和合，故为吉，尤宜嫁娶、宴会、求嗣。"},"wufu":{"name":"五富","cat":"九、吉神","nature":"吉","meaning":"富盛之神，三合长生之六合，按月建取日支：正亥、二寅、三巳、四申、五亥、六寅、七巳、八申、九亥、十寅、十一巳、十二申。宜开市、立券、纳财。","plain":"主富足丰盛，开张、订约、收财都宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷六·义例·五富","basis":"《协纪辨方书》卷五·义例·五富：月建三合五行所生之支，富厚所聚，故为吉，宜兴居、出行、求财、纳财。"},"mucang":{"name":"母仓","cat":"九、吉神","nature":"吉","meaning":"春亥子、夏寅卯、秋辰戌丑未、冬申酉（按本季取日支）；《协纪》另列「土王后巳午」子句。宜纳财、养育、栽植。","plain":"「母亲的粮仓」，主生养丰足，收财、种植、养殖都宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·母仓","basis":"《协纪辨方书》卷五·义例·母仓：月建三合五行所墓之库，生养所归，故为吉，宜养育、栽种、收纳。"},"tiancang":{"name":"天仓","cat":"九、吉神","nature":"吉","meaning":"天库之神，正月起寅逆行十二辰：正寅、二丑、三子、四亥、五戌、六酉、七申、八未、九午、十巳、十一辰、十二卯。宜纳财、修仓、牧养。","plain":"天上的仓库，主积蓄入库，收财、修仓、牧养都宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷六·义例·天仓","basis":"《协纪辨方书》卷五·义例·天仓：主仓储积聚之日，故为吉，宜纳财、收纳、积聚、仓储。"},"minri":{"name":"民日","cat":"九、吉神","nature":"吉","meaning":"月内视事之神，按本季取日支：春午、夏酉、秋子、冬卯。宜会亲友、开市、立券、纳财。","plain":"主民间事务顺遂，会友、开张、交易、收财都宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷十一·用事","basis":"《协纪辨方书》卷五·义例·民日：主黎庶安乐之日，故为吉，百事皆宜。"},"fude":{"name":"福德","cat":"九、吉神","nature":"吉","meaning":"日值「满」日（满日叠福德星）。《协纪》卷四：「满为天富小吉。」宜会亲友。","plain":"满日自带福德，主圆满有福，会亲宴请最宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷四·义例二·建除","basis":"《协纪辨方书》卷五·义例·福德：福祐所聚之日，故为吉，百事皆宜。"},"jianchu_chengkai":{"name":"建除·成日·开日","cat":"九、吉神","nature":"吉（入学之宜）","meaning":"《协纪辨方书》卷十一《用事·入学》：「宜成日、开日。忌无。」卷十《宜忌·成日》按语：「成为合局之终，开为生气之始，故其日宜入学，原始要终之义也。」《御定星历考原》卷六：「凡尊师传经等事，宜孟、仲月成、开日。」即：日值建除之「成」或「开」，即《协纪》所谓入学之吉日。","plain":"孩子进学堂、拜先生这天，挑「成」日或「开」日就好——成是事情有个圆满结果，开是生气刚刚发动，古人对读书人入门看得郑重。这是《协纪辨方书》白纸黑字收着的正式条目，不是民间瞎传的讲究。","usecase":"本因素为吉神（吉（入学之宜））。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷十一·用事·入学；卷十·宜忌·成日、开日按语；《御定星历考原》卷六·用事宜忌","basis":"入学为《协纪》正式收录之用事（御用六十七事第22、民用三十七事第4、通书六十事第8），原文明言「忌无」，故本项只为吉、不为忌，全列「—」；仅于新增之「入学受业」「赴举应试」二列列为可用之宜。"}};
+const RK_FACTOR_DOC = {"jianchu":{"name":"建除十二神","cat":"一、日辰总纲","nature":"核心（吉凶随值日而异）","meaning":"从月建上起「建」，顺行十二辰，每月交节则叠两值日。十二值：建、除、满、平、定、执、破、危、成、收、开、闭。《考原》以除危定执成开为吉、建破平收满闭为凶；《选择宗镜》以平成开危最吉、定除次吉、破大凶。","plain":"古人给每一天贴的「宜动／宜静」标签，是择日的第一道基本面。破日最凶（正冲月建），闭、收主收敛，开、成主成就。看日子先看建除，再论其他神煞。","usecase":"先看当日值哪一神：吉六（除·危·定·执·成·开）通过，凶六（建·满·平·收·闭·破）取重忌；遇开市、立券交易、纳财、出行等特别用事时，须再查「专宜／专忌」——如建日出行、满日开市、收日纳财属「虽凶但用」，开日安葬属「吉而不用」。","src":"《协纪辨方书》卷四·义例二·建除","basis":"凶日（建、满、平、收、闭）诸事不宜程度轻于诸煞，故列「忌」；其中「破」与月破同辰，已另立为重忌。","zhuan":{"name":"建除十二神","note":"建除以「基本吉凶」为常理——吉六（除·危·定·执·成·开）通过，凶六（建·满·平·收·闭·破）重忌。以下为《协纪》卷十一·用事明列之「反向专条」，属常理之外的特别用事，界面逐案特标提示。","yi":[["建日","出行","《协纪辨方书》卷十一·用事「出行」条「宜」列：宜建日","建日（基本凶）遇出行 → 「虽凶但用」，通过并标记，不入忌单"],["满日","开市","《协纪辨方书》卷十一·用事「开市」条「宜」列：宜满日","满日（基本凶）遇开市 → 「虽凶但用」"],["满日","立券交易","《协纪辨方书》卷十一·用事「立券交易」条「宜」列：宜满日","满日（基本凶）遇立券交易 → 「虽凶但用」"],["满日","纳财","《协纪辨方书》卷十一·用事「纳财」条「宜」列：宜满日","满日（基本凶）遇纳财 → 「虽凶但用」"],["收日","纳财","《协纪辨方书》卷十一·用事「纳财」条「宜」列：宜收日","收日（基本凶）遇纳财 → 「虽凶但用」"]],"ji":[["开日","安葬","《玉匣记》及民间通书（民俗层）。《协纪》卷十一·安葬条不列；卷三十六《辨讹》辨斥、四库提要「依托许真君《玉匣记》之说者，悉皆删削」","开日（基本吉）遇安葬 → 「吉而不用」，取重忌并标记；属民俗，协纪不载"]]}},"huanghei":{"name":"黄道黑道","cat":"一、日辰总纲","nature":"核心（黑道凶）","meaning":"以月建分六组起青龙顺行十二辰：寅申月起子、卯酉起寅、辰戌起辰、巳亥起午、子午起申、丑未起戌。青龙、明堂、金匮、天德、玉堂、司命为黄道六神，余六神为黑道。","plain":"民间「黄道吉日」的正式出处。黄道主吉、黑道主凶，但黑道并非诸事皆废（如白虎日古法反宜出师），故只作减分之忌，不作一票否决。","usecase":"看当日所值是黄道六神还是黑道六神：黄道通过、黑道取重忌，作每日吉凶底色。本程序所列 16 用事中，黄黑道暂无「专宜／专忌」之特别用事（框架已备，日后纳入出师、畋猎、祭祀等再激活）。","src":"《协纪辨方书》卷四·义例二·黄道黑道","basis":"黑道为日辰之凶，然古法各有所宜，未至诸事不宜，列「忌」。","zhuan":{"name":"黄道黑道","note":"黄道六神（青龙·明堂·金匮·天德·玉堂·司命）值日则吉、黑道六神（天刑·朱雀·白虎·天牢·玄武·勾陈）值日则凶，是每日吉凶底色。《协纪》卷十一·用事之宜忌列根本不列黄黑道十二神；卷七·神枢经所载黑道神专宜（天刑宜出师、白虎宜畋猎祭祀、朱雀宜教兵安营、金匮宜修兵兴工、天牢宜执凶禁盗、玄武宜伏兵潜水）均不在本程序所列 16 用事之内。故当前无活跃例外，框架已就位（RK_HUANGHEI_YIJI 十二用事全空）；日后纳入出师/畋猎/祭祀等用事，填表即可激活「虽凶但用／吉而不用」标记，判定逻辑无需改动。","yi":[],"ji":[]}},"ershiba":{"name":"二十八宿值日（宿曜）","cat":"一、日辰总纲","nature":"值凶宿则重忌（吉宿不为忌；两例之外）","meaning":"七元甲子起例：一元起虚、二元起奎、三元起毕、四元起鬼、五元起翼、六元起氐、七元起箕，420 日一周，每日轮值一宿。基本吉凶据《玉匣记》「二十八宿值日吉凶歌」通行本，吉宿十四：角房尾箕斗室壁娄胃毕参井张轸；凶宿十四：亢氐心牛女虚危奎昴觜鬼柳星翼（奎凶、娄吉，v90 已正名录）。","plain":"把天上二十八宿轮流「值班」排到每一天，老黄历上写的「角木蛟、亢金龙」就是它。v91 口径：先看这一宿本身是吉是凶——值凶宿即作重忌不用；值吉宿则不为忌。只有两种例外，且都在界面上特标：①「吉而不用」＝虽是吉宿，歌诀却明言不宜本用事（如角宿「惟有葬埋不可用」→ 安葬仍忌）；②「虽凶但用」＝虽是凶宿，歌诀却明言宜本用事（如鬼宿「埋葬此日官禄至」→ 安葬反可用）。","usecase":"先看当日值哪一宿：吉宿十四通过、凶宿十四取重忌。遇安葬、修造、嫁娶时须再查「专宜／专忌」——如鬼宿安葬、星宿昴宿修造属「虽凶但用」，角宿参宿井宿安葬、参宿嫁娶属「吉而不用」。入学、赴举无专条，只从基本吉凶。","src":"《协纪辨方书》卷一·本原一（载起例而云「载在时宪书而无所用」）；各宿吉凶歌出《玉匣记》通行本","basis":"按用户所定 v91 口径：以基本吉凶为准，值凶宿即标重忌（百事不宜之列），值吉宿不为忌；歌诀明言本用事者为唯一两类例外（吉而不用 / 虽凶但用），皆须逐案注明出处原句。歌诀无一字及「赴举/应试/入学」，故此二用事亦只从基本吉凶，不立专条。","zhuan":{"name":"二十八宿值日（宿曜）","note":"二十八宿以「基本吉凶」为常理——吉宿十四通过、凶宿十四即重忌（据《玉匣记》二十八宿值日吉凶歌通行本）。唯两类例外属常理之外、须逐案特标：①「吉而不用」＝吉宿而歌诀明言不宜本用事；②「虽凶但用」＝凶宿而歌诀明言宜本用事。歌诀无一字及「赴举／应试／入学」，故此二用事只从基本吉凶，不立专条。","yi":[["鬼宿","安葬","《玉匣记》鬼宿值日歌：「埋葬此日官禄至」","鬼（凶宿）遇安葬 → 「虽凶但用」，通过并标记，不入忌单"],["星宿","修造","《玉匣记》星宿值日歌：「好造新房」，明言宜造作","星（凶宿）遇修造 → 「虽凶但用」"],["昴宿","修造","《玉匣记》昴宿值日歌：「造作进田牛」，明言宜造作","昴（凶宿）遇修造 → 「虽凶但用」"]],"ji":[["角宿","安葬","《玉匣记》角宿值日歌：「惟有葬埋不可用」","角（吉宿）遇安葬 → 「吉而不用」，取重忌并标记"],["参宿","安葬","《玉匣记》参宿值日歌明言不宜安葬","参（吉宿）遇安葬 → 「吉而不用」，取重忌并标记"],["参宿","嫁娶","《玉匣记》参宿值日歌明言不宜嫁娶","参（吉宿）遇嫁娶 → 「吉而不用」，取重忌并标记"],["井宿","安葬","《玉匣记》井宿值日歌明言不宜安葬","井（吉宿）遇安葬 → 「吉而不用」，取重忌并标记"]]}},"yuepo":{"name":"月破","cat":"二、百事不宜·诸事大忌","nature":"正统重忌（一票否决）","meaning":"日支冲月建之支，即建除之「破」日，一名大耗。《协纪》卷四：「月破者，月建所冲之日也，与岁破义同。」","plain":"这个月的「当家地支」被当天的地支正面冲撞，等于硬碰硬。古书直说诸事大忌，是择日里最凶的日子之一，凡办大事都不该选。","usecase":"本因素属凶煞（正统重忌（一票否决））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷四·义例二（建除「破」同位·大耗）","basis":"「诸事大忌」，七用事主条皆直列，全列重忌。"},"suipo":{"name":"岁破日","cat":"二、百事不宜·诸事大忌","nature":"正统重忌（一票否决）","meaning":"日支冲当年太岁所居之支，即太岁所冲之辰，与大耗同辰。《协纪》卷十「大耗」条：「与德合并犹忌。」","plain":"太岁是一年的「值年太岁」，当天正冲太岁，等于当面冒犯年神。主破败耗散，诸事不宜。","usecase":"本因素属凶煞（正统重忌（一票否决））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷四「月破者……与岁破义同」；卷十·大耗","basis":"「诸事不宜」，一票否决，全列重忌。"},"silijue":{"name":"四离·四绝","cat":"二、百事不宜·诸事大忌","nature":"正统重忌（一票否决）","meaning":"春分、秋分、夏至、冬至前一日为四离；立春、立夏、立秋、立冬前一日为四绝。《协纪》卷十一：「上朔、四离、四绝、晦日：除整理修饰外皆忌。」","plain":"四季交替、阴阳转换的「接缝日」，古人认为气场驳杂不稳，除打扫修整外，办什么事都不妥。","usecase":"本因素属凶煞（正统重忌（一票否决））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷十一·用事","basis":"原文「除整理修饰外皆忌」，兴造动土属之，全列重忌（仅「修饰垣墙」不忌，已注于含义）。"},"sifei":{"name":"四废","cat":"二、百事不宜·诸事大忌","nature":"正统重忌（一票否决）","meaning":"春庚申辛酉、夏壬子癸亥、秋甲寅乙卯、冬丙午丁巳——四时旺气与日干支相战，五行无气之日。《协纪》卷十：「与德合并犹忌。」","plain":"当令的五行与这一天的干支互相「打架」，谁也不服谁，五行之气废而不用。古书说即便碰到天德月德也救不回来，是硬忌。","usecase":"本因素属凶煞（正统重忌（一票否决））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷六·义例·四废；卷十·宜忌","basis":"七用事主条皆直列且「与德合并犹忌」，全列重忌。"},"yincuo":{"name":"阴阳不足之辰（阳错·阴错等）","cat":"二、百事不宜·诸事大忌","nature":"正统重忌","meaning":"《协纪》卷四立成十九目：行狠、了戾、孤辰、单阴、纯阴、孤阳、岁薄、逐阵、阴阳交破、阴阳击冲、阳破阴冲、阴道冲阳、阴位、三阴、阳错、阴错、阴阳俱错、绝阴、绝阳。按月建取所值干支日。","plain":"阴阳二气搭配失衡的日子——孤阳不长、纯阴不生，或阴阳互冲。原文直说「百事不宜」，是《协纪》里明文的全凶日。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷四·义例·阴阳不足之辰（引《堪舆经》＋立成）","basis":"原文「忌兴造、嫁娶、上官赴任、入宅迁移、出行、交易、合药问病，百事不宜」，全列重忌。"},"hongsha":{"name":"红砂（红沙）","cat":"二、百事不宜·诸事大忌","nature":"民俗重忌（《协纪》引而不列正条）","meaning":"孟月（寅巳申亥）酉日、仲月（子午卯酉）巳日、季月（辰戌丑未）丑日。口诀：「四孟金鸡四仲蛇，四季丑日是红砂。」","plain":"民间最怕的凶日之一，俗谓「诸事不宜，起造犯红砂，百日火焚家；嫁娶犯红砂，夫死嫁别家」。虽《协纪》不列正条，但民间奉为硬忌。","usecase":"本因素属凶煞（民俗重忌（《协纪》引而不列正条））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷三十六·辨讹引《转神历》《袪疑说》","basis":"通书明言「诸事不宜，极凶」，属明确不利，全列重忌；《协纪》采其说入《辨讹》而未入正条，性质标民俗。"},"wulu":{"name":"十恶大败","cat":"二、百事不宜·诸事大忌","nature":"正统忌（通书升为重忌）","meaning":"无禄十日：甲辰、乙巳、庚辰、辛巳、丙申、戊戌、丁亥、己丑、壬申、癸亥——十日禄皆落空。通书一名「十恶大败」。","plain":"「禄」是养命之源，这一天禄落空亡，等于财禄无着。《五行精纪》说「国家用兵须大忌……仓库金银化作尘」，忌出行、赴任、兴造、开市及一切喜庆之事。","usecase":"本因素属凶煞（正统忌（通书升为重忌））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷五·义例·无禄；《三命通会》论十恶大败；《五行精纪》","basis":"通书明列「忌出行、赴任、兴造、开市及喜庆之事」，覆盖面遍及七类用事，全列重忌。"},"yueyan":{"name":"月厌（地火）","cat":"二、百事不宜·诸事大忌","nature":"正统重忌","meaning":"月厌（一名地火），正月起戌逆行十二辰（寅月戌、卯月酉……丑月亥）。其对冲即「厌对」（一名河魁，坊间称妨姑日）。《协纪》卷十：「忌……几于诸事皆忌，止不忌祭祀、覃恩、肆赦。」","plain":"月中的阴气极盛之地，忌讳极广——古书说几乎什么事都忌，只不忌祭祀和朝廷大赦。是覆盖面最宽的凶煞之一。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷十·月厌（一名地火）；卷十一·用事诸条","basis":"原文「几于诸事皆忌」，全列重忌。"},"jiesha":{"name":"劫煞","cat":"三、月建凶煞","nature":"正统重忌","meaning":"月建三合五行之「绝」位：寅午戌月（火局）在亥、亥卯未月（木局）在申、申子辰月（水局）在巳、巳酉丑月（金局）在寅。十一月起巳，巳寅亥申循环。","plain":"月中三合局的「绝地」，气势断绝之处。主盗劫、伤损，是《协纪》用事各条几乎都直列的凶煞。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷九·月神·劫煞；忌单见卷十一·用事诸条","basis":"七用事主条皆直列，全列重忌。"},"zaisha":{"name":"灾煞（天火）","cat":"三、月建凶煞","nature":"正统重忌","meaning":"劫煞顺一位（三合五行之「胎」位），一名天火：寅午戌月在子、亥卯未月在酉、申子辰月在午、巳酉丑月在卯。午卯子酉循环。","plain":"紧接劫煞之后的凶位，主灾病、火厄。与劫煞、月煞合称「三煞」之流，同属《协纪》用事条直列之忌。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷九·月神·灾煞（一名天火）；卷十一·用事诸条","basis":"七用事主条皆直列，全列重忌。"},"yuesha":{"name":"月煞（月虚）","cat":"三、月建凶煞","nature":"正统重忌","meaning":"劫煞顺二位（三合五行之「养」位），一名月虚：寅午戌月在丑、亥卯未月在戌、申子辰月在未、巳酉丑月在辰。未辰丑戌循环。","plain":"三合局的「养地」逢煞，气势未成而先损，主虚耗、耗散。与劫煞、灾煞同列《协纪》用事诸条之忌。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷九·月神·月煞（一名月虚）；卷十一·用事诸条","basis":"七用事主条皆直列，全列重忌。"},"yuexing":{"name":"月刑","cat":"三、月建凶煞","nature":"正统重忌","meaning":"正月巳、二月子、三月辰、四月申、五月午、六月丑、七月寅、八月酉、九月未、十月亥、十一月卯、十二月戌；日月同支者亦犯（如辰月辰日）。《协纪》：「月刑为月建刑伤之地，故所忌与三煞同。」","plain":"本月地支刑伤其他地支的位置，主刑伤、争讼、官非。古书说它所忌的严重程度与三煞相同。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷九·月神·月刑；卷十「按月刑……所忌与三煞同」","basis":"「所忌与三煞同」，七用事主条皆直列，全列重忌。"},"yuehai":{"name":"月害","cat":"三、月建凶煞","nature":"正统重忌（嫁娶·安葬·开市尤重）","meaning":"取本月支之六合、再取其冲：子月害未、丑月害午、寅月害巳、卯月害辰、辰月害卯、巳月害寅、午月害丑、未月害子、申月害亥、酉月害戌、戌月害酉、亥月害申。《协纪》：「月害为六合之冲。」","plain":"把本月的「好朋友」（六合）给冲散了，主暗中损害、亲人之间有隔阂，古称「害」。","usecase":"本因素属凶煞（正统重忌（嫁娶·安葬·开市尤重））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、开市、立券交易、纳财——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：上官赴任、施恩封拜、上表章、出行、会友宴请、入宅、修造——犯之可酌情配吉神化解或改期。其余用事（入学受业、赴举应试）一般不涉及本因素。","src":"《协纪辨方书》卷十·月害；忌单见卷十一·用事诸条","basis":"嫁娶、安葬、开市类主条直列 → 重忌；出行、赴任、般移、修造条不直列 → 忌。"},"yandui":{"name":"厌对","cat":"三、月建凶煞","nature":"正统重忌（嫁娶独重）","meaning":"月厌之对冲，一名河魁：正月起辰逆行十二辰（正辰、二卯、三寅……）。《协纪》卷四引《历例》：「阳建之月，前三辰为天罡，后三辰为河魁；阴建之月反是」——天罡即月厌、河魁即厌对，坊间称「妨翁日／妨姑日」。卷十：「忌嫁娶，与德并则不忌；子午月与月破并尤忌。」","plain":"月厌的正对面，是嫁娶条明文直列的忌神。民间说的「妨翁妨姑」，正源就是这一对神煞。","usecase":"本因素属凶煞（正统重忌（嫁娶独重））。「重忌」用事：嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：纳采问名、结婚姻——犯之可酌情配吉神化解或改期。其余 13 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·厌对；卷四引《历例》天罡河魁；卷十·宜忌","basis":"唯嫁娶条直列 → 嫁娶重忌；结婚姻、纳采问名条不直列 → 忌；余类无涉。"},"wangwang":{"name":"往亡","cat":"三、月建凶煞","nature":"正统重忌（上任·远行·嫁娶·般移）","meaning":"《堪舆经》：「往者去也，亡者无也。」历例：正月在寅、二月在巳……寅午戌月顺行寅卯辰、亥卯未月顺行巳午未、申子辰月顺行申酉戌、巳酉丑月顺行亥子丑。忌拜官上任、远行归家、出军征讨、嫁娶寻医。","plain":"字面就是「去了回不来」，主出行不归、上任不利、出师不返。古人最忌在这一天出门远行或赴任。","usecase":"本因素属凶煞（正统重忌（上任·远行·嫁娶·般移））。「重忌」用事：纳采问名、结婚姻、嫁娶、上官赴任、出行、入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：安葬、施恩封拜、上表章、开市、立券交易、纳财、会友宴请、修造——犯之可酌情配吉神化解或改期。其余用事（入学受业、赴举应试）一般不涉及本因素。","src":"《协纪辨方书》卷六·往亡（引《堪舆经》＋历例）","basis":"嫁娶、上官赴任、出行、般移主条直列且「与德合、赦愿并，犹忌」→ 重忌；他类他处论及 → 忌。"},"qiwang":{"name":"气往亡","cat":"三、月建凶煞","nature":"正统重忌（出行·般移）","meaning":"自交节之日起数：立春 7、惊蛰 14、清明 21、立夏 8、芒种 16、小暑 24、立秋 9、白露 18、寒露 27、立冬 10、大雪 20、小寒 30 日，取三合化象之成数。","plain":"与往亡同类的「节气版」，按交节日数推算，同样主出门不归、搬迁不利。","usecase":"本因素属凶煞（正统重忌（出行·般移））。「重忌」用事：出行、入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 14 项用事一般不涉及本因素。","src":"《协纪辨方书》卷六·气往亡「历例曰……皆自交节日数之」","basis":"出行、般移所忌，本引擎限出行·入宅两类登记，列重忌。"},"guiji":{"name":"归忌","cat":"三、月建凶煞","nature":"正统重忌（般移·远回）","meaning":"孟月（寅巳申亥）忌丑、仲月（卯午酉子）忌寅、季月（辰未戌丑）忌子。《广圣历》忌远行归家、移徙。《协纪》按：「汉注『并忌嫁娶』之说他书所无，应止忌般移远回，不忌嫁娶。」","plain":"专门管「回家、搬家」的凶日：出了门回不来，或搬了家不安稳。**注意：古籍明言它不忌嫁娶**，民间误传忌嫁娶，《协纪》特别纠正过。","usecase":"本因素属凶煞（正统重忌（般移·远回））。「重忌」用事：入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：出行——犯之可酌情配吉神化解或改期。其余 14 项用事一般不涉及本因素。","src":"《协纪辨方书》卷六·归忌（引《广圣历》＋历例＋按语）","basis":"般移（入宅）主条直列 → 重忌；远回（出行）论及 → 忌；**嫁娶依《协纪》按语不忌**，故婚嫁三子项标「—」。"},"tufu":{"name":"土符","cat":"三、月建凶煞","nature":"正统重忌（动土）","meaning":"土神，正月丑、二月巳、三月酉、四月寅、五月午、六月戌、七月卯、八月未、九月亥、十月辰、十一月申、十二月子。忌破土穿井、开渠筑墙。","plain":"土里的凶神当值，动土就是惊动它。凡破土、打井、挖渠、砌墙都该避开。","usecase":"本因素属凶煞（正统重忌（动土））。「重忌」用事：安葬、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 14 项用事一般不涉及本因素。","src":"《协纪辨方书》卷六·土符「历例曰：正月丑，二月巳，三月酉……」","basis":"兴造动土、破土诸条直列，修造、丧葬（破土）列重忌。"},"dinang":{"name":"地囊","cat":"三、月建凶煞","nature":"正统重忌（动土）","meaning":"四时三合卦之纳甲：正庚子庚午、二乙未癸丑、三甲子壬午、四己卯己酉、五壬戌甲辰、六丙辰丙戌、七丁巳丁亥、八丙寅丙申、九辛丑辛未、十戊寅戊申、十一辛卯辛酉、十二癸酉乙卯。《协纪》奏议：「地囊乃四时三合卦之纳甲……今俱应改正。」","plain":"与土符同类的动土之忌，按卦纳甲推算。历代通书多传抄讹误，《协纪》专门更正过，本表从《协纪》改正之例。","usecase":"本因素属凶煞（正统重忌（动土））。「重忌」用事：安葬、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 14 项用事一般不涉及本因素。","src":"《协纪辨方书》卷六·奏议（四库本改正之例）","basis":"兴造动土、破土诸条直列，修造、丧葬列重忌。"},"tuwang":{"name":"土王用事后","cat":"三、月建凶煞","nature":"正统重忌（动土）","meaning":"四立（立春、立夏、立秋、立冬）前十八日为土王用事，土气方旺而不可犯。《协纪》兴造动土、开渠穿井、破土诸条皆直列「土王用事后」为忌。","plain":"四季交替前土气最旺的十八天，土「正当年」不能动。凡破土、动工、安葬都要避开这四段日子。","usecase":"本因素属凶煞（正统重忌（动土））。「重忌」用事：安葬、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 14 项用事一般不涉及本因素。","src":"《协纪辨方书》卷十一·用事·兴造动土／破土／开渠穿井","basis":"兴造动土、破土诸条直列，修造、丧葬列重忌。"},"tianzei":{"name":"天贼","cat":"三、月建凶煞","nature":"正统重忌（远行）","meaning":"月中盗神，正月在丑逆行十二辰（正丑、二子、三亥、四戌、五酉、六申、七未、八午、九巳、十辰、十一卯、十二寅）。《协纪》：「其日忌远行。」","plain":"月中「盗神」当值，出门容易遭偷盗、遗失、受骗。故专忌远行。","usecase":"本因素属凶煞（正统重忌（远行））。「重忌」用事：出行——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷六·天贼","basis":"原文「忌远行」，出行列重忌；余类无明文，不列。"},"xiaohao":{"name":"小耗","cat":"三、月建凶煞","nature":"正统重忌（立券·纳财）","meaning":"月内耗神，本月闭日之冲即小耗（月建顺推五辰）：正未、二申、三酉、四戌、五亥、六子、七丑、八寅、九卯、十辰、十一巳、十二午。立券、纳财所忌。","plain":"小号「漏财神」，主钱财耗散。签合同、收钱、开仓这类与财物有关的事最忌。","usecase":"本因素属凶煞（正统重忌（立券·纳财））。「重忌」用事：开市、立券交易、纳财——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：修造——犯之可酌情配吉神化解或改期。其余 12 项用事一般不涉及本因素。","src":"《协纪辨方书》卷四·义例二·建除·执日","basis":"开市、立券、纳财主条直列 → 重忌；修造条论及 → 忌。"},"bafeng":{"name":"八风·触水龙","cat":"四、日辰杂煞","nature":"正统重忌（涉水）","meaning":"春丁丑己酉、夏甲申甲辰、秋辛未丁未、冬甲戌甲寅。一名触水龙。《协纪》：「忌乘船渡水、涉江河。」","plain":"专管水上的凶日：坐船渡河、下江涉水都忌。古人出行常走水路，此煞最关人命。","usecase":"本因素属凶煞（正统重忌（涉水））。「重忌」用事：出行——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·八风·触水龙","basis":"原文「忌乘船渡水、涉江河」，出行列重忌；余类无涉。"},"bazhuan":{"name":"八专","cat":"四、日辰杂煞","nature":"正统重忌（嫁娶）","meaning":"八专：丁未、己未、庚申、甲寅、癸丑五日（《协纪》卷五）；坊本另有八日之说。卷十：「忌安抚边境、选将训兵、出师、结婚姻、纳采问名、嫁娶，与德合并犹忌。」按语：「八专之忌婚嫁，取阴阳同居而无别为义。」","plain":"干支同气、阴阳不分家，古人认为「男女无别」之日不宜成婚——**这是《协纪》明文写定忌嫁娶的，婚嫁一大硬忌**。","usecase":"本因素属凶煞（正统重忌（嫁娶））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·八专；卷十·宜忌；卷五引《曾门经》","basis":"结婚姻、纳采问名、嫁娶三条皆直列，且「与德合并犹忌」→ 婚嫁三子项重忌（本引擎 v87 前此处疏漏，已改）。"},"siji":{"name":"四忌·四穷","cat":"四、日辰杂煞","nature":"正统重忌","meaning":"四忌＝本令阳干加于辰首（春甲子、夏丙子、秋庚子、冬壬子）；四穷＝本令阴干加于辰尾（春乙亥、夏丁亥、秋辛亥、冬癸亥）。二者相合即八龙、七鸟、九虎、六蛇，「其日皆不可迎婚嫁娶」。","plain":"一季里最「穷尽」的两个日子：阳气不得伸、阴气无所归。古书说这几天绝不可迎亲嫁娶，德神也化解不了。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、开市、立券交易、纳财——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 9 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·四忌·四穷（引《神煞起例》《总要历》）","basis":"嫁娶、安葬、开市类主条直列 → 重忌；余类不直列，本引擎限三类登记。"},"wumu":{"name":"五墓","cat":"四、日辰杂煞","nature":"正统重忌","meaning":"四旺之墓辰：正二月乙未、四五月丙戌、七八月辛丑、十、十一月壬辰、四季月（三六九十二）戊辰。《广圣历》：「忌营造起土、嫁娶、出军。」","plain":"五行「入库」之地，气势收敛入墓。凡动工、嫁娶、出兵都不宜——七类用事主条全部直列，覆盖面极广。","usecase":"本因素属凶煞（正统重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷五·五墓（引《广圣历》＋历例）","basis":"嫁娶、安葬、赴任、开市、出行、般移/安床、兴造/竖柱皆直列，全列重忌。"},"jiukong":{"name":"九空","cat":"四、日辰杂煞","nature":"正统重忌（财货·仓库）","meaning":"月内杀神，正月在辰逆行四季（辰丑戌未循环）。《广圣历》：「忌修造仓库、出入货财。」墓库破散之神：库破则空、冲则散。","plain":"库破了、财散了。修仓库、进出货物钱财都忌，主一场空。","usecase":"本因素属凶煞（正统重忌（财货·仓库））。「重忌」用事：开市、立券交易、纳财——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：修造——犯之可酌情配吉神化解或改期。其余 12 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·九空（引《广圣历》＋历例）","basis":"开市、立券、纳财主条直列 → 重忌；修造条论及 → 忌。"},"sihao":{"name":"四耗","cat":"四、日辰杂煞","nature":"正统重忌（财货·亲姻）","meaning":"四时休干临分至之辰：春壬子、夏乙卯、秋戊午、冬辛酉。《总圣历》：「忌会亲姻、出师、开仓库、施债负。」","plain":"四季休气遇上二分二至，主耗散。开仓放债、会亲结姻都忌，钱粮出去回不来。","usecase":"本因素属凶煞（正统重忌（财货·亲姻））。「重忌」用事：开市、立券交易、纳财——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：纳采问名、结婚姻、嫁娶——犯之可酌情配吉神化解或改期。其余 10 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·四耗（引《总圣历》＋历例）","basis":"开市、立券、纳财主条直列 → 重忌；「会亲姻」论及婚嫁 → 忌。"},"wuxu":{"name":"五虚","cat":"四、日辰杂煞","nature":"正统重忌（财货）","meaning":"四时绝辰：春巳酉丑、夏申子辰、秋亥卯未、冬寅午戌。《协纪》：「忌开仓库、营种莳、出财宝、施债负。」","plain":"四季气绝之日，仓库空虚之象。开仓、出货、放债都忌。","usecase":"本因素属凶煞（正统重忌（财货））。「重忌」用事：开市、立券交易、纳财——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·五虚","basis":"开市、立券、纳财主条皆涉财货，列重忌。"},"wuli":{"name":"五离（除神）","cat":"四、日辰杂煞","nature":"正统重忌（婚嫁·交关）","meaning":"月中离神，申、酉日是也。《协纪》：「忌结婚姻、会亲友、作交关、立契券。」同理寅、卯日为「五合」，宜结婚会亲、立券交易。","plain":"主「分离、散伙」的日子。结婚、约亲友、订契约都忌——与之相对，寅卯日是「五合」，正宜这些事。","usecase":"本因素属凶煞（正统重忌（婚嫁·交关））。「重忌」用事：纳采问名、结婚姻、嫁娶、开市、立券交易、纳财、会友宴请——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 9 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·五离（除神）·五合","basis":"结婚姻、会亲友、立契券原文明列 → 婚嫁三子项、立券、开市、会友重忌。"},"jiuchou":{"name":"九丑","cat":"四、日辰杂煞","nature":"正统重忌（嫁娶·移徙·筑室）","meaning":"乙、戊、己、辛、壬五干临子午卯酉四仲，凡十日：乙卯、乙酉、戊子、戊午、己卯、己酉、辛卯、辛酉、壬子、壬午。《金匮经》：「其日不可出军、嫁娶、移徙、筑室。」","plain":"五干配四仲，阴阳交战「丑而不正」，古书点名：出兵、嫁娶、搬家、盖房都不能用。","usecase":"本因素属凶煞（正统重忌（嫁娶·移徙·筑室））。「重忌」用事：纳采问名、结婚姻、嫁娶、入宅、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 11 项用事一般不涉及本因素。","src":"《协纪辨方书》卷七·九丑（引《金匮经》）","basis":"《金匮经》明列嫁娶、移徙、筑室 → 婚嫁三子项、入宅、修造重忌；余类未列。"},"furi":{"name":"复日·重日","cat":"四、日辰杂煞","nature":"正统重忌（凶事）","meaning":"复日以日干论（正七月甲庚、二八月乙辛、四十月丙壬、五十一月丁癸、三九六十二戊己）；重日即巳、亥二日。《协纪》：「忌为凶事，利为吉事」，故忌破土、安葬、启攒；与天德、月德、天赦、六合并则不忌。","plain":"专管「凶事」的凶日——办丧葬、破土这类阴事最忌；反过来办喜事反而有利。民俗所称「重丧」其实与它同一起例，只是换了个民间叫法。","usecase":"本因素属凶煞（正统重忌（凶事））。「重忌」用事：安葬——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷五·复日·重日","basis":"安葬条直列（条件忌：鸣吠遇之则忌，德/赦/六合遇之则不忌）→ 丧葬重忌。"},"tianshi":{"name":"大时（咸池）","cat":"四、日辰杂煞","nature":"正统重忌（安葬除外）","meaning":"月建三合五行沐浴之辰，一名咸池。正月起卯逆行四仲（正卯、二子、三酉、四午，循环）。《神枢经》有忌无宜。上官、出行、会亲、开市、立券、纳财皆忌。","plain":"月中桃花败地，主淫佚、败事、口舌。古书说它只有忌、没有宜，是少见的全凶之神；唯安葬不忌。","usecase":"本因素属凶煞（正统重忌（安葬除外））。「重忌」用事：纳采问名、结婚姻、嫁娶、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：安葬——犯之可酌情配吉神化解或改期。其余用事（入学受业、赴举应试）一般不涉及本因素。","src":"《协纪辨方书》卷六·义例·大时（咸池）","basis":"除安葬外六类主条皆直列 → 重忌；安葬条不列 → 忌。"},"tianli":{"name":"天吏（致死）","cat":"四、日辰杂煞","nature":"正统重忌（安葬除外）","meaning":"三合五行死气之位，一名致死。正月起酉逆行四仲（正酉、二午、三卯、四子，循环）。临官赴任、远行、开市、词讼皆忌。","plain":"月中「死气」所在，主阻滞、官非、上司不喜。赴任、远行、开市、打官司都忌；唯安葬不忌。","usecase":"本因素属凶煞（正统重忌（安葬除外））。「重忌」用事：纳采问名、结婚姻、嫁娶、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：安葬——犯之可酌情配吉神化解或改期。其余用事（入学受业、赴举应试）一般不涉及本因素。","src":"《协纪辨方书》卷六·义例·天吏（致死）","basis":"除安葬外六类主条皆直列 → 重忌；安葬条不列 → 忌。"},"siday":{"name":"巳日","cat":"四、日辰杂煞","nature":"正统重忌（出行）","meaning":"日支属巳之日。《协纪》卷十一·出行条：「忌……巳日。」","plain":"巳为「地户」，出行忌之，主出门不顺、中途有阻。","usecase":"本因素属凶煞（正统重忌（出行））。「重忌」用事：出行——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷十一·用事·出行","basis":"出行主条直列，出行列重忌。"},"youri":{"name":"酉日","cat":"四、日辰杂煞","nature":"正统重忌（会友·宴请）","meaning":"日支属酉之日。《协纪》卷十一·宴会条（会亲友同）：「忌……酉日。」酉主离散。","plain":"酉有「分离」之象，请客吃饭、聚会约见都忌，主宾主不欢而散。","usecase":"本因素属凶煞（正统重忌（会友·宴请））。「重忌」用事：会友宴请——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷十一·用事·宴会（会亲友同）","basis":"宴会（会亲友同）主条直列，会友·宴请列重忌。"},"haizi":{"name":"亥日","cat":"四、日辰杂煞","nature":"正统重忌（嫁娶独忌）","meaning":"日支属亥之日。《协纪》卷十一·嫁娶条：「忌……亥日。」纳采问名、结婚姻不忌。","plain":"亥为「天门」亦是阴极之地，《协纪》独独在嫁娶一条点名忌亥日，纳采、结婚姻反而不忌——**专忌迎亲正日**。","usecase":"本因素属凶煞（正统重忌（嫁娶独忌））。「重忌」用事：嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷十一·用事·嫁娶","basis":"嫁娶条独列，「嫁娶」子项重忌；纳采问名、结婚姻不忌。"},"shenri":{"name":"申日（安床所忌）","cat":"四、日辰杂煞","nature":"正统重忌（安床）","meaning":"日支属申之日。《协纪》卷十一·安床条：「忌……申日。」","plain":"安床（铺床、安置床铺）独忌申日，属《协纪》本条明文。","usecase":"本因素属凶煞（正统重忌（安床））。「重忌」用事：入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《协纪辨方书》卷十一·用事·安床","basis":"安床条直列，入宅（含安床）列重忌。"},"pima":{"name":"披麻（批麻）","cat":"四、日辰杂煞","nature":"民俗忌（主孝服）","meaning":"寅午戌月子日、亥卯未月酉日、申子辰月午日、巳酉丑月卯日（月支三合胎位，与《协纪》灾煞同位）。《鳌头通书》披麻煞诗例，主孝服，忌嫁娶、入宅。","plain":"名字就说明问题——「披麻」即披麻戴孝。主家有丧服之事，办喜事、搬新家最忌讳。","usecase":"本因素属凶煞（民俗忌（主孝服））。「重忌」用事：纳采问名、结婚姻、嫁娶、入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 12 项用事一般不涉及本因素。","src":"《鳌头通书》披麻煞诗例（《协纪》视同灾煞）","basis":"通书明言「主孝服，忌嫁娶、入宅」，属明确不利 → 婚嫁三子项、入宅重忌；性质标民俗（与《协纪》灾煞同位）。"},"renge":{"name":"人隔","cat":"四、日辰杂煞","nature":"民俗忌（嫁娶·纳婿）","meaning":"寅月酉、卯月未、辰月巳、巳月卯、午月丑、未月亥、申月酉、酉月未、戌月巳、亥月卯、子月丑、丑月亥。忌嫁娶、纳婿、进人口。","plain":"「人隔」即人与人之间隔阂不和，主进门之人（新娘、入赘、新增人口）与家主不睦。","usecase":"本因素属凶煞（民俗忌（嫁娶·纳婿））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉历碎金赋》《造福堂择日》","basis":"通书明言「忌嫁娶、纳婿、进人口」→ 婚嫁三子项重忌。"},"taisui":{"name":"太岁日","cat":"五、年煞与方位","nature":"中性（协纪不忌）","meaning":"日支同当年岁支。《协纪》卷三：太岁为年神，非日之凶煞；岁德、岁德合等吉神皆自此出，故本不忌。","plain":"民间常说「太岁当头坐」，但那是**方位**上的太岁方不宜动土；日辰上逢太岁日，《协纪》明言不忌，只记录不扣分。","usecase":"本因素属凶煞（中性（协纪不忌））。其余 16 项用事一般不涉及本因素。本因素在各用事中不单列忌，按当日所值随宜取舍。","src":"《协纪辨方书》卷三·义例（太岁）","basis":"《协纪》不以为忌，全列「—」；真正的「太岁之忌」在岁破日与三煞方两条。"},"sansha":{"name":"年三煞（方）","cat":"五、年煞与方位","nature":"正统重忌（动土）","meaning":"申子辰年煞南方（巳午未）、寅午戌年煞北方（亥子丑）、亥卯未年煞西方（申酉戌）、巳酉丑年煞东方（寅卯辰）。日支落入当年三煞方即犯，兼犯坐山尤忌。","plain":"一年中最凶的三个方位，向这三个方向动土是大忌。日辰地支若落在三煞方，等于踩了年煞的尾巴。","usecase":"本因素属凶煞（正统重忌（动土））。「重忌」用事：安葬、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：入宅——犯之可酌情配吉神化解或改期。其余 13 项用事一般不涉及本因素。","src":"《协纪辨方书》卷三·三煞（申子辰煞南、寅午戌煞北、亥卯未煞西、巳酉丑煞东）","basis":"修造动土、破土主条所忌 → 修造、丧葬重忌；入宅兼论 → 忌。"},"wuhuang":{"name":"年·月五黄（方）","cat":"五、年煞与方位","nature":"正统忌（动土）","meaning":"洛书九宫顺飞：年五黄自 2022 年入中顺飞逐年移一位；月五黄依月家紫白诀（寅月八白入中、卯月七赤……申月二黑），五黄所临之方忌动土。","plain":"九宫飞星里最凶的一颗「五黄廉贞」，所到之方主灾病横祸。该方忌动土、忌开门、忌安床。","usecase":"本因素属凶煞（正统忌（动土））。「重忌」用事：修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：安葬、入宅——犯之可酌情配吉神化解或改期。其余 13 项用事一般不涉及本因素。","src":"洛书九宫顺飞（年：2022 入中顺飞；月：月家紫白诀，寅八白入中）","basis":"主忌动土 → 修造重忌；安葬破土、入宅兼论 → 忌。"},"chongshan":{"name":"日冲坐山","cat":"五、年煞与方位","nature":"正统重忌（坐山所忌）","meaning":"课日地支冲坐山所在宫支（如子山午向遇午日）。修造通例：日辰不可冲坐山。","plain":"房子的「靠山」被日辰冲撞，等于根基动摇。修造、安葬、入宅凡有坐向的，都必须避开。","usecase":"本因素属凶煞（正统重忌（坐山所忌））。「重忌」用事：安葬、入宅、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"修造通例（日辰不可冲坐山）","basis":"修造、安葬、入宅三条皆以坐山为本，列重忌。"},"benchong":{"name":"日冲本命","cat":"六、八字合参","nature":"本命冲·日级（重忌·一票否决）","meaning":"《协纪辨方书》卷三十三·利用·论相主（出《选择宗镜》）：「一本命地支切忌四柱地支冲之……一太岁冲命最凶，月次之，日又次之时为轻。」课日支冲当事人（事主／新娘新郎／亡人）生年地支，属「本命冲」日级。","plain":"所选日课「日支」冲了你（事主／新娘新郎／亡人）的出生年地支，就是日冲本命。属本命冲日级。是刚性个人化本命约束，对任何用事都不利本命，故两档（标准／严选）一律全开，与用事类型、档位无关，须填主命生辰方生效。","usecase":"本因素属凶煞（本命冲·日级（重忌·一票否决））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷三十三·利用·论相主","basis":"重忌（一票否决），两档皆重忌；须填主命生辰方生效。"},"tianke":{"name":"天克地冲","cat":"六、八字合参","nature":"合参重忌","meaning":"课日天干克当事人日干、且课日地支冲当事人日支（如甲寅日柱之人遇庚申日）。与「本命冲」同为课日—当事人之合参层。","plain":"不只是生肖相冲，连日柱的干也被克——天克地冲，双重冲克。对当事人而言是最不利的组合，凡填了完整生辰者皆当避。","usecase":"本因素属凶煞（合参重忌）。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"后世合参法（非《协纪辨方书》正文）","basis":"干支双冲克，属明确不利当事人，全列重忌；性质标「合参」，示其非《协纪》正文。"},"tiangang":{"name":"天罡四煞（坊本·三合死位）","cat":"六、八字合参","nature":"坊本忌（与《协纪》天罡非一物）","meaning":"年支三合死位：寅午戌命忌酉日、申子辰命忌卯日、巳酉丑命忌子日、亥卯未命忌午日。★辨名：《协纪辨方书》卷四之天罡＝月厌、河魁＝厌对（按月建起，见「月厌」「厌对」二条）；此系坊本以年支三合死位别立「天罡四煞」之名，二者非一物。","plain":"按当事人生肖推出的「死位日」，坊间通书认为造葬、婚嫁、出行、入宅都忌。**注意它和《协纪》正说里的「天罡」不是同一个东西**，不可混为一谈。","usecase":"本因素属凶煞（坊本忌（与《协纪》天罡非一物））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"坊间通行版（年支三合死位）；《协纪辨方书》卷四之天罡别为一物","basis":"坊本明言「造葬、婚嫁、出行、入宅皆忌」，覆盖面及七类 → 全列重忌；性质标坊本，需当事人生辰方判。"},"tiangu":{"name":"天孤（孤辰）","cat":"六、八字合参","nature":"命理忌（孤辰）","meaning":"天孤（孤辰）：年支三会进前一辰——亥子丑年寅、寅卯辰年巳、巳午未年申、申酉戌年亥。男命孤辰，主婚姻不顺。婚嫁查新郎年支，其余查事主年支。","plain":"命理上的「孤辰」，主孤单、缘分淡薄。婚嫁首忌——男方命带孤辰之日成婚，古人认为不利夫妻偕老。","usecase":"本因素属凶煞（命理忌（孤辰））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：入宅——犯之可酌情配吉神化解或改期。其余 12 项用事一般不涉及本因素。","src":"《三命通会》《协纪》命理（年支三会进前一辰）","basis":"通书明言「主婚姻不顺」，嫁娶明确不利 → 婚嫁三子项重忌；入宅论及 → 忌。"},"digua":{"name":"地寡（寡宿）","cat":"六、八字合参","nature":"命理忌（寡宿）","meaning":"地寡（寡宿）：年支三会退后一辰——亥子丑年戌、寅卯辰年丑、巳午未年辰、申酉戌年未。女命寡宿，主孤寡。婚嫁查新娘年支，其余查事主年支。","plain":"命理上的「寡宿」，与孤辰是一对，主孤单独守。婚嫁首忌——女方命带寡宿之日成婚，古人视为大不利。","usecase":"本因素属凶煞（命理忌（寡宿））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。「忌」用事：入宅——犯之可酌情配吉神化解或改期。其余 12 项用事一般不涉及本因素。","src":"《三命通会》《协纪》命理（年支三会退后一辰）","basis":"通书明言「主孤寡」，嫁娶明确不利 → 婚嫁三子项重忌；入宅论及 → 忌。"},"xiangzhu":{"name":"相主·吉格","cat":"六、八字合参","nature":"造命·相主（吉格）","meaning":"《协纪辨方书》卷三十三·利用·论相主：「以四柱八字辅相主人之命也。从来皆论生年，不论生日。」吉格：比肩、天干五合（合官／合财）、印绶（生我）、命禄（本命禄支到课日）、命贵人（阳贵／阴贵到课日）、四长生（生旺五位到课日）、驿马（三合局长生对冲到课日）。「命禄与命贵人最吉，马次之。」","plain":"用课日四柱去「扶相」当事人的本命（事主／新娘新郎／亡人）。命禄（本命禄神到的日子）、命贵人（本命贵人到的日子）最吉，驿马次之；再加比肩、天干五合、印绶、四长生等生旺帮扶。注意：《协纪》论相主「只论生年不论生日」，且嫁娶等人事用事《协纪》卷十一·用事不取本命——故标准档仅修造（宅长命）／丧葬（亡命）开放；严选档才对所有用事开放。","usecase":"本因素为吉神（造命·相主（吉格））。凡办吉事遇之皆沾吉气、百无禁忌，于吉格尤宜优先选用；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷三十三·利用·论相主","basis":"吉格，不构成忌，全列「—」（矩阵中吉神不单列，仅作加分参考）；档位规则见下。"},"bulong":{"name":"补龙（吉）","cat":"六、八字合参","nature":"造命·补龙（吉）","meaning":"《协纪辨方书》卷三十三·利用·论补龙：「造命之法，一看来龙宜何局以补之。」日课年／月／日三柱五行生扶来龙山脉三合五行（印比）则吉，扶龙运也。需坐向方可判；两档皆仅修造／丧葬。","plain":"盖房修造、动土安葬，要选「补龙」的日子——课的年、月、日三柱五行去生扶这座山的来龙五行（印比），就是补龙吉日，龙运得扶。要填坐向才判。","usecase":"本因素为吉神（造命·补龙（吉））。凡办吉事遇之皆沾吉气、百无禁忌，于吉尤宜优先选用；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷三十三·利用·论补龙","basis":"吉格，不构成忌，两档皆吉；未填坐向则该项不参与推算。"},"longsha":{"name":"龙煞（凶）","cat":"六、八字合参","nature":"造命·龙煞（凶）","meaning":"《协纪辨方书》卷三十三·利用·论补龙（犯龙煞）：日课三柱五行克泄来龙山脉三合五行则犯龙煞，凶。需坐向方可判；两档皆仅修造／丧葬。","plain":"与补龙相反——课的年、月、日三柱五行去克或泄来龙五行，就是犯龙煞，凶。要填坐向才判。","usecase":"本因素属凶煞（造命·龙煞（凶））。「重忌」用事：安葬、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 14 项用事一般不涉及本因素。","src":"《协纪辨方书》卷三十三·利用·论补龙","basis":"凶格，两档皆重忌（修造／丧葬）；未填坐向则该项不参与推算。"},"taichong":{"name":"太岁冲命（年冲本命）","cat":"六、八字合参","nature":"本命冲·太岁级（重忌·一票否决）","meaning":"《协纪辨方书》卷三十三·利用·论相主（出《选择宗镜》）：「一太岁冲命最凶，月次之，日又次之时为轻。」用事之年太岁地支冲当事人（事主／新娘新郎／亡人）生年地支，属「本命冲」年（太岁）级，最凶，一票否决。","plain":"你（事主／新娘新郎／亡人）的出生年地支，被「用事那一年的太岁地支」冲了，就是犯太岁、冲本命——例如丙子年生人遇丙午年（午冲子）。这是本命冲里最凶的一级。《协纪》明言「太岁冲命最凶」，且是刚性年份约束，对任何用事都不利本命，故两档（标准／严选）一律全开，不随用事类型与档位变化。","usecase":"本因素属凶煞（本命冲·太岁级（重忌·一票否决））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷三十三·利用·论相主","basis":"重忌（一票否决），两档皆重忌；须填主命生辰方生效。"},"yuechong":{"name":"月冲命（月冲本命）","cat":"六、八字合参","nature":"本命冲·月级（重忌·一票否决）","meaning":"《协纪辨方书》卷三十三·利用·论相主：「一太岁冲命最凶，月次之……」课月支冲当事人生年地支，属「本命冲」月级，次之，一票否决。","plain":"所选日课的「月支」冲了你（事主／新娘新郎／亡人）的出生年地支，就是月冲本命。比年（太岁）冲命轻一级，但仍属冲本命，刚性本命约束，两档全开。","usecase":"本因素属凶煞（本命冲·月级（重忌·一票否决））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《协纪辨方书》卷三十三·利用·论相主","basis":"重忌（一票否决），两档皆重忌；须填主命生辰方生效。"},"shichong":{"name":"时冲命（时冲本命）","cat":"六、八字合参","nature":"本命冲·时级（忌·提示）","meaning":"《协纪辨方书》卷三十三·利用·论相主：「……日又次之时为轻。」课时支冲当事人生年地支，属「本命冲」时级，轻，仅提示（不否决）。于择时层（吉时查看）判定。","plain":"所选时辰的地支冲了你的出生年地支，就是时冲本命。是冲本命里最轻的一级，只作提示、不否决。它在「吉时查看」里以「冲XX本命」呈现，不进日级主判定。两档全开。","usecase":"本因素属凶煞（本命冲·时级（忌·提示））。其余 16 项用事一般不涉及本因素。本因素在各用事中不单列忌，按当日所值随宜取舍。","src":"《协纪辨方书》卷三十三·利用·论相主","basis":"忌（提示，不否决），于择时层判定；须填主命生辰方生效。"},"zt_hunjia":{"name":"嫁娶周堂","cat":"七、民俗周堂","nature":"民俗重忌（值夫·值妇）","meaning":"《协纪》卷三十五·附录·嫁娶周堂：「凡选择嫁娶日，大月从夫顺数，小月从妇逆数，遇第、堂、厨、灶日用之；如遇翁、姑而无翁、姑者亦可用。」环序：夫→姑→堂→翁→第→灶→妇→厨。按语：「周堂图，乾为翁、坎为第、艮为灶、震为妇、巽为厨、离为夫、坤为姑、兑为堂……而要谓遇翁姑夫妇则凶，殊为非理。因载在时宪书，故存其旧，第勿拘忌可耳。」","plain":"一张按农历月大月小、初一数到出嫁日的循环表，落到哪一位就管哪一位：值「夫」「妇」古谓断不可用；值「翁」「姑」只要翁姑回避一下即可。**民间说的「妨夫、妨妇、妨翁姑」，日级推算就是这张表。**","usecase":"本因素属凶煞（民俗重忌（值夫·值妇））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《协纪辨方书》卷三十五·附录·嫁娶周堂；《玉匣记》嫁娶周堂图同","basis":"《玉匣记》定「值夫、值妇断不可用」→ 婚嫁三子项重忌；值翁姑仅须少避，已注于含义。"},"zt_baihu":{"name":"行嫁白虎","cat":"七、民俗周堂","nature":"民俗忌（可禳）","meaning":"《玉匣记》行嫁白虎图：「大月从灶向堂顺行，小月从厨向路逆行。如值死、睡、厨、灶大吉；如值门、床、堂、路宜斩牲禳之。」环序：灶→堂→床→死→睡→门→路→厨。禳法：黄纸朱书「麒麟在此」贴于门、床、堂；值路则轿内挂碰头肉，遇岔路弃之。","plain":"婚嫁专用的第二张周堂表。值死、睡、厨、灶大吉；值门、床、堂、路虽不利，但可以「禳解」（贴符、挂肉化解），所以不算硬忌。","usecase":"本因素属凶煞（民俗忌（可禳））。「忌」用事：纳采问名、结婚姻、嫁娶——犯之可酌情配吉神化解或改期。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》行嫁白虎图","basis":"原文「宜斩牲禳之」——可禳解者非断不可用，故列「忌」而非「重忌」。"},"zt_naxu":{"name":"纳婿周堂","cat":"七、民俗周堂","nature":"民俗重忌（入赘方用）","meaning":"《玉匣记》纳婿周堂图：「只论月分大小，不论节气。大月从夫向姑顺数，小月从户向厨逆数，遇户、厨、灶、门可用；遇公、姑、夫、弟不用。」环序：夫→姑→第→厨→户→灶→翁→门。","plain":"男方入赘女家时专用的周堂表，与嫁娶周堂并行。值公（翁）、姑、夫、弟（第）四位明言「不用」。","usecase":"本因素属凶煞（民俗重忌（入赘方用））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》纳婿周堂图","basis":"原文「遇公、姑、夫、弟不用」，属明确不可用 → 婚嫁三子项重忌（男方入赘方用之）。"},"zt_chuling":{"name":"出灵周堂","cat":"七、民俗周堂","nature":"民俗忌（可避）","meaning":"《玉匣记》安葬日周堂图：「其图只论月分大小，不论节气。大月初一，从父向男顺数；小月初一，从母向女逆数，一日一位数。值亡人则吉；如值人，则出外少避，惟停丧在外，则不论。」环序：父→男→孙→亡→客→妇→婿→母。","plain":"出殡专用的周堂表。值「亡人」位最吉；值其他活人位（父、男、孙、客、妇、婿、母），只要那个人出殡时回避一下就行。","usecase":"本因素属凶煞（民俗忌（可避））。「忌」用事：安葬——犯之可酌情配吉神化解或改期。其余 15 项用事一般不涉及本因素。","src":"《玉匣记》安葬日周堂图","basis":"原文「出外少避」即可，属可避而非不可用 → 列「忌」。"},"zt_qizao":{"name":"起造周堂","cat":"七、民俗周堂","nature":"民俗重忌（起造）","meaning":"《玉匣记》起灶（起造）周堂图：「大月从王向艮顺行，小月从败向富逆行，择吉：富、君、图、王、臣」；图本作「大月从坎王向艮图顺数，小月从离败向巽富逆数；值震君、巽富、艮图、坎王吉，兑臣半吉」。环序：坎王→艮图→震君→巽富→离败→坤绝→兑臣→乾破。","plain":"盖房、砌灶专用的周堂表。值坎王、艮图、震君、巽富吉；值离败、坤绝、乾破凶——「败、绝、破」三位字面就凶，不可用。","usecase":"本因素属凶煞（民俗重忌（起造））。「重忌」用事：修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《玉匣记》起造周堂图","basis":"原文「离败、坤绝、乾破」凶，属明确不利 → 修造重忌。"},"zt_xianghuo":{"name":"安香火周堂","cat":"七、民俗周堂","nature":"民俗重忌（安香火）","meaning":"《玉匣记》安香火周堂图：「大月从安向利顺数，小月从天向利逆数；值天、利、安、师、富吉，能与神在日合之大吉。」环序：安→利→天→灾→害→师→富→煞。","plain":"安放神位、祖宗牌位专用的周堂表。值安、利、天、师、富吉；值灾、害、煞三位凶——安神位是敬神之事，逢灾煞最忌。","usecase":"本因素属凶煞（民俗重忌（安香火））。「重忌」用事：入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《玉匣记》安香火周堂图","basis":"原文「值灾、害、煞凶」，属明确不利 → 入宅重忌。"},"zt_ruzhai":{"name":"入宅周堂","cat":"七、民俗周堂","nature":"民俗重忌（入宅）","meaning":"《玉匣记》入宅周堂图：「大月从玉清（一作月清）起初一顺行，小月从玉堂起初一逆行。」十六位：吉八（玉堂、三财、月清、昌盛、台阶、天良、天福、月福）、凶八（五离、三刑、六道、三徒、家亡、五严、地耗、玄武）。环序：月清→六道→台阶→三徒→昌盛→家亡→天福→五严→月福→地耗→玄武→天良→玉堂→五离→三财→三刑。","plain":"搬家入宅专用的周堂表，共十六位。落在「五离、三刑、六道、三徒、家亡、五严、地耗、玄武」这八位上，字字不吉（家亡、地耗尤其凶），不可用。","usecase":"本因素属凶煞（民俗重忌（入宅））。「重忌」用事：入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"《玉匣记》入宅周堂图","basis":"凶八位原文列为不吉（家亡、五离、地耗、玄武等），属明确不利 → 入宅重忌。"},"zt_anchuang":{"name":"安床周堂","cat":"七、民俗周堂","nature":"民俗重忌（安床）","meaning":"《玉匣记》安床周堂图：「大月从平向富顺行，小月从地向凶逆行；值平、富、地、安用之大吉，值疾、病、凶、倒则凶。」环序：平→富→疾→凶→地→倒→安→病。","plain":"安床（铺床）专用的周堂表。值平、富、地、安大吉；值疾、病、凶、倒四位凶——床是一生安寝之所，逢「疾病凶倒」最忌。**婚嫁铺床、入宅安床都要看它。**","usecase":"本因素属凶煞（民俗重忌（安床））。「重忌」用事：纳采问名、结婚姻、嫁娶、入宅——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 12 项用事一般不涉及本因素。","src":"《玉匣记》安床周堂图","basis":"原文「值疾、病、凶、倒则凶」，属明确不利 → 入宅、婚嫁（铺床）重忌。"},"yuxia":{"name":"杨公忌日","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》辨驳）","meaning":"杨公忌十三日：正月十三、二月十一、三月初九、四月初七、五月初五、六月初三、七月初一、七月廿九、八月廿七、九月廿五、十月廿三、十一月廿一、十二月十九；另有月忌日（初五、十四、二十三）。皆以农历日期为准。《协纪》卷三十六《辨伪》：「世俗多畏杨公忌……皆因未悉其原委，故为所惑耳」，并指出其推法乃「室火猪日」。","plain":"民间流传最广的十三个「百事不宜」日，老黄历几乎家家忌避。**但《协纪辨方书》专列《辨伪》驳斥它**，指出不过是「室火猪」值日，世人不知原委才被唬住。","usecase":"本因素属凶煞（民俗重忌（《协纪》辨驳））。「重忌」用事：纳采问名、结婚姻、嫁娶、安葬、上官赴任、施恩封拜、上表章、开市、立券交易、纳财、出行、会友宴请、入宅、修造、入学受业、赴举应试——此等用事务必核对是否犯此煞，犯即建议另择吉日。","src":"《玉匣记》（四库列存目、不录正文，托名许逊）；《协纪辨方书》卷三十六·辨伪（驳斥方）","basis":"民间奉为「诸事不宜」，按「明确不利即重忌」之口径全列重忌；**《协纪》卷三十六《辨伪》已驳，性质标民俗**，守正统者可取消勾选。"},"chongsang":{"name":"重丧（民俗）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》不收）","meaning":"按月建取日干：寅月甲、卯月乙、辰月戊、巳月丙、午月丁、未月己、申月庚、酉月辛、戌月戊、亥月壬、子月癸、丑月己；又每月巳、亥日为「天地大重丧」。其起例与《协纪》正神「复日」全同。《协纪》卷五按语：「俗则以为犯此则致重丧，益无是理。」","plain":"民间最怕的安葬凶日，谓犯之则家中再死一人。**它与《协纪》正神「复日」的推算方法完全一样，只是换了个民间叫法**——古书早已说「无是理」。","usecase":"本因素属凶煞（民俗重忌（《协纪》不收））。「重忌」用事：安葬——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"明清通书口诀；《协纪辨方书》不收，卷三十六《辨讹》「依托许真君《玉匣记》之说者……则从删削」","basis":"通书明言犯之致重丧，属明确不利 → 丧葬重忌；**与「复日·重日」重复计数，二者取其一即可**，性质标民俗。"},"fusang":{"name":"复丧·复伤（民俗）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》未见）","meaning":"按月建取日支，逐月表恰为各月月破之日（寅月申、卯月酉……丑月未），疑即「月破」在丧葬语境下之异名。","plain":"「复丧」即丧事再来一次，民间安葬大忌。**它的逐月表与各月「月破」之日一模一样**，很可能是月破在丧葬里的别名，与月破重复计数。","usecase":"本因素属凶煞（民俗重忌（《协纪》未见））。「重忌」用事：安葬——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"民间通书；《协纪辨方书》未见此条目（未核到典籍原文）","basis":"通书明言不利丧葬 → 丧葬重忌；**与「月破」重复计数**，且未核到典籍原文，姑存备查。"},"sansang":{"name":"三丧（民俗）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》不收）","meaning":"按季取墓库支：春（寅卯辰月）辰日、夏（巳午未月）未日、秋（申酉戌月）戌日、冬（亥子丑月）丑日。口诀：「春龙滚滚夏羊肥，秋犬冬牛是三丧。」","plain":"与重丧、复丧并称的第三个丧葬凶日，按季节取墓库之辰。民间谓犯之则丧事连三。","usecase":"本因素属凶煞（民俗重忌（《协纪》不收））。「重忌」用事：安葬——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 15 项用事一般不涉及本因素。","src":"民间通书；《协纪辨方书》不收","basis":"通书明言不利丧葬 → 丧葬重忌；性质标民俗。"},"xingjia_dali":{"name":"行嫁大利月（民俗·协纪奏删）","cat":"八、民俗俗忌","nature":"民俗吉（《协纪》奏删）","meaning":"起例歌：「阳前阴后一吉辰，正七首子及媒人，二八月妨翁与姑，三九女之父母身，四十乃妨夫主身，五十一月妨自身，子午寅申辰戌顺，丑未卯酉巳亥逆。」以女命年支之本命月为基，阳年顺推、阴年逆推，第一位为大利月，每位取对冲月配成两月。《协纪》卷三十六：「行嫁大利月则举世用之而不辨其非……固术士之捏造而无理之甚者也……今已奏准删除。」","plain":"按女方生肖推出的「最适合出嫁的月份」，民间几乎人人遵用。**但《协纪辨方书》卷三十六专文辨斥，并已「奏准删除」**，理由是阴阳五行、九宫八卦、建除丛辰无一可通。","usecase":"本因素属凶煞（民俗吉（《协纪》奏删））。其余 16 项用事一般不涉及本因素。本因素在各用事中不单列忌，按当日所值随宜取舍。","src":"《玉匣记·民俗吉凶日篇》；《类编历法通书大全》卷七；《协纪辨方书》卷三十六·辨讹（辨斥方）","basis":"属吉神（得之则宜），不构成忌，全列「—」；《协纪》已奏准删除，性质标民俗，本引擎设为默认不勾选。"},"xingjia_xiaoli":{"name":"小利月·妨媒氏首子（民俗·协纪奏删）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》奏删）","meaning":"承大利月顺／逆推第二位，并取对冲月。即行嫁月表第二栏「妨媒氏、首子」。《类编历法通书大全》卷七原注：「若得行嫁大利月，是遇吉期，无诸禁忌……若用余月，各防其咎。如女无所忌之人，用之无害。」","plain":"大小利月体系第二栏：此月出嫁，妨媒人与头生子。按通书说，若女方家中无所谓「媒氏、首子」之人，用了也无妨。","usecase":"本因素属凶煞（民俗重忌（《协纪》奏删））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》女命行嫁月表第二栏；《协纪辨方书》卷三十六·辨讹（辨斥方）","basis":"通书明言「妨媒氏、首子」→ 嫁娶明确不利，婚嫁三子项重忌；《协纪》已奏准删除，性质标民俗（本引擎默认不勾选）。"},"xingjia_wenggu":{"name":"妨翁姑月（民俗·协纪奏删）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》奏删）","meaning":"承大利月顺／逆推第三位，并取对冲月。即行嫁月表第三栏「妨翁姑」。★此为**月级**之妨，与日级之嫁娶周堂值翁姑、《协纪》正神月厌（一名天罡，通书称妨翁日）层级不同，非一物。","plain":"大小利月体系第三栏：此月出嫁，妨男方父母（翁姑）。这是**按月份**算的，与按日子算的嫁娶周堂「值翁值姑」不是一回事。","usecase":"本因素属凶煞（民俗重忌（《协纪》奏删））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》女命行嫁月表第三栏「翁姑」；《协纪辨方书》卷三十六·辨讹（辨斥方）","basis":"通书明言「妨翁与姑」→ 嫁娶明确不利，婚嫁三子项重忌；《协纪》已奏准删除，性质标民俗（本引擎默认不勾选）。"},"xingjia_fumu":{"name":"妨女父母月（民俗·协纪奏删）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》奏删）","meaning":"承大利月顺／逆推第四位，并取对冲月。即行嫁月表第四栏「父母」。《协纪》卷三十六按语：「第一月利矣，以次而推，何由而妨媒氏？何由而妨翁姑？何由而妨父母？……求之阴阳五行、九宫八卦、堪舆、建除、丛辰之说，无一可通。」","plain":"大小利月体系第四栏：此月出嫁，妨女方自己父母。","usecase":"本因素属凶煞（民俗重忌（《协纪》奏删））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》女命行嫁月表第四栏「父母」；《协纪辨方书》卷三十六·辨讹（辨斥方）","basis":"通书明言「妨女之父母身」→ 嫁娶明确不利，婚嫁三子项重忌；《协纪》已奏准删除，性质标民俗（本引擎默认不勾选）。"},"xingjia_fuzhu":{"name":"妨夫主月（民俗·协纪奏删）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》奏删）","meaning":"承大利月顺／逆推第五位，并取对冲月。即行嫁月表第五栏「夫主」。","plain":"大小利月体系第五栏：此月出嫁，妨丈夫本人。","usecase":"本因素属凶煞（民俗重忌（《协纪》奏删））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》女命行嫁月表第五栏「夫主」；《协纪辨方书》卷三十六·辨讹（辨斥方）","basis":"通书明言「乃妨夫主身」→ 嫁娶明确不利，婚嫁三子项重忌；《协纪》已奏准删除，性质标民俗（本引擎默认不勾选）。"},"xingjia_benshen":{"name":"妨本身月·妨妇（民俗·协纪奏删）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》奏删）","meaning":"承大利月顺／逆推第六位，并取对冲月。即行嫁月表第六栏「本身」，恰为女命本命月与其对冲月。《协纪》卷三十六：「夫第十二月为女本命，第六月为本命之冲，虽选择无忌地支一字之理，而犹有可言。」","plain":"大小利月体系第六栏：此月出嫁，妨新娘自己——正好是她本命月与相冲月。","usecase":"本因素属凶煞（民俗重忌（《协纪》奏删））。「重忌」用事：纳采问名、结婚姻、嫁娶——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 13 项用事一般不涉及本因素。","src":"《玉匣记》女命行嫁月表第六栏「本身」；《协纪辨方书》卷三十六·辨讹（辨斥方）","basis":"通书明言「五十一月妨自身」→ 嫁娶明确不利，婚嫁三子项重忌；《协纪》已奏准删除，性质标民俗（本引擎默认不勾选）。"},"baihu_leiting":{"name":"雷霆白虎占中宫（民俗）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》不收）","meaning":"起例歌：「甲己顺坤走，乙庚逆马游，丙辛从乾逆（一作震上逆），丁壬顺巽求，戊癸从兑顺，皆将甲子周，飞宫到本日，白虎坐星头。」九宫序：坎1坤2震3巽4中5乾6兑7艮8离9。丙辛月起例古籍自相歧异，本引擎从《肘后经》并书。《选择要略》：「右雷霆白虎入中宫日，忌入宅、嫁娶、会亲友、大宴、起工、拆屋、修造、起屋，并忌从中间起手。」","plain":"把「雷霆白虎」按日飞布九宫，落到中宫就是占中宫——中宫是一家之主位，白虎占了主位最凶。忌入宅、嫁娶、会客、动工修造。","usecase":"本因素属凶煞（民俗重忌（《协纪》不收））。「重忌」用事：纳采问名、结婚姻、嫁娶、会友宴请、入宅、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 10 项用事一般不涉及本因素。","src":"《选择要略·上》引《肘后经》；《道法会元》雷霆白虎煞方；《协纪辨方书》不收","basis":"《选择要略》明列「忌入宅、嫁娶、会亲友、大宴、起工、拆屋、修造」→ 婚嫁三子项、入宅、修造、会友重忌；性质标民俗。"},"baihu_dasha":{"name":"大煞白虎占中宫（民俗）","cat":"八、民俗俗忌","nature":"民俗重忌（《协纪》不收）","meaning":"「甲子常将坎上亲，九宫顺走教君轮。假如戊辰居中五，即是大煞占中庭。」七日固定，不随年月而移。网络通行本首日多误作「戊寅」，据九宫顺飞复算当为戊辰，本引擎从戊辰。","plain":"雷霆白虎之外的另一支「大煞白虎」，同样以入中宫为凶。七日一轮，固定不变。","usecase":"本因素属凶煞（民俗重忌（《协纪》不收））。「重忌」用事：纳采问名、结婚姻、嫁娶、会友宴请、入宅、修造——此等用事务必核对是否犯此煞，犯即建议另择吉日。其余 10 项用事一般不涉及本因素。","src":"后世通书（未核到原书）；《协纪辨方书》不收","basis":"与雷霆白虎同例，通书明言忌入宅、嫁娶、修造等 → 婚嫁三子项、入宅、修造、会友重忌；性质标民俗。"},"tiande":{"name":"天德","cat":"九、吉神","nature":"上吉","meaning":"正丁、二坤（申）、三壬、四辛、五乾（亥）、六甲、七癸、八艮（寅）、九丙、十乙、十一巽（巳）、十二庚。月中德神。《协纪》卷五·义例。","plain":"一年十二个月各自的「德神」，最能化解凶煞——古书说「逢凶化吉」多半靠它。喜事办在天德日，凶煞也减三分。","usecase":"本因素为吉神（上吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·天德","basis":"《协纪辨方书》卷五·义例·天德：为月建三合之气所映之干（正月丁、二月申、三月壬、四月辛、五月亥、六月甲、七月癸、八月寅、九月丙、十月乙、十一月巳、十二月庚），「百福之元，万善所聚」，故为上吉，诸事皆宜、百无禁忌。"},"tiandehe":{"name":"天德合","cat":"九、吉神","nature":"吉","meaning":"天德在干则取五合之干（丁→壬），在支则取六合之支（申→巳）。","plain":"天德的「搭档」，力量次于天德，同属解凶之吉神。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·天德合","basis":"《协纪辨方书》卷五·义例：天德之五合干（甲己、乙庚、丙辛、丁壬、戊癸），与天德同气相亲，故为吉，可次天德一等。"},"yuede":{"name":"月德","cat":"九、吉神","nature":"上吉","meaning":"寅午戌月丙日、申子辰月壬日、亥卯未月甲日、巳酉丑月庚日（三合局之阳干）。月中之德，与天德并为两大解凶之神。","plain":"与天德齐名的大吉神，按月三合局取阳干。俗语「天德月德，百事吉庆」，凡凶煞遇之可减。","usecase":"本因素为吉神（上吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·月德","basis":"《协纪辨方书》卷五·义例·月德：月建三合五行之旺气（寅午戌月丙、申子辰月壬、亥卯未月甲、巳酉丑月庚），与天德并号三合旺气所聚，故为上吉，百事皆宜。"},"yuedehe":{"name":"月德合","cat":"九、吉神","nature":"吉","meaning":"月德之五合干：丙→辛、壬→丁、甲→己、庚→乙。","plain":"月德的搭档，力量次于月德。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·月德合","basis":"《协纪辨方书》卷五·义例：月德之五合干（丙→辛、壬→丁、甲→己、庚→乙），与月德同气，故为吉。"},"tianshe":{"name":"天赦","cat":"九、吉神","nature":"上吉","meaning":"春戊寅、夏甲午、秋戊申、冬甲子（四季以月建分：寅卯辰为春）。《协纪》谓天赦为「天地合德、赦过宥罪」之日。","plain":"老天爷「大赦」的日子，一年仅四天。古人认为这一天百无禁忌，连凶煞也让三分，是择日里最上等的吉日。","usecase":"本因素为吉神（上吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·天赦","basis":"《协纪辨方书》卷五·义例·天赦：春戊寅、夏甲午、秋戊申、冬甲子，为天地四时之气和合之日，故为上吉，百事皆宜，古谓罪过可赦、冤抑得伸。"},"sanhe":{"name":"三合日","cat":"九、吉神","nature":"吉","meaning":"日支与月建三合（寅午戌、申子辰、亥卯未、巳酉丑）。三合主人和、事成。","plain":"日子的地支与当月地支「三合」，主和气成事，是嫁娶、合作一类喜事最爱用的吉象。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·三合","basis":"《协纪辨方书》卷五·义例·三合：日支与月建三合（寅午戌、申子辰、亥卯未、巳酉丑），得月建旺气相助，故为吉，百事皆宜。"},"liuhe":{"name":"六合日","cat":"九、吉神","nature":"吉","meaning":"日支与月建六合（子丑、寅亥、卯戌、辰酉、巳申、午未）。六合主亲和、情投。","plain":"日子的地支与当月地支「六合」，主人缘和顺，婚嫁尤为相宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·六合","basis":"《协纪辨方书》卷五·义例·六合：日支与月建六合（子丑、寅亥、卯戌、辰酉、巳申、午未），阴阳和合、情气相投，故为吉，百事皆宜。"},"bujiang":{"name":"阴阳不将","cat":"九、吉神","nature":"上吉（嫁娶专吉）","meaning":"月建为阳建（正月起寅顺行）、月厌为阴建（正月起戌逆行）；厌前之干配厌后之枝者为不将。《天宝历》：「阴阳不将，夫妇荣昌。」本引擎直取《协纪》卷四「历例」十二组干支，并按语「六月戊午为逐阵不可用」剔除之。","plain":"嫁娶第一吉神——阴阳交会而不相将就，夫妇和顺、子孙昌盛。**择婚日先看不将**，是《协纪》为嫁娶专设的最高标准。","usecase":"本因素为吉神（上吉（嫁娶专吉））。凡办吉事遇之皆沾吉气、百无禁忌，于嫁娶尤宜优先选用；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷四·义例·阴阳不将（引《天宝历》＋历例十二组）","basis":"《协纪辨方书》卷六·义例·阴阳不将：「天宝历曰……厌前干配厌后枝者为阴阳不将也」，为嫁娶之专吉（卷十一·嫁娶条所宜），故标上吉（嫁娶专吉）。"},"mingfei":{"name":"鸣吠·鸣吠对","cat":"九、吉神","nature":"上吉（安葬专吉）","meaning":"鸣吠十三日（甲午、甲申、丙午、丙申、庚午、庚申、壬午、壬申＋乙酉、丁酉、己酉、辛酉、癸酉）宜安葬；鸣吠对十一日（丙子、庚子、壬子＋甲寅、丙寅、庚寅、壬寅＋乙卯、丁卯、辛卯、癸卯）宜启攒破土。酉为西方入地之门，故用午申酉、子寅卯，避戌未土不用。","plain":"安葬专用的吉日，取金鸡鸣吠、亡人安息之象。**鸣吠日宜安葬、鸣吠对日宜启攒破土**，是丧葬择日的首要吉神。","usecase":"本因素为吉神（上吉（安葬专吉））。凡办吉事遇之皆沾吉气、百无禁忌，于安葬尤宜优先选用；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷六·鸣吠·鸣吠对（「应依起例改正」）","basis":"《协纪辨方书》卷十一·用事·安葬条所列鸣吠、鸣吠对之日，为安葬之专吉，故标上吉（安葬专吉）。"},"wuhe5":{"name":"五合","cat":"九、吉神","nature":"吉","meaning":"寅、卯日。《协纪》卷五：「五合者月内良辰也，宜结婚、会亲友、立券交易。」与「五离」（申酉日）相对。","plain":"主「和合」的日子，与「五离」正好相反。结婚、会友、订契约都宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·五合","basis":"《协纪辨方书》卷五·义例：月建与日干五合（甲己、乙庚、丙辛、丁壬、戊癸），阴阳相合、情专而无争，故为吉。"},"tianyuan":{"name":"天愿","cat":"九、吉神","nature":"上吉","meaning":"月中善神，按月建取干支日：正甲午、二甲戌、三乙酉、四丙子、五丁丑、六戊午、七甲寅、八丙辰、九辛卯、十戊辰、十一甲子、十二癸未。宜上官赴任、会亲友、立券、纳财、开市、嫁娶、敦睦亲族。","plain":"「天遂人愿」之神，覆盖面很宽——上任、会友、订约、收钱、开张、嫁娶、和亲族都宜。","usecase":"本因素为吉神（上吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷十一·用事","basis":"《协纪辨方书》卷五·义例·天愿：月建所生之干支（寅月乙亥、卯月甲戌之类），天心所愿、万物向荣，故为上吉，百事皆宜。"},"yueen":{"name":"月恩","cat":"九、吉神","nature":"吉","meaning":"阳建所生之干，按月建取日干：正丙、二丁、三庚、四己、五戊、六辛、七壬、八癸、九庚、十乙、十一甲、十二辛。宜上官、会亲友、立券、纳财。","plain":"当月生出的「恩气」，主得上司、长辈照应，宜上任、会友、交易。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷六·义例·月恩","basis":"《协纪辨方书》卷五·义例·月恩：月建所生之支（寅月亥、卯月戌之类），恩泽所被，故为吉，百事皆宜。"},"sixiang":{"name":"四相","cat":"九、吉神","nature":"吉","meaning":"四时王相之辰，按本季取日干：春丙丁、夏戊己、秋壬癸、冬甲乙。宜上官、会亲友、立券、纳财。","plain":"当季得令的干日，主气运相生，办文书、财务一类事宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷六·义例·四相","basis":"《协纪辨方书》卷五·义例·四相：春亥子、夏寅卯、秋巳午、冬申酉，四时生旺之气所在，故为吉，百事皆宜。"},"shide":{"name":"时德","cat":"九、吉神","nature":"吉","meaning":"四时阳辰，按本季取日支：春午、夏辰、秋子、冬寅。宜上官、会亲友、立券、纳财。","plain":"当季阳和之辰，主时机得宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷六·义例·时德","basis":"《协纪辨方书》卷五·义例·时德：月建三合五行所生之辰，得时之德，故为吉，百事皆宜。"},"wangri":{"name":"王日","cat":"九、吉神","nature":"吉","meaning":"月内视事之神，按本季取日支：春寅、夏巳、秋申、冬亥。宜上官赴任、会亲友。","plain":"「王日」即当旺之日，主得位得势，上任会友皆宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷十一·用事","basis":"《协纪辨方书》卷五·义例·王日：春甲乙、夏丙丁、秋庚辛、冬壬癸，四时当旺之干，故为吉，百事皆宜。"},"guanri":{"name":"官日","cat":"九、吉神","nature":"吉","meaning":"官守相临四神之一。官日：取本季官星得位之日（春卯、夏午、秋酉、冬子），依月建顺行取日支。《协纪》卷五·义例列官日、守日、相日、临日四神，并为上官赴任所宜。","plain":"上任做官专用吉神之一，主得官执政、仕途顺遂。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·官日／卷十一·用事","basis":"《协纪辨方书》卷五·义例·官日：本季官星得位之日（春卯、夏午、秋酉、冬子），官星得位、政令以行，故为吉，尤宜上官赴任。"},"shouri":{"name":"守日","cat":"九、吉神","nature":"吉","meaning":"官守相临四神之一。守日：取本季阳辰（春酉、夏子、秋卯、冬午），依本季取日支。主官守得安、政令得守，上官赴任所宜。","plain":"上任做官专用吉神之一，主职守安稳。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·守日／卷十一·用事","basis":"《协纪辨方书》卷五·义例·守日：本季阳辰（春酉、夏子、秋卯、冬午），与官日、相日、临日并称「官守相临」四神，主官守得安、政令得守，故为吉，尤宜上官赴任。"},"xiangri":{"name":"相日","cat":"九、吉神","nature":"吉","meaning":"官守相临四神之一。相日：取本季相旺之辰（春巳、夏申、秋亥、冬寅），依本季取日支。主官相得助、事得相成，上官赴任所宜。","plain":"上任做官专用吉神之一，主得助成事。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·相日／卷十一·用事","basis":"《协纪辨方书》卷五·义例·相日：本季相旺之辰（春巳、夏申、秋亥、冬寅），与官日、守日、临日并称「官守相临」四神，主官相得助、事得相成，故为吉，尤宜上官赴任。"},"linri":{"name":"临日","cat":"九、吉神","nature":"吉","meaning":"官守相临四神之一。临日：取本月建之临官支（寅月午、卯月亥、辰月申、巳月丑、午月戌、未月卯、申月子、酉月巳、戌月寅、亥月未、子月辰、丑月酉），依月建取日支。主官临其位，上官赴任所宜。","plain":"上任做官专用吉神之一，主官临其位、事得临成。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·临日／卷十一·用事","basis":"《协纪辨方书》卷五·义例·临日：本月建之临官支（寅月午、卯月亥、辰月申、巳月丑、午月戌、未月卯、申月子、酉月巳、戌月寅、亥月未、子月辰、丑月酉），与官日、守日、相日并称「官守相临」四神，主官临其位、事得临成，故为吉，尤宜上官赴任。"},"tianxi":{"name":"天喜","cat":"九、吉神","nature":"吉","meaning":"日值「成」日（月建三合）。《协纪》卷四：「成日天喜吉。」宜上官、会亲友。","plain":"成日自带天喜，主事情能成、有喜庆。上任会友都宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷四·义例二·建除","basis":"《协纪辨方书》卷五·义例·喜神：喜神方位所值之日，欢悦和合，故为吉，尤宜嫁娶、宴会、求嗣。"},"wufu":{"name":"五富","cat":"九、吉神","nature":"吉","meaning":"富盛之神，三合长生之六合，按月建取日支：正亥、二寅、三巳、四申、五亥、六寅、七巳、八申、九亥、十寅、十一巳、十二申。宜开市、立券、纳财。","plain":"主富足丰盛，开张、订约、收财都宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷六·义例·五富","basis":"《协纪辨方书》卷五·义例·五富：月建三合五行所生之支，富厚所聚，故为吉，宜兴居、出行、求财、纳财。"},"mucang":{"name":"母仓","cat":"九、吉神","nature":"吉","meaning":"春亥子、夏寅卯、秋辰戌丑未、冬申酉（按本季取日支）；《协纪》另列「土王后巳午」子句。宜纳财、养育、栽植。","plain":"「母亲的粮仓」，主生养丰足，收财、种植、养殖都宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷五·义例·母仓","basis":"《协纪辨方书》卷五·义例·母仓：月建三合五行所墓之库，生养所归，故为吉，宜养育、栽种、收纳。"},"tiancang":{"name":"天仓","cat":"九、吉神","nature":"吉","meaning":"天库之神，正月起寅逆行十二辰：正寅、二丑、三子、四亥、五戌、六酉、七申、八未、九午、十巳、十一辰、十二卯。宜纳财、修仓、牧养。","plain":"天上的仓库，主积蓄入库，收财、修仓、牧养都宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷六·义例·天仓","basis":"《协纪辨方书》卷五·义例·天仓：主仓储积聚之日，故为吉，宜纳财、收纳、积聚、仓储。"},"minri":{"name":"民日","cat":"九、吉神","nature":"吉","meaning":"月内视事之神，按本季取日支：春午、夏酉、秋子、冬卯。宜会亲友、开市、立券、纳财。","plain":"主民间事务顺遂，会友、开张、交易、收财都宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷十一·用事","basis":"《协纪辨方书》卷五·义例·民日：主黎庶安乐之日，故为吉，百事皆宜。"},"fude":{"name":"福德","cat":"九、吉神","nature":"吉","meaning":"日值「满」日（满日叠福德星）。《协纪》卷四：「满为天富小吉。」宜会亲友。","plain":"满日自带福德，主圆满有福，会亲宴请最宜。","usecase":"本因素为吉神（吉）。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷四·义例二·建除","basis":"《协纪辨方书》卷五·义例·福德：福祐所聚之日，故为吉，百事皆宜。"},"jianchu_chengkai":{"name":"建除·成日·开日","cat":"九、吉神","nature":"吉（入学之宜）","meaning":"《协纪辨方书》卷十一《用事·入学》：「宜成日、开日。忌无。」卷十《宜忌·成日》按语：「成为合局之终，开为生气之始，故其日宜入学，原始要终之义也。」《御定星历考原》卷六：「凡尊师传经等事，宜孟、仲月成、开日。」即：日值建除之「成」或「开」，即《协纪》所谓入学之吉日。","plain":"孩子进学堂、拜先生这天，挑「成」日或「开」日就好——成是事情有个圆满结果，开是生气刚刚发动，古人对读书人入门看得郑重。这是《协纪辨方书》白纸黑字收着的正式条目，不是民间瞎传的讲究。","usecase":"本因素为吉神（吉（入学之宜））。凡办吉事遇之皆沾吉气、百无禁忌；在候选日中得此神者可加分优先，仅作吉神参考，不与凶煞相抵。","src":"《协纪辨方书》卷十一·用事·入学；卷十·宜忌·成日、开日按语；《御定星历考原》卷六·用事宜忌","basis":"入学为《协纪》正式收录之用事（御用六十七事第22、民用三十七事第4、通书六十事第8），原文明言「忌无」，故本项只为吉、不为忌，全列「—」；仅于新增之「入学受业」「赴举应试」二列列为可用之宜。"}}; /*FACTOR_DOC_PLACEHOLDER*/
 /* v94：点击某参考因素时展开「完整释义」
    具体含义 / 通俗解释 / 用例 / 典籍出处 / 判定依据 / 专宜·专忌（常理之外的特别用事）
    数据源 RK_FACTOR_DOC，与《择日模块_参考因素释义与重忌矩阵》同源生成，避免口径漂移。 */
@@ -4227,6 +4595,23 @@ function rkFactorRank(f, r){
   return 3;
 }
 const RK_RANK_TIP = ['重忌命中', '吉·上吉命中', '忌（提示）命中', '其余（未命中）'];
+/* v103：弹窗内容由短变长之后重建滚动层并重算范围。
+   iOS WebKit 的滚动层若先按短内容定过 scrollHeight，后续内容暴涨时偶发不刷新，
+   表现为「只见上几行、且滑不下去」，退出重进一次才恢复。此处以
+   「冻结溢出 → 强制回流 → 还原溢出」重建滚动层并回顶；双帧各做一次，跨过 WebKit 的布局惰性。 */
+function rkFixModalScroll(maskId){
+  const mask = document.getElementById(maskId || 'rkDetailMask');
+  const md = mask ? mask.querySelector('.rk-modal') : null;
+  if (!md) return;
+  md.style.overflowY = 'hidden';
+  requestAnimationFrame(() => {
+    void md.offsetHeight;                 /* 读布局属性 → 强制回流 */
+    md.style.overflowY = '';              /* 还原 → 按新高度重建滚动层 */
+    md.scrollTop = 0;
+    requestAnimationFrame(() => { void md.offsetHeight; md.scrollTop = 0; });
+  });
+}
+
 function rkFactorListHtml(r){
   const items = RK_FACTORS.filter(f => rkFactorVisible(f))
     .map((f, i) => ({ f: f, i: i, k: rkFactorRank(f, r) }))
@@ -4287,6 +4672,10 @@ function rkCaseYijiHtml(T){
 function rkTogglePlain(id){
   const el = document.getElementById('rkf-plain-' + id);
   if (el) el.style.display = (el.style.display === 'none') ? '' : 'none';
+  /* v103：释义展开后本区变长，读一次布局属性令滚动层同步（仅增减一小段，不必重建滚动层） */
+  const mk = document.getElementById('rkDetailMask');
+  const box = mk ? mk.querySelector('.rk-modal') : null;
+  if (box) requestAnimationFrame(() => { void box.offsetHeight; });
 }
 function rkShowDetail(i){
   const r = RK_STATE.rows[i];
@@ -4353,6 +4742,7 @@ function rkShowDetail(i){
     document.getElementById('rkMainView').style.display = 'none';
     document.getElementById('rkFactorView').style.display = '';
     document.getElementById('rkDetailHd').textContent = '参考因素详情（本日课类型）';
+    rkFixModalScroll('rkDetailMask');        /* v103：九十八项列表远长于首页，须重建滚动层并回顶 */
   };
   const hb = document.getElementById('rkHourBtn');
   if (hb) hb.onclick = () => rkOpenHours(r);
@@ -4360,8 +4750,10 @@ function rkShowDetail(i){
     document.getElementById('rkFactorView').style.display = 'none';
     document.getElementById('rkMainView').style.display = '';
     document.getElementById('rkDetailHd').textContent = '逐项推算';
+    rkFixModalScroll('rkDetailMask');        /* v103：视图伸缩后回顶并重算滚动范围 */
   };
   document.getElementById('rkDetailMask').classList.add('on');
+  rkFixModalScroll('rkDetailMask');          /* v103：首帧之后重算滚动范围 */
 }
 function rkInit(){
   document.getElementById('rkGo').onclick = rkRun;
@@ -4420,7 +4812,7 @@ function rkInit(){
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 
-const APP_VER = 'v99 · 2026-09-24';
+const APP_VER = 'v105 · 2026-09-26';
 ['verTagHome', 'verTagCompass', 'verTagModules', 'verTagRike'].forEach(id => {
   const e = document.getElementById(id);
   if (e) e.textContent = '版本 ' + APP_VER;
