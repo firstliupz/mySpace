@@ -278,10 +278,17 @@
   .cp-ok:hover{background:#1740b5;}
   #sitSummary{color:#3c4552; font-weight:600;}
   .options-card{width:100%; max-width:820px; align-self:center;}
-  .options-flex{display:flex; flex-direction:column; gap:10px;}
+  .options-flow{display:flex; flex-direction:column; gap:14px;}   /* 选项区各块（格龙/立向/纳水/时间输入）之间的统一间隔 */
+  .options-flex{display:flex; flex-direction:column; gap:12px;}
   .opt-row{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:6px 14px;}
   .opt-group{display:flex; flex-direction:column; gap:5px; padding:9px 11px; background:#f4f6f8; border:1px solid var(--border); border-radius:9px;}
-  .opt-group-title{font-size:12px; font-weight:700; color:#5b6472; letter-spacing:.5px;}
+  .opt-group-title{font-size:12px; font-weight:700; color:#5b6472; letter-spacing:.5px; display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .opt-title-text{font-size:12px; font-weight:700; color:#5b6472; letter-spacing:.5px;}
+  .opt-toggle{margin-left:auto; background:none; border:none; padding:2px 4px; cursor:pointer; color:#5b6472; display:inline-flex; align-items:center; flex:0 0 auto; border-radius:6px; line-height:0;}
+  .opt-toggle:hover{background:#e7ebf0; color:#1f2937;}
+  .opt-toggle svg{display:block; transition:transform .18s ease;}
+  .opt-group.collapsed .opt-toggle svg{transform:rotate(-90deg);}
+  .opt-group.collapsed .opt-group-body{display:none;}
   .opt-select{width:100%; padding:7px 9px; border:1px solid #c9d2dd; border-radius:8px; font-size:14px; color:var(--ink); background:#fff;}
   .opt-fixed-row{display:flex; flex-wrap:wrap; gap:6px 8px;}
   .opt-fixed-item{font-size:13px; color:#15803d; background:#e7f6ec; border:1px solid #b7e4c7; border-radius:999px; padding:3px 11px; white-space:nowrap;}
@@ -292,9 +299,29 @@
   .chuan-input .at-select{flex:0 0 auto; min-width:0; max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .chuan-input .at-select#selChuanMountain{flex:0 0 auto; min-width:0; max-width:80px;}
   .chuan-input .at-select#selChuanDragon{flex:0 0 auto; min-width:0; max-width:96px;}
-  .chuan-input .at-select#selShuikouInline{flex:0 0 auto; min-width:0; max-width:130px;}
+  .chuan-input .at-select#selShuikouInline{flex:0 0 auto; min-width:0; max-width:88px;}   /* 走口行：下拉收窄，配合单行不溢出 */
+  .chuan-input .at-select#selFaceMeasure{flex:0 0 auto; min-width:0; max-width:130px;}
+  .chuan-input .chuan-ctl.sk-row{overflow:visible; gap:4px;}   /* 走口行：整行自然放下，不用横向滚动条；间距收紧 */
+  .chuan-input .chuan-ctl.sk-row .deg-input{flex:0 0 auto; width:50px; min-width:0;}   /* 走口行：实测度数输入框大幅收窄，配合单行布局 */
+  .chuan-input .chuan-ctl.sk-row .at-btn{padding:4px 5px;}   /* 走口行：实时获取按钮内边距收紧，配合单行不溢出 */
   .chuan-ctl .at-btn{flex:0 0 auto; min-width:0; padding:4px 6px; font-size:12.5px;}
   .chuan-cur{font-size:12px; color:#0f172a; display:block; margin-top:4px;}
+  .chuan-ctl.dev-row{align-items:center; margin-top:2px;}
+  .chuan-input .chuan-ctl.dev-row .dev-chk{width:16px; height:16px; flex:0 0 16px; margin:0;}
+  .chuan-input .chuan-ctl.dev-row .dev-lbl{font-size:12px; font-weight:700; color:#5b6472; white-space:nowrap; flex:0 0 auto;}
+  .chuan-ctl .dev-step{flex:0 0 auto; width:26px; min-width:26px; padding:3px 0; font-size:15px; line-height:1; text-align:center;}
+  .chuan-input .chuan-ctl.dev-row .dev-val{min-width:48px; text-align:center; font-size:13px; font-weight:700; color:#7c3aed; flex:0 0 auto;}
+  .chuan-input .chuan-ctl.sk-row .xs-mtn{display:inline-block; flex:0 0 auto; min-width:52px; padding:3px 6px; border:1px solid var(--border); border-radius:6px; background:#fff; text-align:center; font-weight:700; color:#b45309; font-size:12.5px;}   /* 消砂：方位显示框（实测归二十四山） */
+  .opt-group-title.xs-head{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}   /* 消砂：标题行（左：消砂+启用偏转+偏转参数 / 右：展开折叠按钮） */
+  .xs-head .xs-left{display:flex; align-items:center; gap:8px; flex:1 1 auto; flex-wrap:wrap;}
+  .xs-head .xs-title{font-weight:800; letter-spacing:.5px;}
+  .xs-head .xs-dev-right{display:flex; align-items:center; gap:4px; font-size:11.5px;}
+  .xs-head .xs-dev-right .dev-val{min-width:42px; text-align:center; font-size:12.5px; color:#7c3aed; font-weight:700;}
+  .xs-head .xs-dev-right .dev-step{padding:2px 5px; font-size:13px;}
+  .xs-head .xs-dev-right .dev-chk{width:16px; height:16px; flex:0 0 16px; margin:0;}
+  .xs-xiu-info{font-size:12.5px; line-height:1.6; padding:8px 4px 2px; color:#334155; white-space:normal; word-break:break-word;}   /* 消砂：星宿落宿信息（文本，仅在实测后显示） */
+  .xs-xiu-info b{color:#0f172a;}
+  .xs-sanliu-info{font-size:12.5px; line-height:1.6; padding:2px 4px 8px; color:#334155; white-space:normal; word-break:break-word;}   /* 消砂：三吉六秀文字判定（实测后显示一行） */
   .annual-test{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:0;
     padding:8px 10px; background:#f4f6f8; border:1px solid var(--border); border-radius:8px; font-size:13px;}
   .annual-test .at-label{color:#5b6472; font-weight:600;}
@@ -422,80 +449,14 @@
 <!-- ============ 第零屏 · 模块九宫格 ============ -->
 <div class="screen" id="screenModules">
   <div class="mod-wrap">
-    <h1 class="mod-title">八尺峦头</h1>
+    <h1 class="mod-title">演示盘</h1>
     <div class="mod-grid" id="modGrid"></div>
     <div class="ver-tag" id="verTagModules" style="margin-top:26px;"></div>
   </div>
 </div>
 
+
 <!-- ============ 第一屏 · 首页（坐向输入） ============ -->
-<div class="screen hidden" id="screenHome">
-  <div class="home-wrap">
-    <button class="btn-back mod-back" id="btnModBack" type="button">‹ 返回</button>
-    <div class="home-hero">
-    <svg class="home-compass" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="50" cy="50" r="48" fill="#ffffff" stroke="#b9b3a4" stroke-width="1.2"/>
-      <circle cx="50" cy="50" r="33" fill="#ffffff" stroke="#e2ded2" stroke-width=".8"/>
-      <g stroke="#8a93a0" stroke-width="1">
-        <line x1="50" y1="3" x2="50" y2="9"/><line x1="50" y1="91" x2="50" y2="97"/>
-        <line x1="3" y1="50" x2="9" y2="50"/><line x1="91" y1="50" x2="97" y2="50"/>
-      </g>
-      <!-- 外层：后天八卦（上南下北、左东右西；洛书数：坎一坤二震三巽四中五乾六兑七艮八离九）
-           离上·坎下·震左·兑右｜巽左上·坤右上·乾右下·艮左下 -->
-      <g font-size="7" fill="#5b6573" text-anchor="middle" font-weight="700">
-        <text x="50" y="14">离</text><text x="50" y="88">坎</text>
-        <text x="9" y="53">震</text><text x="91" y="53">兑</text>
-        <text x="21" y="24">巽</text><text x="79" y="24">坤</text>
-        <text x="21" y="78">艮</text><text x="79" y="78">乾</text>
-      </g>
-      <!-- 内层：先天八卦（上南下北、左东右西；序数：乾一兑二离三震四巽五坎六艮七坤八）
-           乾上·坤下·离左·坎右｜兑左上·震左下·巽右上·艮右下 -->
-      <g font-size="5.4" fill="#9aa0ad" text-anchor="middle" font-weight="600">
-        <text x="50" y="28">乾</text><text x="50" y="73">坤</text>
-        <text x="28" y="53">离</text><text x="72" y="53">坎</text>
-        <text x="34" y="34">兑</text><text x="34" y="66">震</text>
-        <text x="66" y="34">巽</text><text x="66" y="66">艮</text>
-      </g>
-      <circle cx="50" cy="50" r="10" fill="#eef3fd" stroke="#2563eb" stroke-width="1"/>
-      <rect x="44" y="45" width="12" height="10" rx="2" fill="#fff" stroke="#475569" stroke-width=".9"/>
-      <line x1="50" y1="45" x2="50" y2="55" stroke="#aab2bf" stroke-width=".7"/>
-    </svg>
-      <!-- 横渠四句：竖排，自右向左，行楷 -->
-      <div class="hengqu" aria-label="横渠四句">
-        <span>为天地立心</span>
-        <span>为生民立命</span>
-        <span>为往圣继绝学</span>
-        <span>为万世开太平</span>
-      </div>
-    </div>
-    <div class="card home-card">
-      <h2>坐向设定
-        <label class="inline field-sw" title="开启「实地排盘」：地盘正针不动；人盘中针（地母翻卦掌·三吉六秀）左旋 7.5°，天盘缝针（水口起长生·向上起长生（顺逆）·向上正五行起长生（顺逆）·辅星水法·纳甲水法）右旋 7.5°。关闭则唯地盘正针一层。">
-          <input type="checkbox" id="chkField"> 实地排盘
-        </label>
-      </h2>
-      <div class="row">
-        <label class="inline">坐山</label>
-        <select id="selSit"></select>
-      </div>
-      <div class="row">
-        <label class="inline">朝向</label>
-        <select id="selFace"></select>
-      </div>
-      <div class="row">
-        <label class="inline">朝向度数</label>
-        <input type="number" id="inpFaceDeg" class="deg-input" min="0" max="360" step="1" placeholder="0–360°" title="手工输入 0-360°（0=正北），或点「实时获取」用手机指南针测量">
-        <button type="button" id="btnCompass" class="at-btn">实时获取</button>
-      </div>
-      <div class="row" style="margin-bottom:2px;">
-        <label class="inline">按八宫速选（取中针）：</label>
-      </div>
-      <div class="quick" id="quickPalaces"></div>
-    </div>
-    <button class="btn-primary" id="btnGo">进入查询</button>
-    <div class="ver-tag" id="verTagHome"></div>
-  </div>
-</div>
 
 <!-- ============ 日课屏（v51） ============ -->
 <div class="screen hidden" id="screenRike">
@@ -536,7 +497,7 @@
 <!-- ============ 第二屏 · 判读页 ============ -->
 <div class="screen hidden" id="screenCompass">
   <header>
-    <h1>八尺峦头</h1>
+    <h1>峦头无假 理气无真</h1>
     <span class="sub" id="sitSummary"></span>
     <span class="ver-tag" id="verTagCompass"></span>
   </header>
@@ -550,11 +511,12 @@
     <div id="fenjinBar" class="fenjin-bar" style="display:none;"></div>
 
     <div class="card options-card">
-      <h2>选项<button class="btn-back" id="btnBack" type="button">‹ 重新输入</button></h2>
-      <!-- 选项模块分组：格龙（下拉）· 纳水（下拉）置于最前；「其余」默认常开项不再显示 -->
-      <div class="options-flex" id="ruleToggles"></div>
-      <!-- 统一「时间输入」模块：置于选项区最后，驱动戊己都天、五黄三煞、九宫飞星等所有与时间相关的因素 -->
-      <div class="annual-test" id="timeInputBox" style="margin-bottom:10px;"></div>
+      <h2>选项<button class="btn-back" id="btnBack" type="button">‹ 返回首页</button></h2>
+      <!-- 选项区顺序：格龙 → 立向（原朝向测定） → 纳水 → 时间输入；各块间隔由 .options-flow 的 gap 统一控制 -->
+      <div class="options-flow" id="optionsFlow">
+        <div class="options-flex" id="ruleToggles"></div>
+        <div class="annual-test" id="timeInputBox" style="margin-bottom:0;"></div>
+      </div>
     </div>
 
     <!-- ===== 以下三个模块暂隐藏（需要时删除本注释对即恢复；JS 已做空值保护，无需改代码） =====
@@ -663,6 +625,48 @@
   </div>
 </div>
 
+<!-- 实时获取消砂（指南针） -->
+<div class="compass-overlay hidden" id="xsCompassOverlay">
+  <div class="compass-panel">
+    <h3>实时获取消砂</h3>
+    <p class="cp-hint" id="xsCpHint">请将手机屏幕朝上放平，机身指向砂峰（周围山体/建筑物）方向</p>
+    <div class="cp-big" id="xsCpDeg">--°</div>
+    <div class="cp-sub" id="xsCpSub">等待传感器数据…</div>
+    <div class="cp-actions">
+      <button type="button" id="xsCpCancel" class="at-btn">取消</button>
+      <button type="button" id="xsCpConfirm" class="at-btn cp-ok">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 实时获取来龙（排龙诀·地母翻卦掌·指南针） -->
+<div class="compass-overlay hidden" id="laiCompassOverlay">
+  <div class="compass-panel">
+    <h3>实时获取来龙</h3>
+    <p class="cp-hint" id="laiCpHint">请将手机屏幕朝上放平，机身指向来龙（山脉入首）方向</p>
+    <div class="cp-big" id="laiCpDeg">--°</div>
+    <div class="cp-sub" id="laiCpSub">等待传感器数据…</div>
+    <div class="cp-actions">
+      <button type="button" id="laiCpCancel" class="at-btn">取消</button>
+      <button type="button" id="laiCpConfirm" class="at-btn cp-ok">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 实时获取纳水方位（辅星水法/向上起长生（顺逆）/向上起顺长生/纳甲水法·指南针） -->
+<div class="compass-overlay hidden" id="nsMeasureCompassOverlay">
+  <div class="compass-panel">
+    <h3>实时获取水法方位</h3>
+    <p class="cp-hint" id="nsMeasureCpHint">请将手机屏幕朝上放平，机身指向所测水法方位（来水/去水）方向</p>
+    <div class="cp-big" id="nsMeasureCpDeg">--°</div>
+    <div class="cp-sub" id="nsMeasureCpSub">等待传感器数据…</div>
+    <div class="cp-actions">
+      <button type="button" id="nsMeasureCpCancel" class="at-btn">取消</button>
+      <button type="button" id="nsMeasureCpConfirm" class="at-btn cp-ok">确认</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ================= 基础数据 ================= */
 const CX = 500, CY = 500;
@@ -712,6 +716,8 @@ const DYN_STARS = {
 };
 const idxOf = m => MOUNTAINS.indexOf(m);
 const opposite = i => (i + 12) % 24;
+// 度数 → 24 山索引（每山 15°，0°=正北子山中心；359.9° 归 0 子山）。全局共用：朝向测定、来龙、走口皆以此归山
+const degToIdx = d => Math.round((((d % 360) + 360) % 360) / 15) % 24;
 
 function fmtDeg(x){ x = ((x % 360) + 360) % 360; return Math.round(x * 10) / 10; }
 function degRange(i){
@@ -731,6 +737,23 @@ const RING_LAYER = {                       // 规则 → 所属盘层（未列�
   changsheng_kou_gu: 7.5, shuangshan_changsheng: 7.5,                 // 天盘缝针：水口起长生（古）·向上起长生（顺逆）
   xiangshang_changsheng: 7.5, xiangshang_shun_changsheng: 7.5          // 天盘缝针：向上正五行起长生（顺逆）·向上起顺长生
 };
+// 纳水环（天盘缝针 388~423）的旋转偏角：
+//   · 实地排盘开启 → 恒为经典天盘缝针 +7.5°（优先于自定义值）；
+//   · 否则旋转开关开启 且 偏转亦开启 → 按「偏转」的自定义度数（默认 +7.5°）旋转；
+//   · 其余（默认）→ 0，与地盘正针对齐。
+// 说明：旋转开关只旋转「纳水环」本身（天盘缝针偏移），不再旋转整盘（整盘朝向由下方 ROT 恒按坐向置顶）。
+function naShuiRot(){
+  if (state.field) return RING_LAYER.dimu || 0;
+  if (state.diskRotate && state.shuikouDevOn) return state.shuikouDev;
+  return 0;
+}
+// 规则标记所属盘层偏角：实地排盘 → 经典三盘偏移；旋转开关 → 仅天盘缝针（纳水）按自定义度数旋转，人盘中针不受影响。
+function ruleRingShift(r){
+  const base = RING_LAYER[r.id] || 0;
+  if (state.field) return base;
+  if (base > 0 && state.diskRotate && state.shuikouDevOn) return state.shuikouDev;
+  return 0;
+}
 function point(a, r){
   const t = (a + ROT + RING_SHIFT) * Math.PI / 180;
   return [CX + r * Math.sin(t), CY - r * Math.cos(t)];
@@ -1551,14 +1574,7 @@ Rules.register({
     const note = `三吉六秀为<b>天星贵山</b>（赖公《催官篇》本义），<b>固定不随坐山变</b>：` +
       `三吉 —— <b>亥、卯(震)、庚</b>；六秀 —— <b>艮、丙、酉(兑)、丁、巽、辛</b>。` +
       `三合模块以亮绿色环标出（350~400，三吉深绿、六秀浅绿）；天星模块标于<b>地母翻卦掌同一环</b>（350~386），二者互斥二择一。`;
-    if (curMod() === 'tianxing'){                  // 天星模块：借地母翻卦掌同环（350~386）标注贵山，仅标三吉六秀九山，不随坐向变、不高亮
-      const out = [];
-      SANJI_STD.forEach(m => { if (MOUNTAINS.indexOf(m) >= 0)
-        out.push({ kind:'flip-mtn', role:'三吉六秀', m, star:'三吉', color:'#16a34a', fillOp:.26, luck:'吉', silent:true }); });
-      LIUXIU_STD.forEach(m => { if (MOUNTAINS.indexOf(m) >= 0)
-        out.push({ kind:'flip-mtn', role:'三吉六秀', m, star:'六秀', color:'#4ade80', fillOp:.26, luck:'吉', silent:true }); });
-      return out.map(e => Object.assign(e, { note }));
-    }
+    if (curMod() === 'tianxing') return [];        // 天星模块已移除格龙环三吉六秀（v116 迁移至消砂文字判定）；v118 起不再于 350~386 环渲染，避免与翻卦/排龙同环叠字
     const out = [];
     SANJI_STD.forEach(m => {                             // 三吉：单山（深绿）
       if (MOUNTAINS.indexOf(m) >= 0)
@@ -1623,14 +1639,18 @@ Rules.register({
   id: 'tianfu', name: '地母翻卦掌（坐山）', type: '坐山论', color: '#2563eb', mods: ['tianxing'],
   verse: '地母翻卦掌（坐山翻卦）：以坐山所纳之卦为本宫起辅弼（坐子即坎起辅），按「上、中、下、中、上、中、下、中」逐爻翻变，配九星辅、贪、巨、禄、文、廉、武、破。用于格龙、消砂。',
   evaluate(ctx){
-    const sitM = MOUNTAINS[ctx.sit];
-    const TF = fanGuaTable(najiaPalaceOf(sitM), TIANFU_SEQ, FLIP_TIANFU);   // 坐山本宫起辅弼，动态成表
+    const hasLai = (state.laiDeg !== undefined && state.laiDeg !== null);   // 已测来龙入首？
+    if (!hasLai) return [];                          // 未输入来龙入首：格龙环（350~386）置空，不以来龙/坐山排布
+    const baseIdx = degToIdx(state.laiDeg);          // 翻卦基准山索引（来龙）
+    const sitM = MOUNTAINS[baseIdx];                                       // 基准山（来龙/坐山）
+    const TF = fanGuaTable(najiaPalaceOf(sitM), TIANFU_SEQ, FLIP_TIANFU);   // 基准山本宫起辅弼，动态成表
     const out = [];
     for (const m of MOUNTAINS){                       // 二十四山每山：据纳甲卦宫查天父翻卦九星，24山环标出
       const pal = najiaPalaceOf(m);
       const star = TF[pal];
       out.push({ kind:'flip-mtn', role:'天父', m, star, luck: STAR_LUCK[star], isSite: (m === sitM), silent:true });
     }
+    if (hasLai) out.push({ kind:'lai-long', m: sitM, a: baseIdx * 15, silent: true });   // 来龙入首：盘面标注基准山为「来龙」
     return out;
   }
 });
@@ -1644,10 +1664,13 @@ Rules.register({
   id: 'pailong', name: '排龙诀（坐山）', type: '坐山论', color: '#7c3aed', mods: ['tianxing'],
   verse: '排龙诀（用户定制·与地母翻卦掌·三吉六秀同环 350~386，三择一互斥）：双山12组（子癸丑艮寅甲卯乙辰巽巳丙午丁未坤申庚酉辛戌乾亥壬），九星顺序「破军·右弼·廉贞·破军·武曲·贪狼·破军·左辅·文曲·破军·巨门·禄存」。坐山为地支→其对冲双山两山起破军、顺时针排12组；坐山为天干/四维（乾坤艮巽）→其双山对冲双山两山起破军、逆时针排12组。',
   evaluate(ctx){
-    const sitM = MOUNTAINS[ctx.sit];
-    const g0 = Math.floor(ctx.sit / 2);                   // 坐山所在双山组（0..11）
+    const hasLai = (state.laiDeg !== undefined && state.laiDeg !== null);   // 已测来龙入首？
+    if (!hasLai) return [];                          // 未输入来龙入首：格龙环（350~386）置空，不以来龙/坐山排布
+    const baseIdx = degToIdx(state.laiDeg);          // 排盘基准山索引（来龙）
+    const sitM = MOUNTAINS[baseIdx];                                       // 基准山（来龙/坐山）
+    const g0 = Math.floor(baseIdx / 2);                   // 基准山所在双山组（0..11）
     const dz = MOUNTAINS[g0 * 2];                         // 该组地支（首字）；MOUNTAINS 偶数位恒为地支
-    const isZhi = (ctx.sit % 2 === 0);                    // 坐山即地支（偶数位）？天干/四维则否（奇数位）
+    const isZhi = (baseIdx % 2 === 0);                    // 基准山即地支（偶数位）？天干/四维则否（奇数位）
     const chong = RK_CHONG[dz];                           // 地支对冲（子↔午…）
     const PAI_LONG_ZHI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
     const gp = PAI_LONG_ZHI.indexOf(chong);                // 破军组 index
@@ -1663,7 +1686,8 @@ Rules.register({
           luck: (STAR_LUCK[star] || '凶'), isSite: (m === sitM) });
       });
     }
-    const note = '排龙诀：坐山「' + sitM + '」（' + (isZhi ? '地支·顺时针' : '天干/四维·逆时针') +
+    if (hasLai) out.push({ kind:'lai-long', m: sitM, a: baseIdx * 15, silent: true });   // 来龙入首：盘面标注基准山为「来龙」
+    const note = '排龙诀：' + (hasLai ? '来龙' : '坐山') + '「' + sitM + '」（' + (isZhi ? '地支·顺时针' : '天干/四维·逆时针') +
       '）所属双山之地支「' + dz + '」对冲「' + chong + '」双山两山起破军，按「破军·右弼·廉贞·破军·武曲·贪狼·破军·左辅·文曲·破军·巨门·禄存」' +
       (isZhi ? '顺时针' : '逆时针') + '顺排12组24山；与地母翻卦掌·三吉六秀同环（350~386），三择一互斥。';
     return out.map(e => Object.assign(e, { note }));
@@ -1779,8 +1803,13 @@ function buildFenjinTable(){
 }
 
 /* ================= 状态 ================= */
-const state = { sit: 0, faceDeg: 180, rules: {}, testMs: Date.now(), nineMode: 'zhai', module: 'sanhe', field: false, shuikou: undefined, chuanDeg: undefined };
-  // chuanDeg：来龙入首方位（0-360°，0=正北顺时针），用于「穿山七十二龙」起例；未输入则为 undefined（提示输入）
+const state = { sit: 0, faceDeg: 180, rules: {}, testMs: Date.now(), nineMode: 'zhai', module: 'sanhe', field: false, shuikou: undefined, chuanDeg: undefined,
+  laiDeg: undefined,   // 来龙入首方位（排龙诀·地母翻卦掌用，24山粒度，0-360°，0=正北顺时针）：测量度数归山后作排盘基准，未测（undefined）则回退坐山
+  shuikouDeg: undefined, shuikouDev: 7.5, shuikouDevOn: true, diskRotate: false,
+  xiaoShaDeg: undefined, xiaoShaDev: -7.5, xiaoShaDevOn: true, xiaoSha: undefined,
+  naShuiMeasureDeg: undefined, naShuiMeasureDev: 7.5, naShuiMeasureDevOn: true, naShuiMeasure: undefined };  // 纳水测量（辅星水法/向上起长生/向上起顺长生/纳甲水法）：仅显示、不参与排盘；默认偏转 +7.5°（天盘缝针），与走口 shuikouDev 及纳水旋转开关 diskRotate 完全独立
+  // xiaoShaDeg：消砂实测方位度数（0-360°，0=正北顺时针）；xiaoShaDev：偏转参数（默认 -7.5，对应人盘中针，与走口 +7.5 天盘缝针相反）；xiaoSha：由实测度数 + 偏转重算得到的二十四山索引（仅显示、不参与排盘）
+  // chuanDeg：来龙入首方位（0-360°，0=正北顺时针），用于「穿山七十二龙」起例（72龙粒度）；未输入则为 undefined（提示输入）
   // shuikou：水口位置（24山索引），用于「水口起长生 / 水口起长生（古）」起长生；**默认＝未指定（undefined）**，需用户在纳水选中对应法时于内联「走口（水口）」下拉指定；不再随坐向变动自动取朝向
   // sit：坐山索引(24山)；faceDeg：精确朝向度数(0-360，0=正北顺时针，1°精度，驱动盘面整盘旋转)；testMs：流年类规则（戊己都天等）的测试基准，默认当前时刻；nineMode：中央九宫视图 'zhai'（元运宅命盘，运/山/向三盘）｜'ti'（起星替盘，起星侧替星入中重飞，无替可起时灰禁自动回退 zhai）｜'year'（流年年星盘）
 Rules.list.forEach(r => state.rules[r.id] = true);   // 默认全选，可按需关闭
@@ -1843,7 +1872,7 @@ function buildStatic(){
     { r1:202, r2:350, shift:0,                                 plate:'地盘正针' },   // 神煞内环 202~250 · 二十四山 250~322 · 八卦带 322~350
     // 格龙消砂·三吉六秀（人盘中针）；但格龙选中「穿山七十二龙」时该环为地盘正针（穿山属正针 72 龙，不随三盘错开），故此时偏角恒 0
     { r1:350, r2:386, shift: ((curMod() === 'tianxing') && state.rules['chuanshan']) ? 0 : (state.field ? (RING_LAYER.tianfu || 0) : 0), plate:'人盘中针' },
-    { r1:388, r2:423, shift: state.field ? (RING_LAYER.dimu   || 0) : 0, plate:'天盘缝针' }    // 各水法
+    { r1:388, r2:423, shift: naShuiRot(), plate:'天盘缝针' }    // 各水法（旋转开关开启且偏转开启→按自定义度数偏移；实地排盘开启→经典天盘缝针 +7.5°）
   ];
   // 各环格度：长生水法（外环 388~423）按双山立宫（12 格，每格 30°）；九星类（辅星·纳甲·翻卦·排龙·穿山）仍按二十四山（24 格，每格 15°）
   //   注：长生宫（含穿山）的宫界即二十四山界（一双山＝两山，界在山界上），故按二十四山画线时宫界自在其列，
@@ -2143,7 +2172,7 @@ function renderMarkers(){
     if (r.mods && r.mods.indexOf(curMod()) < 0) continue;   // 模块专属规则仅在本模块绘制
     const ctx = { sit, face, sitPalace: PALACE_OF[sitM], facePalace: PALACE_OF[faceM] };
     // 「实地排盘」开启：本规则所属盘层整体偏转（人盘中针 −7.5°、天盘缝针 +7.5°，地盘不动）
-    RING_SHIFT = state.field ? (RING_LAYER[r.id] || 0) : 0;
+    RING_SHIFT = ruleRingShift(r);   // 实地排盘 → 经典三盘偏移；旋转开关 → 仅天盘缝针（纳水）按自定义度数旋转，人盘中针不受影响
     for (const e of r.evaluate(ctx)){
       const color = e.color || r.color;               // 条目可自带颜色（如大游年按星分色）
       if (e.kind === 'lai'){                          // 长生·来水吉方：山名带高亮（来水：长生、帝旺）
@@ -2239,6 +2268,16 @@ function renderMarkers(){
           'text-anchor':'middle','dominant-baseline':'central','font-family':'"PingFang SC",sans-serif'});
         continue;
       }
+      if (e.kind === 'lai-long'){                          // 来龙入首（排龙诀·地母翻卦掌）：基准山高亮（橙）并标「来龙」，350~386 内环（与 flip-mtn 同环）
+        const i = idxOf(e.m), a = i * 15;
+        const col = '#ea580c';
+        el('path', {d: sectorPath(a-7.5, a+7.5, 350, 386), class:'lai-long-mtn',
+          fill: col, 'fill-opacity':.20, stroke: col, 'stroke-width':2.4}, gMarkers);
+        const [lx,ly] = point(a, 382);
+        txt(gMarkers, lx, ly, '来龙', {'font-size':14,'font-weight':800, fill:'#c2410c',
+          'text-anchor':'middle','dominant-baseline':'central','font-family':'"PingFang SC",sans-serif'});
+        continue;
+      }
       if (!e.mountains) continue;
       if (e.center){                                    // 年五黄入中宫：在罗盘中心标注
         const rc = 28, color = e.color;
@@ -2314,10 +2353,10 @@ const OPT_SHORT = {'basha':'八煞','xiangshang':'黄泉','dayounian':'大游年
   'wuhuangsansha':'五黄三煞','changsheng_sit':'坐山水法','changsheng_face':'水口起长生','sanjiliuxiu':'三吉六秀',
   'tianfu':'地母翻卦掌','pailong':'排龙诀','chuanshan':'穿山七十二龙','dimu':'辅星水法','fuxing':'纳甲水法','xiangshang_changsheng':'向上正五行起长生（顺逆）','shuangshan_changsheng':'向上起长生（顺逆）','xiangshang_shun_changsheng':'向上起顺长生','changsheng_kou_gu':'水口起长生（古）'};
 // 选项分组（tianxing 用对象分组：title 组名 · type 'select'(下拉单选) | 'fixed'(常开无勾选) · ids 顺序 · def 默认选中）：
-//   格龙 = select[排龙诀·地母翻卦掌·三吉六秀] 默认 地母翻卦掌；纳水 = select[辅星水法·水口起长生·水口起长生（古）·向上起长生（顺逆）·向上起顺长生·向上正五行起长生（顺逆）·纳甲水法] 默认 辅星水法；
+//   格龙 = select[排龙诀·地母翻卦掌·穿山七十二龙] 默认 地母翻卦掌；纳水 = select[辅星水法·水口起长生·水口起长生（古）·向上起长生（顺逆）·向上起顺长生·向上正五行起长生（顺逆）·纳甲水法] 默认 辅星水法；
 //   坐山水法：用户要求注释掉/不再参与排盘（默认关闭、不显示于选项）。「其余」默认常开项（八煞·黄泉·大游年·戊己都天·五黄三煞）保留为默认开启，但不再在选项区显示。sanhe 仍用旧数组分组（三合入口虽停用，结构保留）。
 // 互斥由下拉单选天然保证（同组仅一项 on），EXCLUSIVE_GROUPS 仅作 sanhe 兼容保留。
-const EXCLUSIVE_GROUPS = [['dimu','fuxing','changsheng_face','xiangshang_changsheng','shuangshan_changsheng','xiangshang_shun_changsheng','changsheng_kou_gu'], ['pailong','tianfu','sanjiliuxiu','chuanshan']];
+const EXCLUSIVE_GROUPS = [['dimu','fuxing','changsheng_face','xiangshang_changsheng','shuangshan_changsheng','xiangshang_shun_changsheng','changsheng_kou_gu'], ['pailong','tianfu','chuanshan']];
 const ROW_GROUPS = {
   sanhe: [
     ['basha','xiangshang','dayounian'],
@@ -2325,30 +2364,144 @@ const ROW_GROUPS = {
     ['wujidoutian','wuhuangsansha']
   ],
   tianxing: [
-    { title:'格龙', type:'select', ids:['pailong','tianfu','sanjiliuxiu','chuanshan'], def:'tianfu' },
+    { title:'格龙', type:'select', ids:['pailong','tianfu','chuanshan'], def:'tianfu' },
     { title:'纳水', type:'select', ids:['dimu','changsheng_face','changsheng_kou_gu','shuangshan_changsheng','xiangshang_shun_changsheng','xiangshang_changsheng','fuxing'], def:'dimu' }
   ]
 };
 // 各模块进入时的选项默认值（未列出的规则默认全开）。tianxing：格龙默认 地母翻卦掌、纳水默认 辅星水法；其余默认常开项（八煞·黄泉·大游年·戊己都天·五黄三煞）保持开启但不显示于选项；坐山水法按用户要求关闭（注释掉、不需要）
 const RULE_DEFAULTS = {
   sanhe:    { changsheng_face:false },
-  tianxing: { tianfu:true, pailong:false, sanjiliuxiu:false, chuanshan:false,
+  tianxing: { tianfu:true, pailong:false, chuanshan:false, sanjiliuxiu:false,
     dimu:true, changsheng_face:false, changsheng_kou_gu:false, shuangshan_changsheng:false, xiangshang_shun_changsheng:false, xiangshang_changsheng:false, fuxing:false,
     basha:true, xiangshang:true, dayounian:true, wujidoutian:true, wuhuangsansha:true, changsheng_sit:false }
 };
+// 选项分组折叠状态：默认全部折叠（仅保留标题栏），点击图标展开 / 再点击折叠；按「模块:分组标题」记忆
+const optExpand = {};
+function optGroupCollapsed(title){ return !optExpand[((typeof curMod === 'function' ? curMod() : '') || '') + ':' + title]; }
+const OPT_TOGGLE_SVG = '<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function optToggleHtml(){ return '<button type="button" class="opt-toggle" aria-expanded="false" aria-label="展开或折叠该模块">' + OPT_TOGGLE_SVG + '</button>'; }
 function applyModuleDefaults(){
   const base = {}; Rules.list.forEach(r => base[r.id] = true);
   Object.assign(state.rules, base, RULE_DEFAULTS[curMod()] || {});
 }
+// 选项区「立向」（原「朝向测定」）：手工下拉选二十四山，或「实时获取」用指南针实测；一经确定即改定盘面坐山朝向（朝向恒置盘顶、坐山恒置盘底）
+function buildFaceMeasureGroup(){
+  const g = document.createElement('div'); g.className = 'opt-group' + (optGroupCollapsed('立向') ? ' collapsed' : ''); g.setAttribute('data-title', '立向');
+  g.innerHTML =
+    '<div class="opt-group-title"><span class="opt-title-text">立向</span>' + optToggleHtml() + '</div>' +
+    '<div class="opt-group-body">' +
+    '<div class="chuan-input">' +
+      '<div class="chuan-ctl">' +
+        '<label class="chuan-lbl">朝向</label>' +
+        '<select id="selFaceMeasure" class="at-select">' +
+          MOUNTAINS.map((m, i) => `<option value="${i}">${m}山（${PALACE_OF[m]}宫）</option>`).join('') +
+        '</select>' +
+        '<button type="button" id="btnFaceCompass" class="at-btn">实时获取</button>' +
+      '</div>' +
+      '<span class="chuan-cur" id="faceMeasureCur"></span>' +
+    '</div>' +
+    '</div>';
+  const tg = g.querySelector('.opt-toggle'); if (tg) tg.setAttribute('aria-expanded', String(!g.classList.contains('collapsed')));
+  const fmSel = g.querySelector('#selFaceMeasure');
+  fmSel.value = degToIdx(state.faceDeg);
+  fmSel.onchange = () => {
+    const idx = +fmSel.value;
+    state.sit = opposite(idx);      // 朝向定 → 坐山即其对冲（相差 180°）
+    state.faceDeg = idx * 15;       // 手工选山取该山中心角（二十四山每山 15°，中心＝索引×15°）
+    render();                       // 盘面随之旋转：朝向恒置盘顶、坐山恒置盘底
+  };
+  const fmBtn = g.querySelector('#btnFaceCompass');
+  if (fmBtn && window.__openFaceCompass) fmBtn.onclick = window.__openFaceCompass;   // 与首页共用「实时朝向测量」弹框
+  updateFaceMeasureCur();
+  return g;
+}
+// 选项区「消砂」（测量显示，仅用于测量显示测量结果，不与其他逻辑联动排盘）：方位显示框（归二十四山）＋度数显示框＋实时获取；换行显示启用偏转开关＋偏转参数（默认 -7.5，对应人盘中针）
+function buildXiaoShaGroup(){
+  const g = document.createElement('div'); g.className = 'opt-group' + (optGroupCollapsed('消砂') ? ' collapsed' : ''); g.setAttribute('data-title', '消砂');
+  g.innerHTML =
+    '<div class="opt-group-title xs-head">' +
+      '<span class="xs-left">' +
+        '<span class="xs-title">消砂</span>' +
+        '<span class="xs-dev-right">' +
+          '<label class="chuan-lbl">启用偏转</label>' +
+          '<input type="checkbox" id="chkXiaoShaDev" class="dev-chk">' +
+          '<label class="chuan-lbl dev-lbl">偏转</label>' +
+          '<button type="button" id="btnXsDevMinus" class="at-btn dev-step">−</button>' +
+          '<span id="xsDevVal" class="dev-val">-7.5°</span>' +
+          '<button type="button" id="btnXsDevPlus" class="at-btn dev-step">＋</button>' +
+        '</span>' +
+      '</span>' +
+      optToggleHtml() +
+    '</div>' +
+    '<div class="opt-group-body">' +
+    '<div class="chuan-input">' +
+      '<div class="chuan-ctl sk-row">' +
+        '<label class="chuan-lbl">方位</label>' +
+        '<span id="xsMountain" class="xs-mtn">（未测量）</span>' +
+        '<label class="chuan-lbl">度数</label>' +
+        '<input id="xsDeg" class="deg-input" type="number" min="0" max="360" step="0.1" placeholder="0–360°">' +
+        '<button type="button" id="btnXiaoShaCompass" class="at-btn">实时获取</button>' +
+      '</div>' +
+      '<div id="xsXiuInfo" class="xs-xiu-info"></div>' +
+      '<div id="xsSanLiu" class="xs-sanliu-info"></div>' +
+    '</div>' +
+    '</div>';
+  const tg = g.querySelector('.opt-toggle'); if (tg) tg.setAttribute('aria-expanded', String(!g.classList.contains('collapsed')));
+  const mEl = g.querySelector('#xsMountain');
+  const dgEl = g.querySelector('#xsDeg');
+  if (state.xiaoShaDeg !== undefined && !isNaN(state.xiaoShaDeg)) dgEl.value = state.xiaoShaDeg;
+  dgEl.oninput = () => {
+    const v = parseFloat(dgEl.value);
+    state.xiaoShaDeg = (isNaN(v) ? undefined : v);
+    recomputeXiaoSha();                 // 实测度数 + 偏转 → 方位（二十四山）显示
+    updateXiaoShaDisplay();
+  };
+  const dvChk = g.querySelector('#chkXiaoShaDev');
+  dvChk.checked = state.xiaoShaDevOn;
+  dvChk.onchange = () => {
+    state.xiaoShaDevOn = dvChk.checked;
+    recomputeXiaoSha();
+    updateXiaoShaDisplay();
+  };
+  const dvVal = g.querySelector('#xsDevVal');
+  const paintDev = () => { dvVal.textContent = (state.xiaoShaDev >= 0 ? '+' : '') + state.xiaoShaDev + '°'; };
+  const stepDev = d => {
+    state.xiaoShaDev = Math.max(-180, Math.min(180, Math.round((state.xiaoShaDev + d) * 10) / 10));   // 每次 ±0.5°，可负（向左偏），限 ±180°
+    paintDev(); recomputeXiaoSha(); updateXiaoShaDisplay();
+  };
+  g.querySelector('#btnXsDevMinus').onclick = () => stepDev(-0.5);
+  g.querySelector('#btnXsDevPlus').onclick = () => stepDev(0.5);
+  const xsBtn = g.querySelector('#btnXiaoShaCompass');
+  if (xsBtn && window.__openXiaoShaCompass) xsBtn.onclick = window.__openXiaoShaCompass;
+  updateXiaoShaDisplay();
+  return g;
+}
+// 纳水测量适用的四法（选中其中之一时，选项区下方出现「方位/度数/实时获取/启用偏转」测量面板，仅显示、不参与排盘）
+const NS_MEASURE_RULES = ['dimu', 'shuangshan_changsheng', 'xiangshang_changsheng', 'xiangshang_shun_changsheng', 'fuxing'];
 function buildRuleToggles(){
   const rt = document.getElementById('ruleToggles');
   rt.innerHTML = '';
+  if (!rt.dataset.toggleBound){               // 折叠图标点击委托（仅绑定一次，跨重建保留）
+    rt.dataset.toggleBound = '1';
+    rt.addEventListener('click', e => {
+      const btn = e.target.closest && e.target.closest('.opt-toggle'); if (!btn) return;
+      const grp = btn.closest('.opt-group'); if (!grp) return;
+      const key = ((typeof curMod === 'function' ? curMod() : '') || '') + ':' + (grp.getAttribute('data-title') || '');
+      grp.classList.toggle('collapsed');
+      const collapsedNow = grp.classList.contains('collapsed');
+      optExpand[key] = !collapsedNow;
+      btn.setAttribute('aria-expanded', String(!collapsedNow));
+    });
+  }
   const ruleById = Object.fromEntries(Rules.list.map(r => [r.id, r]));
   const groups = (ROW_GROUPS[curMod()] || []);
   groups.forEach(group => {
     if (!Array.isArray(group)){                         // 新格式：对象分组（title/type/ids/def）
-      const g = document.createElement('div'); g.className = 'opt-group';
-      const t = document.createElement('div'); t.className = 'opt-group-title'; t.textContent = group.title; g.appendChild(t);
+      const g = document.createElement('div'); g.className = 'opt-group' + (optGroupCollapsed(group.title) ? ' collapsed' : ''); g.setAttribute('data-title', group.title);
+      const t = document.createElement('div'); t.className = 'opt-group-title';
+      t.innerHTML = '<span class="opt-title-text">' + group.title + '</span>' + optToggleHtml();
+      g.appendChild(t);
+      const body = document.createElement('div'); body.className = 'opt-group-body';
       if (group.type === 'select'){                     // 下拉单选：同组仅一项 on，切换即取消其余
         const sel = document.createElement('select'); sel.className = 'opt-select';
         const onId = group.ids.find(id => state.rules[id]) || group.def;
@@ -2364,7 +2517,7 @@ function buildRuleToggles(){
           group.ids.forEach(x => { state.rules[x] = (x === id); });
           buildRuleToggles(); render();
         };
-        g.appendChild(sel);
+        body.appendChild(sel);
         if (group.title === '格龙' && onId === 'chuanshan'){   // 穿山七十二龙：来龙入首（二十四山 → 该山具体七十二龙 两级级联）+ 实时获取
           const cw = document.createElement('div'); cw.className = 'chuan-input';
           cw.innerHTML = '<div class="chuan-ctl">' +
@@ -2377,7 +2530,7 @@ function buildRuleToggles(){
             '<button type="button" id="btnChuanCompass" class="at-btn">实时获取</button>' +
             '</div>' +
             '<span class="chuan-cur" id="chuanCur"></span>';
-          g.appendChild(cw);
+          body.appendChild(cw);
           const mSel = cw.querySelector('#selChuanMountain');
           const dSel = cw.querySelector('#selChuanDragon');
           const curD = (state.chuanDeg !== undefined && state.chuanDeg !== null) ? chuanDragonOfDeg(state.chuanDeg).idx : null;
@@ -2409,23 +2562,149 @@ function buildRuleToggles(){
           const cbBtn = cw.querySelector('#btnChuanCompass');
           if (cbBtn && window.__openChuanCompass) cbBtn.onclick = window.__openChuanCompass;
         }
-        if (group.title === '纳水' && (onId === 'changsheng_face' || onId === 'changsheng_kou_gu')){   // 水口起长生 / 水口起长生（古）：走口（水口）二十四山下拉 + 实时获取
+        if (group.title === '格龙' && (onId === 'pailong' || onId === 'tianfu')){   // 排龙诀 / 地母翻卦掌：来龙入首（归 24 山）＋ 实时获取
           const cw = document.createElement('div'); cw.className = 'chuan-input';
           cw.innerHTML = '<div class="chuan-ctl">' +
-            '<label class="chuan-lbl">走口（水口）</label>' +
-            '<select id="selShuikouInline" class="at-select">' +
-            '<option value="">（未指定）</option>' +
+            '<label class="chuan-lbl">来龙入首</label>' +
+            '<select id="selLaiMountain" class="at-select">' +
+            '<option value="">（未指定 · 用坐山）</option>' +
             MOUNTAINS.map((m, i) => `<option value="${i}">${m}山（${PALACE_OF[m]}宫）</option>`).join('') +
             '</select>' +
+            '<button type="button" id="btnLaiCompass" class="at-btn">实时获取</button>' +
+            '</div>' +
+            '<span class="chuan-cur" id="laiCur"></span>';
+          body.appendChild(cw);
+          const mSel = cw.querySelector('#selLaiMountain');
+          const curI = (state.laiDeg !== undefined && state.laiDeg !== null) ? degToIdx(state.laiDeg) : null;
+          mSel.value = (curI !== null) ? String(curI) : '';
+          mSel.onchange = () => {
+            const v = mSel.value;
+            if (!v){ state.laiDeg = undefined; updateLaiCur(); render(); return; }   // 清空 → 回退坐山
+            state.laiDeg = (+v) * 15;   // 手工选山取该山中心角（二十四山每山 15°，中心＝索引×15°）
+            updateLaiCur(); render();
+          };
+          const cbBtn = cw.querySelector('#btnLaiCompass');
+          if (cbBtn && window.__openLaiCompass) cbBtn.onclick = window.__openLaiCompass;
+          updateLaiCur();
+        }
+        if (group.title === '纳水' && (onId === 'changsheng_face' || onId === 'changsheng_kou_gu')){   // 水口起长生 / 水口起长生（古）：走口（水口）二十四山下拉 + 实测度数 + 偏转控制 + 实时获取
+          const cw = document.createElement('div'); cw.className = 'chuan-input';
+          cw.innerHTML = '<div class="chuan-ctl sk-row">' +
+            '<label class="chuan-lbl">走口</label>' +
+            '<select id="selShuikouInline" class="at-select">' +
+            '<option value="">（未指定）</option>' +
+            MOUNTAINS.map((m, i) => `<option value="${i}">${m}山</option>`).join('') +
+            '</select>' +
+            '<label class="chuan-lbl">实测</label>' +
+            '<input id="inpShuikouDeg" class="deg-input" type="number" min="0" max="360" step="0.1" placeholder="0–360°">' +
             '<button type="button" id="btnShuikouCompass" class="at-btn">实时获取</button>' +
             '</div>' +
-            '<span class="chuan-cur" id="shuikouCur"></span>';
-          g.appendChild(cw);
+            '<div class="chuan-ctl dev-row">' +
+            '<label class="chuan-lbl">启用偏转</label>' +
+            '<input type="checkbox" id="chkShuikouDev" class="dev-chk">' +
+            '<label class="chuan-lbl dev-lbl">偏转</label>' +
+            '<button type="button" id="btnDevMinus" class="at-btn dev-step">−</button>' +
+            '<span id="shuikouDevVal" class="dev-val">+7.5°</span>' +
+            '<button type="button" id="btnDevPlus" class="at-btn dev-step">＋</button>' +
+            '</div>';
+          body.appendChild(cw);
           const skSel = cw.querySelector('#selShuikouInline');
-          skSel.value = (state.shuikou === undefined ? '' : state.shuikou);     // 默认「未指定」
-          skSel.onchange = () => { state.shuikou = (skSel.value === '' ? undefined : +skSel.value); render(); };
+          skSel.value = (state.shuikou === undefined ? '' : state.shuikou);     // 默认「未指定」；下拉亦可作为「直接选山」手动覆盖
+          skSel.onchange = () => {
+            state.shuikou = (skSel.value === '' ? undefined : +skSel.value);
+            state.shuikouDeg = undefined;          // 直接选山：清空实测度数，避免与「实测+偏转」路径冲突
+            const dg = cw.querySelector('#inpShuikouDeg'); if (dg) dg.value = '';
+            updateShuikouCur(); render();
+          };
+          const dgEl = cw.querySelector('#inpShuikouDeg');
+          if (state.shuikouDeg !== undefined) dgEl.value = state.shuikouDeg;
+          dgEl.oninput = () => {
+            const v = parseFloat(dgEl.value);
+            state.shuikouDeg = (isNaN(v) ? undefined : v);
+            recomputeShuikou();                    // 实测度数 + 偏转 → 有效水口山
+            skSel.value = (state.shuikou === undefined ? '' : state.shuikou);
+            updateShuikouCur(); render();
+          };
+          const dvChk = cw.querySelector('#chkShuikouDev');
+          dvChk.checked = state.shuikouDevOn;
+          dvChk.onchange = () => {
+            state.shuikouDevOn = dvChk.checked;
+            recomputeShuikou();
+            skSel.value = (state.shuikou === undefined ? '' : state.shuikou);
+            updateShuikouCur(); render();
+          };
+          const dvVal = cw.querySelector('#shuikouDevVal');
+          const paintDev = () => { dvVal.textContent = (state.shuikouDev >= 0 ? '+' : '') + state.shuikouDev + '°'; };
+          paintDev();
+          const stepDev = d => {
+            state.shuikouDev = Math.max(-180, Math.min(180, Math.round((state.shuikouDev + d) * 10) / 10));   // 每次 ±0.5°，可降至负（向左偏），限 ±180°
+            paintDev(); recomputeShuikou();
+            skSel.value = (state.shuikou === undefined ? '' : state.shuikou);
+            updateShuikouCur(); render();
+          };
+          cw.querySelector('#btnDevMinus').onclick = () => stepDev(-0.5);
+          cw.querySelector('#btnDevPlus').onclick = () => stepDev(0.5);
           const skBtn = cw.querySelector('#btnShuikouCompass');
           if (skBtn && window.__openShuikouCompass) skBtn.onclick = window.__openShuikouCompass;
+          updateShuikouCur();
+        }
+        // 纳水测量（辅星水法/向上起长生（顺逆）/向上起顺长生/纳甲水法）：方位（显示框，默认未测量）+ 度数 + 实时获取 + 启用偏转（默认 +7.5° 天盘缝针）；仅显示、不参与排盘，偏转独立于走口与旋转开关
+        if (group.title === '纳水' && NS_MEASURE_RULES.indexOf(onId) >= 0){
+          const cw = document.createElement('div'); cw.className = 'chuan-input';
+          cw.innerHTML = '<div class="chuan-ctl sk-row">' +
+            '<label class="chuan-lbl">方位</label>' +
+            '<span id="nsMeasureMountain" class="xs-mtn">（未测量）</span>' +
+            '<label class="chuan-lbl">度数</label>' +
+            '<input id="nsMeasureDeg" class="deg-input" type="number" min="0" max="360" step="0.1" placeholder="0–360°">' +
+            '<button type="button" id="btnNsMeasureCompass" class="at-btn">实时获取</button>' +
+            '</div>' +
+            '<div class="chuan-ctl dev-row">' +
+            '<label class="chuan-lbl">启用偏转</label>' +
+            '<input type="checkbox" id="chkNsMeasureDev" class="dev-chk">' +
+            '<label class="chuan-lbl dev-lbl">偏转</label>' +
+            '<button type="button" id="btnNsMeasureDevMinus" class="at-btn dev-step">−</button>' +
+            '<span id="nsMeasureDevVal" class="dev-val">+7.5°</span>' +
+            '<button type="button" id="btnNsMeasureDevPlus" class="at-btn dev-step">＋</button>' +
+            '</div>';
+          body.appendChild(cw);
+          const mEl = cw.querySelector('#nsMeasureMountain');
+          const dgEl = cw.querySelector('#nsMeasureDeg');
+          if (state.naShuiMeasureDeg !== undefined && !isNaN(state.naShuiMeasureDeg)) dgEl.value = state.naShuiMeasureDeg;
+          dgEl.oninput = () => {
+            const v = parseFloat(dgEl.value);
+            state.naShuiMeasureDeg = (isNaN(v) ? undefined : v);
+            recomputeNsMeasure();
+            updateNsMeasureDisplay();
+          };
+          const dvChk = cw.querySelector('#chkNsMeasureDev');
+          dvChk.checked = state.naShuiMeasureDevOn;
+          dvChk.onchange = () => {
+            state.naShuiMeasureDevOn = dvChk.checked;
+            recomputeNsMeasure();
+            updateNsMeasureDisplay();
+          };
+          const dvVal = cw.querySelector('#nsMeasureDevVal');
+          const paintDev = () => { dvVal.textContent = (state.naShuiMeasureDev >= 0 ? '+' : '') + state.naShuiMeasureDev + '°'; };
+          const stepDev = d => {
+            state.naShuiMeasureDev = Math.max(-180, Math.min(180, Math.round((state.naShuiMeasureDev + d) * 10) / 10));
+            paintDev(); recomputeNsMeasure(); updateNsMeasureDisplay();
+          };
+          cw.querySelector('#btnNsMeasureDevMinus').onclick = () => stepDev(-0.5);
+          cw.querySelector('#btnNsMeasureDevPlus').onclick = () => stepDev(0.5);
+          const nsBtn = cw.querySelector('#btnNsMeasureCompass');
+          if (nsBtn && window.__openNsMeasureCompass) nsBtn.onclick = window.__openNsMeasureCompass;
+          updateNsMeasureDisplay();
+        }
+        // 纳水专用「旋转开关」（持久显示于纳水分组内）：控制盘面是否随坐向旋转——关闭（默认）盘面不旋转、与地盘正针对齐；开启后盘面随坐向旋转（朝向置盘顶、坐山置盘底）
+        if (group.title === '纳水') {
+          const rotRow = document.createElement('div'); rotRow.className = 'chuan-ctl dev-row';
+          rotRow.innerHTML = '<label class="chuan-lbl">旋转开关</label>' +
+            '<input type="checkbox" id="chkDiskRotate" class="dev-chk">' +
+            '<span class="chuan-lbl dev-lbl">开启后盘面随坐向旋转（关闭则与地盘正针对齐）</span>';
+          body.appendChild(rotRow);
+          const rotChk = rotRow.querySelector('#chkDiskRotate');
+          rotChk.checked = !!state.diskRotate;
+          rotChk.onchange = () => { state.diskRotate = rotChk.checked; render(); };
         }
       } else {                                          // fixed：常开，无勾选框
         const fr = document.createElement('div'); fr.className = 'opt-fixed-row';
@@ -2437,7 +2716,10 @@ function buildRuleToggles(){
         });
         g.appendChild(fr);
       }
+      g.appendChild(body);
+      const tg = g.querySelector('.opt-toggle'); if (tg) tg.setAttribute('aria-expanded', String(!g.classList.contains('collapsed')));
       rt.appendChild(g);
+      if (group.title === '格龙'){ rt.appendChild(buildFaceMeasureGroup()); rt.appendChild(buildXiaoShaGroup()); }   // 立向（原朝向测定）→ 消砂：紧随格龙之后、纳水之前
       return;
     }
     // 旧格式：数组分组（三合模块兼容）—— 复选框 + 互斥
@@ -2468,6 +2750,8 @@ function buildRuleToggles(){
     });
     rt.appendChild(row);
   });
+  // 三合模块：无「格龙」标题分组，立向置于各组最前（保留原「朝向测定」在两模块均存在的行为）
+  if (curMod() === 'sanhe' && rt.children.length) rt.insertBefore(buildFaceMeasureGroup(), rt.firstChild);
 }
 
 /* 来龙入首当前值提示（输入框右侧） */
@@ -2480,25 +2764,155 @@ function updateChuanCur(){
   elc.textContent = dr.void ? `当前：${dr.mountain}山 · 大空亡（${Math.round(dr.s)}–${Math.round(dr.e)}°，八干四维正中·无干支所管）`
     : (dr.guijia ? `当前：${dr.mountain}山 · ${dr.jiazi}（${dr.wx}·${dr.yang?'阳(顺)':'阴(逆)'}）· 龟甲空亡`
                  : `当前：${dr.mountain}山 · ${dr.jiazi}（${dr.wx}·${dr.yang?'阳(顺)':'阴(逆)'}）`);
+  }
+
+/* 来龙入首当前值提示（排龙诀·地母翻卦掌，归 24 山；选项区「来龙入首」行下方） */
+function updateLaiCur(){
+  const elc = document.getElementById('laiCur');
+  if (!elc) return;
+  const deg = state.laiDeg;
+  if (deg === undefined || deg === null){ elc.textContent = ''; return; }
+  const idx = degToIdx(deg), m = MOUNTAINS[idx];
+  elc.textContent = `当前来龙：${m}山（${PALACE_OF[m]}宫 · ${degRange(idx)}）· ${Math.round(((deg % 360) + 360) % 360)}°`;
+}
+
+/* 朝向测定当前值提示（选项区「朝向测定」行下方）：向某山 → 坐某山 → 精确度数 */
+function updateFaceMeasureCur(){
+  const elc = document.getElementById('faceMeasureCur');
+  if (!elc) return;
+  const idx = degToIdx(state.faceDeg), fm = MOUNTAINS[idx], sm = MOUNTAINS[opposite(idx)];
+  elc.textContent = `当前：向 ${fm}山（${PALACE_OF[fm]}宫 · ${degRange(idx)}）` +
+    ` · 坐 ${sm}山（${PALACE_OF[sm]}宫） · 朝向 ${Math.round(state.faceDeg)}°`;
+}
+
+// 走口「实测度数 + 偏转」→ 有效水口山。
+//   逻辑（用户指定）：先按偏转 dev（向右为正、向左为负）把「天盘（缝针）二十四山」的每座山范围整体平移——山 i 覆盖 [i*15−7.5+dev, i*15+7.5+dev)；
+//   再把实测度数套入这套重算后的天盘范围，确定走口所在山。
+//   例：dev=+7.5 → 天盘丙山 [165,180)，实测 160° 落入巳山 [150,165) → 巳；dev=0（关偏转/地盘）则 160° 落丙山 [157.5,172.5) → 丙。
+function recomputeShuikou(){
+  if (state.shuikouDeg === undefined || state.shuikouDeg === null || isNaN(state.shuikouDeg)) return;   // 未实测：不改动现有 state.shuikou（允许直接下拉选山）
+  const dev = state.shuikouDevOn ? state.shuikouDev : 0;          // 偏转关闭 → 地盘解读（dev=0）
+  const d = ((state.shuikouDeg % 360) + 360) % 360;               // 实测度数归一化到 [0,360)
+  for (let i = 0; i < 24; i++){                                   // 遍历天盘二十四山，套入重算后的范围
+    const lo = ((i * 15 - 7.5 + dev) % 360 + 360) % 360;
+    const hi = ((i * 15 + 7.5 + dev) % 360 + 360) % 360;
+    if (lo < hi){ if (d >= lo && d < hi){ state.shuikou = i; return; } }
+    else { if (d >= lo || d < hi){ state.shuikou = i; return; } }  // 跨 0° 的山（如 子山）
+  }
+}
+function updateShuikouCur(){
+  const elc = document.getElementById('shuikouCur');
+  if (!elc) return;
+  if (state.shuikou === undefined || state.shuikou === null){ elc.textContent = ''; return; }
+  const skM = MOUNTAINS[state.shuikou];
+  const dev = state.shuikouDevOn ? state.shuikouDev : 0;
+  const degTxt = (state.shuikouDeg !== undefined && !isNaN(state.shuikouDeg)) ? `实测 ${Math.round(state.shuikouDeg * 10) / 10}°` : '未实测（直接选山）';
+  const plate = dev === 0 ? '地盘' : `天盘偏转${(dev >= 0 ? '+' : '') + dev}°`;
+  elc.textContent = `当前水口：${skM}山（${PALACE_OF[skM]}宫） · ${degTxt} · ${plate}解读`;
+}
+
+function recomputeXiaoSha(){
+  if (state.xiaoShaDeg === undefined || state.xiaoShaDeg === null || isNaN(state.xiaoShaDeg)) return;   // 未实测：不改动现有 state.xiaoSha
+  const dev = state.xiaoShaDevOn ? state.xiaoShaDev : 0;          // 偏转关闭 → 地盘解读（dev=0）
+  const d = ((state.xiaoShaDeg % 360) + 360) % 360;              // 实测度数归一化到 [0,360)
+  for (let i = 0; i < 24; i++){                                  // 遍历二十四山，套入重算后的范围（与走口同算法，仅默认偏转参数不同）
+    const lo = ((i * 15 - 7.5 + dev) % 360 + 360) % 360;
+    const hi = ((i * 15 + 7.5 + dev) % 360 + 360) % 360;
+    if (lo < hi){ if (d >= lo && d < hi){ state.xiaoSha = i; return; } }
+    else { if (d >= lo || d < hi){ state.xiaoSha = i; return; } }  // 跨 0° 的山（如 子山）
+  }
+}
+function updateXiaoShaDisplay(){
+  const mEl = document.getElementById('xsMountain');
+  const dEl = document.getElementById('xsDeg');
+  const xiuEl = document.getElementById('xsXiuInfo');
+  if (mEl){
+    if (state.xiaoSha === undefined || state.xiaoSha === null || isNaN(state.xiaoSha)) mEl.textContent = '（未测量）';
+    else mEl.textContent = MOUNTAINS[state.xiaoSha] + '山';
+  }
+  if (dEl && document.activeElement !== dEl) dEl.value = (state.xiaoShaDeg === undefined || isNaN(state.xiaoShaDeg)) ? '' : state.xiaoShaDeg;
+  const dvChk = document.getElementById('chkXiaoShaDev');
+  if (dvChk) dvChk.checked = !!state.xiaoShaDevOn;
+  const dvVal = document.getElementById('xsDevVal');
+  if (dvVal) dvVal.textContent = (state.xiaoShaDev >= 0 ? '+' : '') + state.xiaoShaDev + '°';
+  // 星宿：以实测原始度数（不经偏转）直查二十八宿度盘范围；与上方「方位」（含偏转）互不干扰
+  if (xiuEl){
+    if (state.xiaoShaDeg === undefined || isNaN(state.xiaoShaDeg)){ xiuEl.innerHTML = ''; }
+    else {
+      const r = findXiu(state.xiaoShaDeg);
+      const rec = RK_XIU_BY_N[r.n];
+      const wx = rec.f.charAt(1);                 // 七曜/五行（日/月/木/火/土/金/水）
+      const g = rec.g;                             // 吉/凶
+      const gColor = g === '吉' ? '#16a34a' : '#dc2626';
+      xiuEl.innerHTML =
+        '测得 ' + (Math.round(state.xiaoShaDeg * 10) / 10) + '° → <b>' + rec.f + '</b>（' + rec.x + '）<br>' +
+        '度盘范围：' + dms2(r.start) + ' – ' + dms2(r.end) + '　古度：' + r.arc + '<br>' +
+        '五行：' + wx + '　吉凶：<span style="color:' + gColor + ';font-weight:700">' + g + '</span>';
+    }
+  }
+  // 三吉六秀判定：以「方位显示框」所示山（含偏转，即拨砂所用中针山）对照三吉六秀；与星宿（原始度数、无偏转）互不干扰
+  const slEl = document.getElementById('xsSanLiu');
+  if (slEl){
+    if (state.xiaoSha === undefined || state.xiaoSha === null || isNaN(state.xiaoSha)) slEl.innerHTML = '';
+    else {
+      const m = MOUNTAINS[state.xiaoSha];
+      let verdict, vColor;
+      if (SANJI_STD.indexOf(m) >= 0){ verdict = '命中三吉方'; vColor = '#16a34a'; }
+      else if (LIUXIU_STD.indexOf(m) >= 0){ verdict = '命中六秀方'; vColor = '#16a34a'; }
+      else { verdict = '非三吉六秀方'; vColor = '#6b7280'; }
+      slEl.innerHTML = '当前测得方位属于<b>' + m + '山</b>，三吉六秀是亥卯庚，艮丙丁酉辛巽。' +
+        '<span style="color:' + vColor + ';font-weight:700">' + verdict + '</span>';
+    }
+  }
+}
+
+// 纳水测量（辅星水法/向上起长生/向上起顺长生/纳甲水法）：实测度数 + 偏转 → 天盘二十四山（仅显示，不参与排盘）
+function recomputeNsMeasure(){
+  if (state.naShuiMeasureDeg === undefined || state.naShuiMeasureDeg === null || isNaN(state.naShuiMeasureDeg)) return;   // 未实测：不改动现有 state.naShuiMeasure
+  const dev = state.naShuiMeasureDevOn ? state.naShuiMeasureDev : 0;        // 偏转关闭 → 地盘解读（dev=0）
+  const d = ((state.naShuiMeasureDeg % 360) + 360) % 360;                  // 实测度数归一化到 [0,360)
+  for (let i = 0; i < 24; i++){                                            // 遍历天盘二十四山，套入重算后的范围（与走口同算法，默认 +7.5° 天盘缝针）
+    const lo = ((i * 15 - 7.5 + dev) % 360 + 360) % 360;
+    const hi = ((i * 15 + 7.5 + dev) % 360 + 360) % 360;
+    if (lo < hi){ if (d >= lo && d < hi){ state.naShuiMeasure = i; return; } }
+    else { if (d >= lo || d < hi){ state.naShuiMeasure = i; return; } }     // 跨 0° 的山（如 子山）
+  }
+}
+function updateNsMeasureDisplay(){
+  const mEl = document.getElementById('nsMeasureMountain');
+  const dEl = document.getElementById('nsMeasureDeg');
+  if (mEl){
+    if (state.naShuiMeasure === undefined || state.naShuiMeasure === null || isNaN(state.naShuiMeasure)) mEl.textContent = '（未测量）';
+    else mEl.textContent = MOUNTAINS[state.naShuiMeasure] + '山';
+  }
+  if (dEl && document.activeElement !== dEl) dEl.value = (state.naShuiMeasureDeg === undefined || isNaN(state.naShuiMeasureDeg)) ? '' : state.naShuiMeasureDeg;
+  const dvChk = document.getElementById('chkNsMeasureDev');
+  if (dvChk) dvChk.checked = !!state.naShuiMeasureDevOn;
+  const dvVal = document.getElementById('nsMeasureDevVal');
+  if (dvVal) dvVal.textContent = (state.naShuiMeasureDev >= 0 ? '+' : '') + state.naShuiMeasureDev + '°';
 }
 
 function buildPanel(){
   const selSit = document.getElementById('selSit');
   const selFace = document.getElementById('selFace');
-  MOUNTAINS.forEach((m, i) => {
-    selSit.add(new Option(`${m}山（${PALACE_OF[m]}宫 · ${degRange(i)}）`, i));
-    selFace.add(new Option(`${m}山（${PALACE_OF[m]}宫 · ${degRange(i)}）`, i));
-  });
-  selSit.onchange = e => {
-    state.sit = +e.target.value;
-    state.faceDeg = opposite(state.sit) * 15;    // 坐山变 → 朝向度数同步（24山中心角）
-    render();
-  };
-  selFace.onchange = e => {
-    state.sit = opposite(+e.target.value);
-    state.faceDeg = +e.target.value * 15;        // 朝向下拉变 → 度数同步
-    render();
-  };
+  // v125：坐向设定页（screenHome）已移除，坐山/朝向改用默认（子山午向）且不再提供改坐向 UI。
+  // 下方的 selSit/selFace/inpFaceDeg 可能不存在，须做存在性保护，避免 getElementById 返回 null 后崩溃。
+  if (selSit && selFace){
+    MOUNTAINS.forEach((m, i) => {
+      selSit.add(new Option(`${m}山（${PALACE_OF[m]}宫 · ${degRange(i)}）`, i));
+      selFace.add(new Option(`${m}山（${PALACE_OF[m]}宫 · ${degRange(i)}）`, i));
+    });
+    selSit.onchange = e => {
+      state.sit = +e.target.value;
+      state.faceDeg = opposite(state.sit) * 15;    // 坐山变 → 朝向度数同步（24山中心角）
+      render();
+    };
+    selFace.onchange = e => {
+      state.sit = opposite(+e.target.value);
+      state.faceDeg = +e.target.value * 15;        // 朝向下拉变 → 度数同步
+      render();
+    };
+  }
 
   /* ---- 「实地排盘」开关：三盘并用（人盘中针左旋、天盘缝针右旋各 7.5°）---- */
   const chkField = document.getElementById('chkField');
@@ -2509,17 +2923,17 @@ function buildPanel(){
 
   /* ---- 朝向度数输入 与 实时获取（手机指南针） ---- */
   const inpFaceDeg = document.getElementById('inpFaceDeg');
-  // 度数 → 24山索引（每山 15°，0°=正北子山；359.9° 归 0 子山）
-  const degToIdx = d => Math.round((((d % 360) + 360) % 360) / 15) % 24;
+  // 度数 → 24山索引见全局 degToIdx（每山 15°，0°=正北子山；359.9° 归 0 子山）
   // 度数生效：更新朝向下拉 + 坐山状态（供「确认」与手工输入共用）；度数本身 1° 精度保留
+  // 注意：applyFaceDeg 亦供选项区「立向 · 实时获取」（window.__openFaceCompass）确认时回填 state，故保留；selFace 可能已不存在须保护
   const applyFaceDeg = deg => {
     const idx = degToIdx(deg);
-    selFace.value = idx;
+    if (selFace) selFace.value = idx;
     state.sit = opposite(idx);
     state.faceDeg = ((deg % 360) + 360) % 360;   // 精确度数驱动盘面旋转
     render();
   };
-  inpFaceDeg.addEventListener('change', () => {
+  if (inpFaceDeg) inpFaceDeg.addEventListener('change', () => {
     const v = parseFloat(inpFaceDeg.value);
     if (isNaN(v)) return;
     applyFaceDeg(v);
@@ -2563,7 +2977,8 @@ function buildPanel(){
     window.removeEventListener('deviceorientation', cpOnOrientation);
     overlay.classList.add('hidden');
   };
-  document.getElementById('btnCompass').addEventListener('click', async () => {
+  // 打开朝向实时测量（首页「实时获取」与选项区「朝向测定 · 实时获取」共用同一弹框与同一落度逻辑）
+  const openFaceCompass = async () => {
     // iOS 13+ 必须在用户手势中请求权限
     if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
       try{
@@ -2594,15 +3009,19 @@ function buildPanel(){
     cp.timer = setTimeout(() => {                // 8 秒无数据：桌面浏览器 / 无指南针设备
       if (cp.running && !cp.got) cpSubEl.textContent = '未收到传感器数据（桌面浏览器或无指南针的设备）';
     }, 8000);
-  });
+  };
+  // v125：首页「实时获取」按钮（btnCompass）已随坐向设定页移除；openFaceCompass 仍经 window.__openFaceCompass 供选项区「立向 · 实时获取」复用
+  window.__openFaceCompass = openFaceCompass;   // 供选项区「朝向测定 · 实时获取」按钮绑定（buildPanel 内动态创建）
   document.getElementById('cpConfirm').addEventListener('click', () => {
     if (!cp.got || !cp.samples.length){ cpSubEl.textContent = '尚未读到稳定度数，请稍候'; return; }
     const deg = cpAvg();
     cpStop();
-    applyFaceDeg(deg);                          // 回填输入框 + 同步下拉与坐山
+    applyFaceDeg(deg);                          // 回填输入框 + 同步下拉与坐山 + 选项区「朝向测定」下拉（render 内统一回写）
   });
   document.getElementById('cpCancel').addEventListener('click', cpStop);
   overlay.addEventListener('click', e => { if (e.target === overlay) cpStop(); });
+
+  /* ---- 选项区「立向」（原「朝向测定」）的构建已并入 buildFaceMeasureGroup()，由 buildRuleToggles 在「格龙」之后注入；此处不再单独构建 ---- */
 
   /* ---- 来龙入首 实时获取（手机指南针）· 弹框「实时获取来龙」 ---- */
   const chuanOverlay = document.getElementById('chuanCompassOverlay');
@@ -2652,6 +3071,44 @@ function buildPanel(){
   document.getElementById('chuanCpCancel').addEventListener('click', chuanCpStop);
   chuanOverlay.addEventListener('click', e => { if (e.target === chuanOverlay) chuanCpStop(); });
 
+  /* ---- 来龙入首（排龙诀·地母翻卦掌）实时获取（手机指南针）· 弹框「实时获取来龙」 ---- */
+  const laiOverlay = document.getElementById('laiCompassOverlay');
+  const laiCpDegEl = document.getElementById('laiCpDeg');
+  const laiCpSubEl = document.getElementById('laiCpSub');
+  const laiCp = { running:false, got:false, samples:[], timer:null };
+  const laiCpAvg = () => { let x = 0, y = 0; for (const h of laiCp.samples){ x += Math.cos(h * Math.PI / 180); y += Math.sin(h * Math.PI / 180); } return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360; };
+  const laiCpOnOri = e => {
+    let h = null;
+    if (typeof e.webkitCompassHeading === 'number') h = e.webkitCompassHeading;
+    else if (typeof e.alpha === 'number'){ h = (360 - e.alpha) % 360; if (window.screen && screen.orientation && screen.orientation.angle) h = (h + screen.orientation.angle) % 360; }
+    if (h === null) return;
+    laiCp.got = true; laiCp.samples.push(h); if (laiCp.samples.length > 8) laiCp.samples.shift();
+    const avg = laiCpAvg(), idx = degToIdx(avg);
+    laiCpDegEl.textContent = Math.round(avg) + '°';
+    laiCpSubEl.textContent = `${MOUNTAINS[idx]}山（${PALACE_OF[MOUNTAINS[idx]]}宫）· ${degRange(idx)}`;
+  };
+  const laiCpStop = () => { laiCp.running = false; laiCp.got = false; laiCp.samples = []; if (laiCp.timer){ clearTimeout(laiCp.timer); laiCp.timer = null; } window.removeEventListener('deviceorientation', laiCpOnOri); laiOverlay.classList.add('hidden'); };
+  window.__openLaiCompass = async () => {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+      try{ const p = await DeviceOrientationEvent.requestPermission(); if (p !== 'granted'){ laiOverlay.classList.remove('hidden'); laiCpDegEl.textContent = '--°'; laiCpSubEl.textContent = '未授权指南针权限（请在设置中允许）'; return; } }
+      catch(err){ laiOverlay.classList.remove('hidden'); laiCpDegEl.textContent = '--°'; laiCpSubEl.textContent = '无法请求指南针权限，请重试'; return; }
+    } else if (!('ondeviceorientation' in window)){ laiOverlay.classList.remove('hidden'); laiCpDegEl.textContent = '--°'; laiCpSubEl.textContent = '当前浏览器不支持指南针'; return; }
+    laiCp.running = true; laiCp.got = false; laiCp.samples = []; laiCpDegEl.textContent = '--°'; laiCpSubEl.textContent = '等待传感器数据…'; laiOverlay.classList.remove('hidden');
+    window.addEventListener('deviceorientation', laiCpOnOri);
+    laiCp.timer = setTimeout(() => { if (laiCp.running && !laiCp.got) laiCpSubEl.textContent = '未收到传感器数据（桌面浏览器或无指南针的设备）'; }, 8000);
+  };
+  document.getElementById('laiCpConfirm').addEventListener('click', () => {
+    if (!laiCp.got || !laiCp.samples.length){ laiCpSubEl.textContent = '尚未读到稳定度数，请稍候'; return; }
+    const deg = laiCpAvg(); laiCpStop();
+    const snapped = Math.round(deg * 1000) / 1000;   // 规整到 0.001°（容差指南针浮点边界，避免恰好 15° 整数倍时落到相邻山）
+    state.laiDeg = snapped;   // 保留指南针精确度数（排龙诀·地母翻卦掌以归山后的来龙为排盘基准）
+    const mSel = document.getElementById('selLaiMountain');
+    if (mSel) mSel.value = String(degToIdx(snapped));
+    updateLaiCur(); render();
+  });
+  document.getElementById('laiCpCancel').addEventListener('click', laiCpStop);
+  laiOverlay.addEventListener('click', e => { if (e.target === laiOverlay) laiCpStop(); });
+
   /* ---- 走口（水口）实时获取（手机指南针）· 弹框「实时获取走口」 ---- */
   const shuikouOverlay = document.getElementById('shuikouCompassOverlay');
   const shuikouCpDegEl = document.getElementById('shuikouCpDeg');
@@ -2681,20 +3138,99 @@ function buildPanel(){
   document.getElementById('shuikouCpConfirm').addEventListener('click', () => {
     if (!shuikouCp.got || !shuikouCp.samples.length){ shuikouCpSubEl.textContent = '尚未读到稳定度数，请稍候'; return; }
     const deg = shuikouCpAvg(); shuikouCpStop();
-    state.shuikou = degToIdx(deg);
-    const skSel = document.getElementById('selShuikouInline'); if (skSel) skSel.value = state.shuikou;
-    render();
+    state.shuikouDeg = deg;                 // 实测度数入 state，交由「实测+偏转」重算有效水口山（默认 +7.5° 天盘解读）
+    recomputeShuikou();
+    const skSel = document.getElementById('selShuikouInline'); if (skSel) skSel.value = (state.shuikou === undefined ? '' : state.shuikou);
+    const dgEl = document.getElementById('inpShuikouDeg'); if (dgEl) dgEl.value = Math.round(deg * 10) / 10;
+    updateShuikouCur(); render();
   });
   document.getElementById('shuikouCpCancel').addEventListener('click', shuikouCpStop);
   shuikouOverlay.addEventListener('click', e => { if (e.target === shuikouOverlay) shuikouCpStop(); });
 
+  /* ---- 消砂实时获取（手机指南针）· 弹框「实时获取消砂」（测量显示，不参与排盘；默认偏转 -7.5° 对应人盘中针） ---- */
+  const xsOverlay = document.getElementById('xsCompassOverlay');
+  const xsCpDegEl = document.getElementById('xsCpDeg');
+  const xsCpSubEl = document.getElementById('xsCpSub');
+  const xsCp = { running:false, got:false, samples:[], timer:null };
+  const xsCpAvg = () => { let x = 0, y = 0; for (const h of xsCp.samples){ x += Math.cos(h * Math.PI / 180); y += Math.sin(h * Math.PI / 180); } return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360; };
+  const xsCpOnOri = e => {
+    let h = null;
+    if (typeof e.webkitCompassHeading === 'number') h = e.webkitCompassHeading;
+    else if (typeof e.alpha === 'number'){ h = (360 - e.alpha) % 360; if (window.screen && screen.orientation && screen.orientation.angle) h = (h + screen.orientation.angle) % 360; }
+    if (h === null) return;
+    xsCp.got = true; xsCp.samples.push(h); if (xsCp.samples.length > 8) xsCp.samples.shift();
+    const avg = xsCpAvg(), idx = degToIdx(avg);
+    xsCpDegEl.textContent = Math.round(avg) + '°';
+    xsCpSubEl.textContent = `${MOUNTAINS[idx]}山（${PALACE_OF[MOUNTAINS[idx]]}宫）· ${degRange(idx)}`;
+  };
+  const xsCpStop = () => { xsCp.running = false; xsCp.got = false; xsCp.samples = []; if (xsCp.timer){ clearTimeout(xsCp.timer); xsCp.timer = null; } window.removeEventListener('deviceorientation', xsCpOnOri); xsOverlay.classList.add('hidden'); };
+  window.__openXiaoShaCompass = async () => {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+      try{ const p = await DeviceOrientationEvent.requestPermission(); if (p !== 'granted'){ xsOverlay.classList.remove('hidden'); xsCpDegEl.textContent = '--°'; xsCpSubEl.textContent = '未授权指南针权限（请在设置中允许）'; return; } }
+      catch(err){ xsOverlay.classList.remove('hidden'); xsCpDegEl.textContent = '--°'; xsCpSubEl.textContent = '无法请求指南针权限，请重试'; return; }
+    } else if (!('ondeviceorientation' in window)){ xsOverlay.classList.remove('hidden'); xsCpDegEl.textContent = '--°'; xsCpSubEl.textContent = '当前浏览器不支持指南针'; return; }
+    xsCp.running = true; xsCp.got = false; xsCp.samples = []; xsCpDegEl.textContent = '--°'; xsCpSubEl.textContent = '等待传感器数据…'; xsOverlay.classList.remove('hidden');
+    window.addEventListener('deviceorientation', xsCpOnOri);
+    xsCp.timer = setTimeout(() => { if (xsCp.running && !xsCp.got) xsCpSubEl.textContent = '未收到传感器数据（桌面浏览器或无指南针的设备）'; }, 8000);
+  };
+  document.getElementById('xsCpConfirm').addEventListener('click', () => {
+    if (!xsCp.got || !xsCp.samples.length){ xsCpSubEl.textContent = '尚未读到稳定度数，请稍候'; return; }
+    const deg = xsCpAvg(); xsCpStop();
+    state.xiaoShaDeg = deg;                 // 实测度数入 state，交由「实测+偏转」重算方位（默认 -7.5° 人盘中针解读）
+    recomputeXiaoSha();
+    const dEl = document.getElementById('xsDeg'); if (dEl) dEl.value = Math.round(deg * 10) / 10;
+    updateXiaoShaDisplay(); render();
+  });
+  document.getElementById('xsCpCancel').addEventListener('click', xsCpStop);
+  xsOverlay.addEventListener('click', e => { if (e.target === xsOverlay) xsCpStop(); });
+
+  /* ---- 纳水测量实时获取（手机指南针）· 弹框「实时获取水法方位」（测量显示，不参与排盘；默认偏转 +7.5° 天盘缝针解读） ---- */
+  const nsOverlay = document.getElementById('nsMeasureCompassOverlay');
+  const nsCpDegEl = document.getElementById('nsMeasureCpDeg');
+  const nsCpSubEl = document.getElementById('nsMeasureCpSub');
+  const nsCp = { running:false, got:false, samples:[], timer:null };
+  const nsCpAvg = () => { let x = 0, y = 0; for (const h of nsCp.samples){ x += Math.cos(h * Math.PI / 180); y += Math.sin(h * Math.PI / 180); } return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360; };
+  const nsCpOnOri = e => {
+    let h = null;
+    if (typeof e.webkitCompassHeading === 'number') h = e.webkitCompassHeading;
+    else if (typeof e.alpha === 'number'){ h = (360 - e.alpha) % 360; if (window.screen && screen.orientation && screen.orientation.angle) h = (h + screen.orientation.angle) % 360; }
+    if (h === null) return;
+    nsCp.got = true; nsCp.samples.push(h); if (nsCp.samples.length > 8) nsCp.samples.shift();
+    const avg = nsCpAvg(), idx = degToIdx(avg);
+    nsCpDegEl.textContent = Math.round(avg) + '°';
+    nsCpSubEl.textContent = `${MOUNTAINS[idx]}山（${PALACE_OF[MOUNTAINS[idx]]}宫）· ${degRange(idx)}`;
+  };
+  const nsCpStop = () => { nsCp.running = false; nsCp.got = false; nsCp.samples = []; if (nsCp.timer){ clearTimeout(nsCp.timer); nsCp.timer = null; } window.removeEventListener('deviceorientation', nsCpOnOri); nsOverlay.classList.add('hidden'); };
+  window.__openNsMeasureCompass = async () => {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+      try{ const p = await DeviceOrientationEvent.requestPermission(); if (p !== 'granted'){ nsOverlay.classList.remove('hidden'); nsCpDegEl.textContent = '--°'; nsCpSubEl.textContent = '未授权指南针权限（请在设置中允许）'; return; } }
+      catch(err){ nsOverlay.classList.remove('hidden'); nsCpDegEl.textContent = '--°'; nsCpSubEl.textContent = '无法请求指南针权限，请重试'; return; }
+    } else if (!('ondeviceorientation' in window)){ nsOverlay.classList.remove('hidden'); nsCpDegEl.textContent = '--°'; nsCpSubEl.textContent = '当前浏览器不支持指南针'; return; }
+    nsCp.running = true; nsCp.got = false; nsCp.samples = []; nsCpDegEl.textContent = '--°'; nsCpSubEl.textContent = '等待传感器数据…'; nsOverlay.classList.remove('hidden');
+    window.addEventListener('deviceorientation', nsCpOnOri);
+    nsCp.timer = setTimeout(() => { if (nsCp.running && !nsCp.got) nsCpSubEl.textContent = '未收到传感器数据（桌面浏览器或无指南针的设备）'; }, 8000);
+  };
+  document.getElementById('nsMeasureCpConfirm').addEventListener('click', () => {
+    if (!nsCp.got || !nsCp.samples.length){ nsCpSubEl.textContent = '尚未读到稳定度数，请稍候'; return; }
+    const deg = nsCpAvg(); nsCpStop();
+    state.naShuiMeasureDeg = deg;               // 实测度数入 state，交由「实测+偏转」重算天盘方位（默认 +7.5° 天盘缝针解读）
+    recomputeNsMeasure();
+    const dEl = document.getElementById('nsMeasureDeg'); if (dEl) dEl.value = Math.round(deg * 10) / 10;
+    updateNsMeasureDisplay(); render();
+  });
+  document.getElementById('nsMeasureCpCancel').addEventListener('click', nsCpStop);
+  nsOverlay.addEventListener('click', e => { if (e.target === nsOverlay) nsCpStop(); });
+
+  // v125：八宫速选（quickPalaces）属已移除的坐向设定页；此处仅在其存在时构建，避免 null 崩溃
   const quick = document.getElementById('quickPalaces');
-  const center = {'坎':'子','艮':'艮','震':'卯','巽':'巽','离':'午','坤':'坤','兑':'酉','乾':'乾'};
-  for (const p in center){
-    const b = document.createElement('button');
-    b.textContent = `坐${p}`;
-    b.onclick = () => { state.sit = idxOf(center[p]); state.faceDeg = opposite(state.sit) * 15; render(); };
-    quick.appendChild(b);
+  if (quick){
+    const center = {'坎':'子','艮':'艮','震':'卯','巽':'巽','离':'午','坤':'坤','兑':'酉','乾':'乾'};
+    for (const p in center){
+      const b = document.createElement('button');
+      b.textContent = `坐${p}`;
+      b.onclick = () => { state.sit = idxOf(center[p]); state.faceDeg = opposite(state.sit) * 15; render(); };
+      quick.appendChild(b);
+    }
   }
 
   const rt = document.getElementById('ruleToggles');
@@ -2805,18 +3341,34 @@ function renderResults(){
 }
 
 function render(){
-  document.getElementById('selSit').value = state.sit;
-  document.getElementById('selFace').value = opposite(state.sit);
+  const sitEl = document.getElementById('selSit');
+  if (sitEl) sitEl.value = state.sit;
+  const faceEl = document.getElementById('selFace');
+  if (faceEl) faceEl.value = opposite(state.sit);
   const skEl = document.getElementById('selShuikouInline');
   if (skEl) skEl.value = (state.shuikou === undefined ? '' : state.shuikou);     // 走口（水口位置）下拉回写（默认未指定，需用户指定）
+  const dgEl = document.getElementById('inpShuikouDeg');
+  if (dgEl && document.activeElement !== dgEl) dgEl.value = (state.shuikouDeg === undefined ? '' : state.shuikouDeg);   // 实测度数回写
+  const dvChk = document.getElementById('chkShuikouDev');
+  if (dvChk) dvChk.checked = state.shuikouDevOn;
+  const dvVal = document.getElementById('shuikouDevVal');
+  if (dvVal) dvVal.textContent = (state.shuikouDev >= 0 ? '+' : '') + state.shuikouDev + '°';   // 偏转值回写
+  updateShuikouCur();
+  updateXiaoShaDisplay();   // 消砂：方位/度数/偏转显示回写（仅显示，不参与排盘）
+  updateNsMeasureDisplay(); // 纳水测量：方位/度数/偏转显示回写（仅显示，不参与排盘）
+  const fmEl = document.getElementById('selFaceMeasure');
+  if (fmEl) fmEl.value = degToIdx(state.faceDeg);                                // 选项区「朝向测定」下拉回写（随实测度数归山）
+  updateFaceMeasureCur();
   const fldEl = document.getElementById('chkField');
   if (fldEl) fldEl.checked = !!state.field;      // 开关状态回写（换屏、改坐向后保持一致）
+  const drEl = document.getElementById('chkDiskRotate');
+  if (drEl) drEl.checked = !!state.diskRotate;   // 纳水环「旋转开关」回写（默认关闭：纳水环不按天盘缝针偏移，与地盘正针对齐）
   const sitM = MOUNTAINS[state.sit], faceM = MOUNTAINS[opposite(state.sit)];
   document.getElementById('sitSummary').textContent =
     `当前：坐 ${sitM}山（${PALACE_OF[sitM]}宫） · 向 ${faceM}山（${PALACE_OF[faceM]}宫） · 朝向 ${Math.round(state.faceDeg)}°`;
   const degEl = document.getElementById('inpFaceDeg');
   if (degEl && document.activeElement !== degEl) degEl.value = Math.round(state.faceDeg);
-  ROT = ((360 - state.faceDeg) % 360 + 360) % 360;   // 1°级精确旋转：朝向度数恒置盘顶(0°)、坐向置盘底(180°)
+  ROT = (((360 - state.faceDeg) % 360 + 360) % 360);   // 盘面基础朝向：背坐山、面朝向（朝向恒置盘顶）。旋转开关不再旋转整盘，只控制纳水环（天盘缝针）按自定义度数偏移（见 naShuiRot / ruleRingShift）
   svg.innerHTML = '';        // 视角已变，整盘重建（文字保持正立）
   buildStatic();
   renderMarkers();
@@ -3674,8 +4226,50 @@ const RK_XIU = [
  {n:'星',f:'星日马',x:'南宫朱雀',g:'凶',y:'好造新房、进职加官近帝王；不可埋葬并放水；生离死别无心恋；放水开沟天命伤'},
  {n:'张',f:'张月鹿',x:'南宫朱雀',g:'吉',y:'造龙轩，年年便见进庄园；埋葬不久升官职；开门放水招财帛；婚姻和合福绵绵；田蚕大利仓库满'},
  {n:'翼',f:'翼火蛇',x:'南宫朱雀',g:'凶',y:'不利架高堂，三年二载见瘟癀；埋葬子孙必定走他乡；婚姻此日不宜利；归家定是不相当；开门放水家须破'},
- {n:'轸',f:'轸水蚓',x:'南宫朱雀',g:'吉',y:'临水造龙宫，代代为官受敕封；埋葬文星来照助；宅合安宁不见凶；更有为官沽帝宠；婚姻龙子出龙宫'}
+ {n:  '轸',f:'轸水蚓',x:'南宫朱雀',g:'吉',y:'临水造龙宫，代代为官受敕封；埋葬文星来照助；宅合安宁不见凶；更有为官沽帝宠；婚姻龙子出龙宫'}
 ];
+// 消砂模块：二十八宿度盘范围（天禧盘 360° 无缝范围，角宿起 0°；用于实测原始度数不经偏转直查落宿）
+// 每行跨度取自天禧盘 360° 范围（角起 0° 累计，末行止于 360°，无缝铺满，357° 等亦可落宿）；arc 为天禧古度（恒星弧分，365.25° 一周）
+const XS_XIU_RANGES = [
+  {n:'角', start:0,         end:10.983333, arc:'11°09′'},
+  {n:'亢', start:10.983333, end:21.583333, arc:'10°45′'},
+  {n:'氐', start:21.583333, end:39.433333, arc:'18°06′'},
+  {n:'房', start:39.433333, end:44.283333, arc:'4°56′'},
+  {n:'心', start:44.283333, end:52.533333, arc:'8°22′'},
+  {n:'尾', start:52.533333, end:67.716667, arc:'15°24′'},
+  {n:'箕', start:67.716667, end:76.65,     arc:'9°04′'},
+  {n:'斗', start:76.65,     end:100.7,     arc:'24°24′'},
+  {n:'牛', start:100.7,     end:108.433333,arc:'7°51′'},
+  {n:'女', start:108.433333,end:120.116667,arc:'11°51′'},
+  {n:'虚', start:120.116667,end:130.083333,arc:'10°07′'},
+  {n:'危', start:130.083333,end:150.15,    arc:'20°21′'},
+  {n:'室', start:150.15,    end:166.883333,arc:'16°59′'},
+  {n:'壁', start:166.883333,end:178.85,    arc:'12°08′'},
+  {n:'奎', start:178.85,    end:190.4,     arc:'11°44′'},
+  {n:'娄', start:190.4,     end:203.383333,arc:'13°10′'},
+  {n:'胃', start:203.383333,end:215.866667,arc:'12°40′'},
+  {n:'昴', start:215.866667,end:224.933333,arc:'9°12′'},
+  {n:'毕', start:224.933333,end:240.116667,arc:'15°24′'},
+  {n:'觜', start:240.116667,end:241.1,     arc:'1°00′'},
+  {n:'参', start:241.1,     end:251.733333,arc:'10°47′'},
+  {n:'井', start:251.733333,end:282.25,    arc:'30°58′'},
+  {n:'鬼', start:282.25,    end:286.55,    arc:'4°22′'},
+  {n:'柳', start:286.55,    end:303.233333,arc:'16°55′'},
+  {n:'星', start:303.233333,end:311.233333,arc:'8°07′'},
+  {n:'张', start:311.233333,end:330.283333,arc:'19°20′'},
+  {n:'翼', start:330.283333,end:347.2,     arc:'17°10′'},
+  {n:'轸', start:347.2,     end:360,       arc:'12°59′'}
+];
+const RK_XIU_BY_N = Object.fromEntries(RK_XIU.map(e => [e.n, e]));   // 单字宿名 → 完整记录（含五行/吉凶/四象），单一数据源
+function findXiu(d){
+  const x = ((d % 360) + 360) % 360;                  // 归一化到 [0,360)
+  for (const r of XS_XIU_RANGES){ if (x >= r.start && x < r.end) return r; }
+  return XS_XIU_RANGES[XS_XIU_RANGES.length - 1];     // 360≡0 兜底（恒为轸）
+}
+function dms2(deg){
+  const d = Math.floor(deg + 1e-9), m = Math.round((deg - d) * 60);
+  return d + '°' + (m < 10 ? '0' : '') + m + '′';
+}
 /* 用事 → 宜宿 / 忌宿（据《玉匣记》二十八宿值日吉凶歌逐条反查；歌中未言者不入列）
    v91 重要修正：
    ① 删去 kaiye（开市）——v90 把歌中「开门放水」误读为「开市」。按《协纪》体例，「开门放水」
@@ -5466,8 +6060,8 @@ function rkInit(){
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 
-const APP_VER = 'v105 · 2026-09-26';
-['verTagHome', 'verTagCompass', 'verTagModules', 'verTagRike'].forEach(id => {
+const APP_VER = 'v125 · 2026-10-10';
+['verTagCompass', 'verTagModules', 'verTagRike'].forEach(id => {
   const e = document.getElementById(id);
   if (e) e.textContent = '版本 ' + APP_VER;
 });
@@ -5485,6 +6079,7 @@ render();
 renderModuleGrid();
 showScreen('modules');
 
+
 /* ===== 模块九宫格 + 三屏导航（模块选择 → 坐向输入 → 判读页） ===== */
 function renderModuleGrid(){
   const grid = document.getElementById('modGrid');
@@ -5498,7 +6093,10 @@ function renderModuleGrid(){
       cell.onclick = () => {
         state.module = m.key;
         if (m.key === 'rike'){ rkInit(); enterInput(); return; }   // 日课模块：独立界面，不走罗盘规则
-        applyModuleDefaults(); buildRuleToggles(); enterInput();
+        applyModuleDefaults(); buildRuleToggles();
+        // v125：排盘/排盘测试 跳过原「坐向设定页」，直接进判读页（坐向用默认 子山午向）
+        if (m.key === 'tianxing' || m.key === 'tianxing_test'){ render(); showScreen('compass'); window.scrollTo(0, 0); return; }
+        enterInput();
       };
     } else {
       cell.onclick = () => toast('该模块敬请期待');
@@ -5507,7 +6105,8 @@ function renderModuleGrid(){
   });
 }
 function enterInput(){
-  showScreen(state.module === 'rike' ? 'rike' : 'home');
+  // v125：坐向设定页（home）已移除，非日课模块默认进判读页
+  showScreen(state.module === 'rike' ? 'rike' : 'compass');
 }
 function toast(msg){
   let t = document.getElementById('toast');
@@ -5516,18 +6115,14 @@ function toast(msg){
   clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove('show'), 1400);
 }
 function showScreen(name){
-  ['modules','home','compass','rike'].forEach(n =>
+  // v125：坐向设定页（home）已移除，屏集合为 modules/compass/rike
+  ['modules','compass','rike'].forEach(n =>
     document.getElementById('screen' + n[0].toUpperCase() + n.slice(1))
       .classList.toggle('hidden', name !== n));
 }
-document.getElementById('btnModBack').addEventListener('click', () => showScreen('modules'));
-document.getElementById('btnGo').addEventListener('click', () => {
-  render();
-  showScreen('compass');
-  window.scrollTo(0, 0);
-});
+
 document.getElementById('btnBack').addEventListener('click', () => {
-  showScreen('home');
+  showScreen('modules');   // v122：「返回首页」直接回九宫格（原回坐向输入页）
   window.scrollTo(0, 0);
 });
 
