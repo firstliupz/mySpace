@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#1e3a5f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,6 +16,8 @@
     --blue:#2563eb; --green:#16a34a; --red:#dc2626; --orange:#e8850a;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
+  /* 所有按钮禁用双击缩放手势 + 去除点击灰色高亮（app 内无需页面缩放） */
+  button{touch-action:manipulation; -webkit-tap-highlight-color:transparent;}
   body{background:var(--bg); color:var(--ink); -webkit-text-size-adjust:100%;
     font-family:"PingFang SC","Microsoft YaHei","Source Han Sans SC",sans-serif; font-size:14px;}
   header{background:var(--card); border-bottom:1px solid var(--border); padding:14px 26px;
@@ -33,7 +35,7 @@
   .card h2::before{content:""; width:4px; height:14px; background:var(--blue); border-radius:2px; display:inline-block;}
   .row{display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;}
   select{padding:6px 8px; border:1px solid var(--border); border-radius:8px; background:#fff;
-    font-size:13.5px; color:var(--ink); min-width:150px;}
+    font-size:13.5px; color:var(--ink); min-width:150px; min-height:40px; line-height:1.5;}
   label.inline{font-size:13px; color:#4a5361;}
   /* 坐向设定标题行右端的「实地排盘」开关（三盘：地盘正针不动，人盘中针左旋、天盘缝针右旋各 7.5°） */
   .card h2 .field-sw{margin-left:auto; display:flex; align-items:center; gap:6px;
@@ -257,7 +259,7 @@
   /* 首页：朝向度数输入 + 实时获取 */
   .deg-input{width:104px; min-width:0; flex:0 0 auto; padding:6px 8px; font-size:16px;
     border:1px solid var(--border); border-radius:8px; color:var(--ink); background:#fff;
-    -webkit-appearance:none; appearance:none;}
+    -webkit-appearance:none; appearance:none; min-height:42px; line-height:1.5;}
   .deg-input::-webkit-inner-spin-button, .deg-input::-webkit-outer-spin-button{-webkit-appearance:none; margin:0;}
   .row .at-btn{padding:6px 14px; font-size:13px;}
   /* 实时朝向测量覆盖层 */
@@ -272,10 +274,13 @@
     letter-spacing:1px; line-height:1.1;}
   .cp-sub{font-size:13px; color:#4a5361; margin:8px 0 18px; min-height:18px;}
   .cp-actions{display:flex; gap:12px; justify-content:center;}
-  .cp-actions button{padding:8px 24px; font-size:14px; border-radius:999px; cursor:pointer;
-    border:1px solid #c9d2dd; background:#eef2f6; color:#3c4552;}
-  .cp-ok{background:#1d4fd8; border-color:#1d4fd8; color:#fff !important; font-weight:700;}
-  .cp-ok:hover{background:#1740b5;}
+  .cp-actions button{padding:9px 26px; font-size:15px; border-radius:999px; cursor:pointer;
+    border:1px solid #c9d2dd; background:#eef2f6; color:#3c4552;
+    -webkit-appearance:none; appearance:none; font-family:inherit;}
+  /* 确认按钮：特异性须高于 .cp-actions button（否则灰底白字＝「灰白」）；加阴影使其高亮突出 */
+  .cp-actions .cp-ok{background:#1d4fd8; border-color:#1d4fd8; color:#fff !important; font-weight:700;
+    box-shadow:0 4px 14px rgba(29,79,216,.35);}
+  .cp-actions .cp-ok:hover{background:#1740b5;}
   #sitSummary{color:#3c4552; font-weight:600;}
   .options-card{width:100%; max-width:820px; align-self:center;}
   .options-flow{display:flex; flex-direction:column; gap:14px;}   /* 选项区各块（格龙/立向/纳水/时间输入）之间的统一间隔 */
@@ -289,7 +294,7 @@
   .opt-toggle svg{display:block; transition:transform .18s ease;}
   .opt-group.collapsed .opt-toggle svg{transform:rotate(-90deg);}
   .opt-group.collapsed .opt-group-body{display:none;}
-  .opt-select{width:100%; padding:7px 9px; border:1px solid #c9d2dd; border-radius:8px; font-size:14px; color:var(--ink); background:#fff;}
+  .opt-select{width:100%; padding:7px 9px; border:1px solid #c9d2dd; border-radius:8px; font-size:14px; color:var(--ink); background:#fff; min-height:42px; line-height:1.5;}
   .opt-fixed-row{display:flex; flex-wrap:wrap; gap:6px 8px;}
   .opt-fixed-item{font-size:13px; color:#15803d; background:#e7f6ec; border:1px solid #b7e4c7; border-radius:999px; padding:3px 11px; white-space:nowrap;}
   .chuan-input{margin-top:7px; padding-top:7px; border-top:1px dashed #d4dae2;}
@@ -309,7 +314,11 @@
   .chuan-ctl.dev-row{align-items:center; margin-top:2px;}
   .chuan-input .chuan-ctl.dev-row .dev-chk{width:16px; height:16px; flex:0 0 16px; margin:0;}
   .chuan-input .chuan-ctl.dev-row .dev-lbl{font-size:12px; font-weight:700; color:#5b6472; white-space:nowrap; flex:0 0 auto;}
-  .chuan-ctl .dev-step{flex:0 0 auto; width:26px; min-width:26px; padding:3px 0; font-size:15px; line-height:1; text-align:center;}
+  /* 偏转±按钮：固定正方形 + flex 居中，去除 iOS 原生按钮外观（否则移动端变椭圆、符号偏）；touch-action 禁用双击缩放 */
+  .chuan-ctl .dev-step{flex:0 0 auto; width:30px; min-width:30px; height:30px; padding:0; font-size:18px; line-height:1; text-align:center;
+    display:inline-flex; align-items:center; justify-content:center; font-family:inherit;
+    -webkit-appearance:none; appearance:none; border:1px solid #c9d2dd; background:#eef2f6; color:#3c4552; border-radius:6px; cursor:pointer;
+    -webkit-tap-highlight-color:transparent; touch-action:manipulation;}
   .chuan-input .chuan-ctl.dev-row .dev-val{min-width:48px; text-align:center; font-size:13px; font-weight:700; color:#7c3aed; flex:0 0 auto;}
   .chuan-input .chuan-ctl.sk-row .xs-mtn{display:inline-block; flex:0 0 auto; min-width:52px; padding:3px 6px; border:1px solid var(--border); border-radius:6px; background:#fff; text-align:center; font-weight:700; color:#b45309; font-size:12.5px;}   /* 消砂：方位显示框（实测归二十四山） */
   .opt-group-title.xs-head{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}   /* 消砂：标题行（左：消砂+启用偏转+偏转参数 / 右：展开折叠按钮） */
@@ -317,7 +326,10 @@
   .xs-head .xs-title{font-weight:800; letter-spacing:.5px;}
   .xs-head .xs-dev-right{display:flex; align-items:center; gap:4px; font-size:11.5px;}
   .xs-head .xs-dev-right .dev-val{min-width:42px; text-align:center; font-size:12.5px; color:#7c3aed; font-weight:700;}
-  .xs-head .xs-dev-right .dev-step{padding:2px 5px; font-size:13px;}
+  .xs-head .xs-dev-right .dev-step{width:26px; min-width:26px; height:26px; padding:0; font-size:15px;
+    display:inline-flex; align-items:center; justify-content:center; font-family:inherit;
+    -webkit-appearance:none; appearance:none; border:1px solid #c9d2dd; background:#eef2f6; color:#3c4552; border-radius:6px; cursor:pointer;
+    -webkit-tap-highlight-color:transparent; touch-action:manipulation;}
   .xs-head .xs-dev-right .dev-chk{width:16px; height:16px; flex:0 0 16px; margin:0;}
   .xs-xiu-info{font-size:12.5px; line-height:1.6; padding:8px 4px 2px; color:#334155; white-space:normal; word-break:break-word;}   /* 消砂：星宿落宿信息（文本，仅在实测后显示） */
   .xs-xiu-info b{color:#0f172a;}
@@ -2384,6 +2396,21 @@ function applyModuleDefaults(){
   const base = {}; Rules.list.forEach(r => base[r.id] = true);
   Object.assign(state.rules, base, RULE_DEFAULTS[curMod()] || {});
 }
+// v126：进入「排盘 / 排盘测试」时，把所有天星参数清空，重置为初始化盘面（坐子山午向）。
+// 否则返回首页再进入，立向/格龙/消砂/纳水里上次输入的数据会残留。规则项由 applyModuleDefaults 处理。
+function resetTianxingState(){
+  state.sit = 0;                 // 坐山：子山
+  state.faceDeg = 180;           // 朝向：午向（子山午向，180°）
+  state.field = false;           // 实地排盘（人盘/天盘偏移）默认关
+  state.shuikou = undefined;     // 纳水·走口（水口）位置
+  state.chuanDeg = undefined;    // 格龙·来龙入首（穿山七十二龙）
+  state.laiDeg = undefined;      // 格龙·来龙入首（排龙诀/地母翻卦掌，24山粒度）
+  state.shuikouDeg = undefined; state.shuikouDev = 7.5; state.shuikouDevOn = true; state.diskRotate = false;   // 纳水·走口偏转与旋转开关
+  state.xiaoShaDeg = undefined; state.xiaoShaDev = -7.5; state.xiaoShaDevOn = true; state.xiaoSha = undefined; // 消砂
+  state.naShuiMeasureDeg = undefined; state.naShuiMeasureDev = 7.5; state.naShuiMeasureDevOn = true; state.naShuiMeasure = undefined; // 纳水测量（仅显示）
+  state.nineMode = 'zhai';       // 中央九宫视图：元运宅命盘
+  state.testMs = Date.now();     // 流年/元运测试基准：重置为当前时刻
+}
 // 选项区「立向」（原「朝向测定」）：手工下拉选二十四山，或「实时获取」用指南针实测；一经确定即改定盘面坐山朝向（朝向恒置盘顶、坐山恒置盘底）
 function buildFaceMeasureGroup(){
   const g = document.createElement('div'); g.className = 'opt-group' + (optGroupCollapsed('立向') ? ' collapsed' : ''); g.setAttribute('data-title', '立向');
@@ -2428,7 +2455,7 @@ function buildXiaoShaGroup(){
           '<label class="chuan-lbl dev-lbl">偏转</label>' +
           '<button type="button" id="btnXsDevMinus" class="at-btn dev-step">−</button>' +
           '<span id="xsDevVal" class="dev-val">-7.5°</span>' +
-          '<button type="button" id="btnXsDevPlus" class="at-btn dev-step">＋</button>' +
+          '<button type="button" id="btnXsDevPlus" class="at-btn dev-step">+</button>' +
         '</span>' +
       '</span>' +
       optToggleHtml() +
@@ -2605,7 +2632,7 @@ function buildRuleToggles(){
             '<label class="chuan-lbl dev-lbl">偏转</label>' +
             '<button type="button" id="btnDevMinus" class="at-btn dev-step">−</button>' +
             '<span id="shuikouDevVal" class="dev-val">+7.5°</span>' +
-            '<button type="button" id="btnDevPlus" class="at-btn dev-step">＋</button>' +
+            '<button type="button" id="btnDevPlus" class="at-btn dev-step">+</button>' +
             '</div>';
           body.appendChild(cw);
           const skSel = cw.querySelector('#selShuikouInline');
@@ -2664,7 +2691,7 @@ function buildRuleToggles(){
             '<label class="chuan-lbl dev-lbl">偏转</label>' +
             '<button type="button" id="btnNsMeasureDevMinus" class="at-btn dev-step">−</button>' +
             '<span id="nsMeasureDevVal" class="dev-val">+7.5°</span>' +
-            '<button type="button" id="btnNsMeasureDevPlus" class="at-btn dev-step">＋</button>' +
+            '<button type="button" id="btnNsMeasureDevPlus" class="at-btn dev-step">+</button>' +
             '</div>';
           body.appendChild(cw);
           const mEl = cw.querySelector('#nsMeasureMountain');
@@ -6060,7 +6087,7 @@ function rkInit(){
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 
-const APP_VER = 'v125 · 2026-10-10';
+const APP_VER = 'v128 · 2026-10-11';
 ['verTagCompass', 'verTagModules', 'verTagRike'].forEach(id => {
   const e = document.getElementById(id);
   if (e) e.textContent = '版本 ' + APP_VER;
@@ -6093,6 +6120,7 @@ function renderModuleGrid(){
       cell.onclick = () => {
         state.module = m.key;
         if (m.key === 'rike'){ rkInit(); enterInput(); return; }   // 日课模块：独立界面，不走罗盘规则
+        resetTianxingState();          // v126：进入排盘/排盘测试即清空天星参数，重置为初始化盘面（坐子山午向）
         applyModuleDefaults(); buildRuleToggles();
         // v125：排盘/排盘测试 跳过原「坐向设定页」，直接进判读页（坐向用默认 子山午向）
         if (m.key === 'tianxing' || m.key === 'tianxing_test'){ render(); showScreen('compass'); window.scrollTo(0, 0); return; }
