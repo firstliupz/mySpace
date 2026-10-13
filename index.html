@@ -1030,7 +1030,8 @@ const CS_LIFE = {
   '金':['巳','午','未','申','酉','戌','亥','子','丑','寅','卯','辰'],
   '木':['亥','子','丑','寅','卯','辰','巳','午','未','申','酉','戌'],
   '水':['申','酉','戌','亥','子','丑','寅','卯','辰','巳','午','未'],
-  '火':['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑']
+  '火':['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'],
+  '土':['申','酉','戌','亥','子','丑','寅','卯','辰','巳','午','未']   // 土同水·长生在申（与《罗经》土随水行同例）
 };
 // 构建 72 龙（每龙 5°）：空亡落于十二地支中心（dragon index 1,7,13,…,67）；甲子起壬（壬山首龙＝dragon 69）顺时针循环
 /* 穿山七十二龙（穿山虎·地纪）起例
@@ -1720,11 +1721,14 @@ Rules.register({
       // 双山宫界即二十四山界（如壬子＝337.5°~7.5°，界在壬左·子右），故与地盘正针间隔线同线，不另生 7.5° 偏移。
       const wx = dr.el, yang = dr.yang, seq = CS_LIFE[wx];
       const laiGrp = SS_GROUP_OF[dr.mountain];                 // 来龙所在双山（整宫高亮）
-      for (let k = 0; k < 12; k++){
-        const dz = yang ? seq[k] : seq[(12 - k) % 12];         // 阳顺阴逆：阴则逆序取地支
-        const grp = SS_GROUPS.find(g => g.dz === dz);
-        out.push({ kind:'cs-sector', dz, pair:grp.name, center:grp.center, name: CHANGSHENG_NAME[k],
-          color: CHANGSHENG_COLOR[k], isSite:(grp === laiGrp) });
+      if (seq && laiGrp){                                     // 五行长生序列缺失（纳音无长生局）或双山归属缺失时，仅标来龙、不绘十二长生，避免中断整盘渲染
+        for (let k = 0; k < 12; k++){
+          const dz = yang ? seq[k] : seq[(12 - k) % 12];         // 阳顺阴逆：阴则逆序取地支
+          const grp = SS_GROUPS.find(g => g.dz === dz);
+          if (!grp) continue;                                   // 防御：长生地支未落入已知双山时跳过该格
+          out.push({ kind:'cs-sector', dz, pair:grp.name, center:grp.center, name: CHANGSHENG_NAME[k],
+            color: CHANGSHENG_COLOR[k], isSite:(grp === laiGrp) });
+        }
       }
     }
     return out;
@@ -2399,6 +2403,7 @@ function applyModuleDefaults(){
 // v126：进入「排盘 / 排盘测试」时，把所有天星参数清空，重置为初始化盘面（坐子山午向）。
 // 否则返回首页再进入，立向/格龙/消砂/纳水里上次输入的数据会残留。规则项由 applyModuleDefaults 处理。
 function resetTianxingState(){
+  for (const k in optExpand) delete optExpand[k];   // v130：重进排盘时折叠状态回到默认（全部折叠），不残留上次展开的分组（如格龙/立向/消砂/纳水）
   state.sit = 0;                 // 坐山：子山
   state.faceDeg = 180;           // 朝向：午向（子山午向，180°）
   state.field = false;           // 实地排盘（人盘/天盘偏移）默认关
@@ -6087,7 +6092,7 @@ function rkInit(){
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 
-const APP_VER = 'v128 · 2026-10-11';
+const APP_VER = 'v130 · 2026-10-13';
 ['verTagCompass', 'verTagModules', 'verTagRike'].forEach(id => {
   const e = document.getElementById(id);
   if (e) e.textContent = '版本 ' + APP_VER;
