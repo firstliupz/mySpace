@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1e3a5f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,7 +16,9 @@
     --blue:#2563eb; --green:#16a34a; --red:#dc2626; --orange:#e8850a;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  /* 所有按钮禁用双击缩放手势 + 去除点击灰色高亮（app 内无需页面缩放） */
+  /* 仅禁用「双击缩放」快速手势（避免点 ± 按钮或其附近误触整页放大）；
+     双指捏合缩放仍保留，用户可主动放大查看盘面。去除点击灰色高亮 */
+  html,body{touch-action:manipulation;}
   button{touch-action:manipulation; -webkit-tap-highlight-color:transparent;}
   body{background:var(--bg); color:var(--ink); -webkit-text-size-adjust:100%;
     font-family:"PingFang SC","Microsoft YaHei","Source Han Sans SC",sans-serif; font-size:14px;}
@@ -439,6 +441,21 @@
     position:relative;}  /* v106：作为子项 offsetTop 的参照系，否则滚动定位含遮罩绝对偏移而过冲到未来年份 */
   .rk-dp-col div{padding:8px 4px; text-align:center; font-size:14px; color:#4a5361; cursor:pointer;}
   .rk-dp-col div.on{background:var(--blue); color:#fff; font-weight:700;}
+  .rk-dp-cols.rk-hide{display:none;}
+  .rk-dp-bz{display:none; flex-direction:column; gap:10px; padding:10px 12px;}
+  .rk-dp-bz.show{display:flex;}
+  .rk-bz-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .rk-bz-row > label{flex:0 0 auto; min-width:46px; font-size:13px; color:#5b6472;}
+  .rk-bz-row select{flex:1 1 0; min-width:96px; padding:7px 8px; border:1px solid var(--border);
+    border-radius:8px; font-size:14px; color:var(--ink); background:#fff; -webkit-appearance:none; appearance:none;}
+  .rk-bz-anchor{width:92px; flex:0 0 auto; padding:7px 8px; border:1px solid var(--border);
+    border-radius:8px; font-size:14px; color:var(--ink); background:#fff;}
+  .rk-bz-read{font-size:15px; font-weight:600; color:var(--blue); text-align:center; padding:4px 0;}
+  .rk-bz-msg{font-size:12.5px; color:#c0392b; min-height:16px; text-align:center;}
+  .rk-bz-row select.bz-gan, .rk-bz-row select.bz-zhi{flex:0 0 auto; min-width:84px; width:88px;}
+  .rk-bz-row .bz-gan-ro{flex:0 0 auto; min-width:40px; text-align:center; font-weight:700; color:var(--ink);
+    border:1px dashed var(--border); border-radius:8px; padding:7px 2px; font-size:14px; background:#fafbfc;}
+  .rk-bz-row .rk-bz-pillar{flex:0 0 auto; min-width:52px; font-weight:700; color:var(--blue); font-size:15px; text-align:center;}
   .rk-dp-foot{display:flex; align-items:center; gap:8px; padding:9px 12px 5px;
     border-top:1px solid var(--border); flex-wrap:wrap;}
   .rk-dp-prev{flex:1 1 auto; min-width:0; font-size:12px; color:var(--muted);}
@@ -3627,11 +3644,11 @@ function rkRefreshDateBtns(){
   });
 }
 function rkSetCal(cal){
-  cal = (cal === 'L') ? 'L' : 'G';
+  cal = (cal === 'L' || cal === 'BZ') ? cal : 'G';
   const dp = document.getElementById('rkDP');
   const open = !!(dp && !dp.hidden);
-  if (open && cal !== RK_CAL){            // 选择器开启时历法切换须同步转译 RK_DP，否则公历日期被原样当农历渲染（如公历9/30→「九月三十」）
-    if (cal === 'L'){                     // 公历 → 农历
+  if (open && cal !== RK_CAL && cal !== 'BZ'){   // 四柱档不触碰 RK_DP；仅 G/L 之间切换才同步转译
+    if (cal === 'L'){                     // 公历 → 农历（含由四柱档切回农历：RK_DP 仍持有公历初值，按公历转农历）
       const u = rkLunarOf(RK_DP.y, RK_DP.m, RK_DP.d);
       RK_DP.y = u.ly; RK_DP.m = u.lm; RK_DP.d = u.ld; RK_DP.leap = !!u.leap;
     } else {                              // 农历 → 公历
@@ -3678,6 +3695,16 @@ function rkDPColsRender(){
   const G = RK_CAL !== 'L';
   document.querySelectorAll('.rk-seg button[data-cal]').forEach(b =>
     b.classList.toggle('on', b.dataset.cal === RK_CAL));
+  const colsEl = document.getElementById('rkDPCols'), bzEl = document.getElementById('rkDPBZ');
+  if (colsEl) colsEl.classList.toggle('rk-hide', RK_CAL === 'BZ');
+  if (bzEl){
+    bzEl.classList.toggle('show', RK_CAL === 'BZ');
+    if (RK_CAL === 'BZ') rkDPBZRender();
+  }
+  const okBtn = document.getElementById('rkDPOk'), tBtn = document.getElementById('rkDPToday');
+  if (okBtn) okBtn.textContent = (RK_CAL === 'BZ') ? '定位' : '确定';
+  if (tBtn) tBtn.textContent = (RK_CAL === 'BZ') ? '今日四柱' : '今天';
+  if (RK_CAL === 'BZ') return;          // 四柱档：不渲染 Y/M/D 列
   let h = '';
   for (let y = RK_DP_Y0; y <= RK_DP_Y1; y++){
     const gz = STEMS[((y - 4) % 10 + 10) % 10] + BRANCHES[((y - 4) % 12 + 12) % 12];
@@ -3712,6 +3739,153 @@ function rkDPApply(iso){
   if (inp && iso){ inp.value = iso; inp.dispatchEvent(new Event('change')); }
   rkDPClose(); rkRefreshDateBtns();
 }
+/* ---------- 四柱输入档（v131→v132）：干支分步输入，选天干后地支仅列可相配者 ---------- */
+const RK_GZ60 = (function(){ const a = []; for (let i = 0; i < 60; i++) a.push(STEMS[i % 10] + BRANCHES[i % 12]); return a; })();
+const RK_MONTH_BZ = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];   // 月支序：寅起 0
+let RK_BZ = null;   // {yS,yB,mS,mB,dS,dB,hS,hB,anchor,mSAuto,hSAuto}  干支分步存（stem/branch 分别，年月日时皆可编辑）
+function rkDPTodayBZ(b){                                // 由 rkBazi 真值源取今日四柱（月/时干按五虎遁/五鼠遁派生）
+  const yS = STEMS.indexOf(b.year[0]), yB = BRANCHES.indexOf(b.year[1]);
+  const dS = STEMS.indexOf(b.day[0]),  dB = BRANCHES.indexOf(b.day[1]);
+  const mB = RK_MONTH_BZ.indexOf(b.month[1]), hB = BRANCHES.indexOf(b.hour[1]);
+  return { yS, yB,
+           mS: (yS >= 0) ? (STEMS.indexOf(WUHU_FIRST[STEMS[yS]]) + (mB >= 0 ? mB : 0)) % 10 : -1, mB,
+           dS, dB,
+           hS: (dS >= 0) ? (STEMS.indexOf(RK_WUSHU[STEMS[dS]]) + (hB >= 0 ? hB : 0)) % 10 : -1, hB,
+           anchor: new Date().getFullYear(), mSAuto: true, hSAuto: true };
+}
+function rkDPBZInit(){
+  if (RK_BZ) return;
+  const n = new Date(), b = rkBazi(n.getFullYear(), n.getMonth() + 1, n.getDate(), n.getHours());
+  RK_BZ = rkDPTodayBZ(b);
+}
+function rkBZGanOpts(sel){                          // 天干下拉（10，可编辑）
+  let h = '<option value="-1">天干</option>';
+  for (let i = 0; i < 10; i++) h += `<option value="${i}"${i === sel ? ' selected' : ''}>${STEMS[i]}</option>`;
+  return h;
+}
+function rkBZZhiOptsCompat(order, stemIdx, sel){    // 地支下拉：仅列与所选天干同阴阳者（阳干配阳支、阴干配阴支）；option value＝该支在 order 中的序号，避免月支(RK_MONTH_BZ)与日/时支(BRANCHES)序错位
+  let h = '<option value="-1">地支</option>';
+  if (stemIdx < 0) return h;
+  for (let j = 0; j < order.length; j++){
+    if ((BRANCHES.indexOf(order[j]) % 2) !== (stemIdx % 2)) continue;   // 阴阳以地支自然序判定
+    h += `<option value="${j}"${j === sel ? ' selected' : ''}>${order[j]}</option>`;
+  }
+  return h;
+}
+function rkDPBZRender(){
+  rkDPBZInit();
+  const bz = RK_BZ, bzEl = document.getElementById('rkDPBZ'); if (!bzEl) return;
+  bzEl.innerHTML =
+    '<div class="rk-bz-row"><label>年柱</label>' +
+      '<select id="bzYS" class="bz-gan">' + rkBZGanOpts(bz.yS) + '</select>' +
+      '<select id="bzYB" class="bz-zhi">' + rkBZZhiOptsCompat(BRANCHES, bz.yS, bz.yB) + '</select>' +
+      '<span class="rk-bz-pillar" id="bzYP">—</span></div>' +
+    '<div class="rk-bz-row"><label>月柱</label>' +
+      '<select id="bzMS" class="bz-gan">' + rkBZGanOpts(bz.mS) + '</select>' +
+      '<select id="bzMB" class="bz-zhi">' + rkBZZhiOptsCompat(RK_MONTH_BZ, bz.mS, bz.mB) + '</select>' +
+      '<span class="rk-bz-pillar" id="bzMP">—</span></div>' +
+    '<div class="rk-bz-row"><label>日柱</label>' +
+      '<select id="bzDS" class="bz-gan">' + rkBZGanOpts(bz.dS) + '</select>' +
+      '<select id="bzDB" class="bz-zhi">' + rkBZZhiOptsCompat(BRANCHES, bz.dS, bz.dB) + '</select>' +
+      '<span class="rk-bz-pillar" id="bzDP">—</span></div>' +
+    '<div class="rk-bz-row"><label>时柱</label>' +
+      '<select id="bzHS" class="bz-gan">' + rkBZGanOpts(bz.hS) + '</select>' +
+      '<select id="bzHB" class="bz-zhi">' + rkBZZhiOptsCompat(BRANCHES, bz.hS, bz.hB) + '</select>' +
+      '<span class="rk-bz-pillar" id="bzHP">—</span></div>' +
+    '<div class="rk-bz-row"><label>锚定年</label><input type="number" id="bzAnchor" class="rk-bz-anchor" value="' + bz.anchor + '">' +
+      '<span class="rk-src rk-nosm">四柱干支分别选择；未选天干则地支不可选。月/时天干默认按年/日天干遁得（五虎遁/五鼠遁）并已可选，可手动改选其他干</span></div>' +
+    '<div class="rk-bz-read" id="bzRead"></div>' +
+    '<div class="rk-bz-msg" id="bzMsg"></div>';
+  const sy = document.getElementById('bzYS'), syB = document.getElementById('bzYB'),
+        smS = document.getElementById('bzMS'), smB = document.getElementById('bzMB'),
+        sdS = document.getElementById('bzDS'), sdB = document.getElementById('bzDB'),
+        shS = document.getElementById('bzHS'), shB = document.getElementById('bzHB'),
+        sa = document.getElementById('bzAnchor'),
+        ypEl = document.getElementById('bzYP'), mpEl = document.getElementById('bzMP'),
+        dpEl = document.getElementById('bzDP'), hpEl = document.getElementById('bzHP'),
+        readEl = document.getElementById('bzRead');
+  const syncBz = () => {                              // 先把所有下拉同步进 bz（保证派生读取的是最新值）
+    bz.yS = +sy.value; bz.yB = +syB.value; bz.mS = +smS.value; bz.mB = +smB.value;
+    bz.dS = +sdS.value; bz.dB = +sdB.value; bz.hS = +shS.value; bz.hB = +shB.value;
+    bz.anchor = parseInt(sa.value, 10) || new Date().getFullYear();
+  };
+  const read = () => {                                // 由选择直接计算四柱（月/时干取所选手动值，不再派生）
+    syncBz();
+    const yGZ = (bz.yS >= 0 && bz.yB >= 0) ? STEMS[bz.yS] + BRANCHES[bz.yB] : '—';
+    const mGZ = (bz.mS >= 0 && bz.mB >= 0) ? STEMS[bz.mS] + RK_MONTH_BZ[bz.mB] : '—';
+    const dGZ = (bz.dS >= 0 && bz.dB >= 0) ? STEMS[bz.dS] + BRANCHES[bz.dB] : '—';
+    const hGZ = (bz.hS >= 0 && bz.hB >= 0) ? STEMS[bz.hS] + BRANCHES[bz.hB] : '—';
+    ypEl.textContent = yGZ; mpEl.textContent = mGZ; dpEl.textContent = dGZ; hpEl.textContent = hGZ;
+    readEl.textContent = `四柱：${yGZ} ${mGZ} ${dGZ} ${hGZ}`;
+  };
+  const restrictZhi = (ganVal, zhiSelId, order) => {  // 选天干后，地支下拉仅保留可配者（原选支若失配自动清空）
+    const zhiEl = document.getElementById(zhiSelId);
+    if (zhiEl) zhiEl.innerHTML = rkBZZhiOptsCompat(order, ganVal, +zhiEl.value);
+  };
+  const deriveMonth = () => {                         // 月干默认按「年干+月支」五虎遁派生（仅当用户未手动改选时）；读实时月支值
+    if (!bz.mSAuto) return;
+    const mb = +smB.value;
+    if (bz.yS >= 0 && mb >= 0) bz.mS = (STEMS.indexOf(WUHU_FIRST[STEMS[bz.yS]]) + mb) % 10;
+    else bz.mS = -1;
+    smS.value = String(bz.mS);
+  };
+  const deriveHour = () => {                          // 时干默认按「日干+时支」五鼠遁派生（仅当用户未手动改选时）；读实时时支值
+    if (!bz.hSAuto) return;
+    const hb = +shB.value;
+    if (bz.dS >= 0 && hb >= 0) bz.hS = (STEMS.indexOf(RK_WUSHU[STEMS[bz.dS]]) + hb) % 10;
+    else bz.hS = -1;
+    shS.value = String(bz.hS);
+  };
+  sy.addEventListener('change',  () => { syncBz(); restrictZhi(bz.yS, 'bzYB', BRANCHES); bz.mSAuto = true; deriveMonth(); restrictZhi(bz.mS, 'bzMB', RK_MONTH_BZ); read(); });
+  syB.addEventListener('change', read);
+  smS.addEventListener('change', () => { syncBz(); restrictZhi(bz.mS, 'bzMB', RK_MONTH_BZ); bz.mSAuto = false; read(); });
+  smB.addEventListener('change', () => { syncBz(); deriveMonth(); restrictZhi(bz.mS, 'bzMB', RK_MONTH_BZ); read(); });
+  sdS.addEventListener('change', () => { syncBz(); restrictZhi(bz.dS, 'bzDB', BRANCHES); bz.hSAuto = true; deriveHour(); restrictZhi(bz.hS, 'bzHB', BRANCHES); read(); });
+  sdB.addEventListener('change', read);
+  shS.addEventListener('change', () => { syncBz(); restrictZhi(bz.hS, 'bzHB', BRANCHES); bz.hSAuto = false; read(); });
+  shB.addEventListener('change', () => { syncBz(); deriveHour(); restrictZhi(bz.hS, 'bzHB', BRANCHES); read(); });
+  sa.addEventListener('change', read);
+  read();
+}
+function rkDPBZPrefillToday(){
+  const n = new Date(), b = rkBazi(n.getFullYear(), n.getMonth() + 1, n.getDate(), n.getHours());
+  RK_BZ = rkDPTodayBZ(b);
+  rkDPBZRender();
+}
+function rkDPBZResolve(){
+  const bz = RK_BZ; if (!bz) return;
+  if (bz.yS < 0 || bz.yB < 0 || bz.mS < 0 || bz.mB < 0 || bz.dS < 0 || bz.dB < 0 || bz.hS < 0 || bz.hB < 0){
+    const msg = document.getElementById('bzMsg'); if (msg) msg.textContent = '请先完整选择四柱（年/月/日/时干支各选齐）';
+    return;
+  }
+  const iso = rkResolveBZ(STEMS[bz.yS] + BRANCHES[bz.yB], STEMS[bz.mS] + RK_MONTH_BZ[bz.mB],
+                          STEMS[bz.dS] + BRANCHES[bz.dB], STEMS[bz.hS] + BRANCHES[bz.hB], bz.anchor);
+  const msg = document.getElementById('bzMsg');
+  if (!iso){ if (msg) msg.textContent = '⚠ 该四柱在锚定年 ±120 年内未轮现，请调整锚定年（干支每 60 年一轮）'; return; }
+  if (msg) msg.textContent = '';
+  rkDPApply(iso);
+}
+function rkResolveBZ(yearGZ, monthGZ, dayGZ, hourGZ, anchorYear){   // 以 rkBazi 为唯一真值源反解；窗口 ±120，取最接近锚定年者
+  const H = BRANCHES.indexOf(hourGZ[1]) === 0 ? 0 : 2 * BRANCHES.indexOf(hourGZ[1]);   // 时辰 → 代表小时（子时=0，余=2×序）
+  const y0 = anchorYear - 120, y1 = anchorYear + 120;
+  let best = null, bestDist = 1e9;
+  for (let y = y0; y <= y1; y++){
+    const gJul = ganzhiYearOf(new Date(y, 6, 1, 12).getTime()).gz;    // 7/1 已过立春，年柱稳定
+    const gJan = ganzhiYearOf(new Date(y, 0, 1, 12).getTime()).gz;    // 1/1 可能属上一年
+    if (gJul !== yearGZ && gJan !== yearGZ) continue;
+    for (let mo = 0; mo < 12; mo++){
+      const days = new Date(y, mo + 1, 0).getDate();
+      for (let d = 1; d <= days; d++){
+        const b = rkBazi(y, mo + 1, d, H);
+        if (b.year === yearGZ && b.month === monthGZ && b.day === dayGZ && b.hour === hourGZ){
+          const dist = Math.abs(y - anchorYear);
+          if (dist < bestDist){ bestDist = dist; best = y + '-' + String(mo + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0'); }
+        }
+      }
+    }
+  }
+  return best;
+}
 function rkDPClose(){
   const dp = document.getElementById('rkDP');
   if (dp) dp.hidden = true;
@@ -3728,9 +3902,11 @@ function rkPickDate(id, title){
       '<div class="rk-dp"><div class="rk-dp-head"><span class="rk-dp-title" id="rkDPTitle">选择日期</span>' +
       '<span class="rk-seg" style="margin-left:auto" id="rkDPSeg">' +
       '<button type="button" data-cal="G" class="on">公历</button>' +
-      '<button type="button" data-cal="L">农历</button></span></div>' +
-      '<div class="rk-dp-cols"><div class="rk-dp-col" id="rkDPY"></div>' +
+      '<button type="button" data-cal="L">农历</button>' +
+      '<button type="button" data-cal="BZ">四柱</button></span></div>' +
+      '<div class="rk-dp-cols" id="rkDPCols"><div class="rk-dp-col" id="rkDPY"></div>' +
       '<div class="rk-dp-col" id="rkDPM"></div><div class="rk-dp-col" id="rkDPD"></div></div>' +
+      '<div class="rk-dp-bz" id="rkDPBZ"></div>' +
       '<div class="rk-dp-foot"><button type="button" class="rk-dp-btn" id="rkDPToday">今天</button>' +
       '<span class="rk-dp-prev" id="rkDPPrev"></span>' +
       '<button type="button" class="rk-dp-btn" id="rkDPCancel">取消</button>' +
@@ -3745,9 +3921,13 @@ function rkPickDate(id, title){
     pick(document.getElementById('rkDPM'), 'data-m', t => { RK_DP.m = +t.dataset.m; RK_DP.leap = t.dataset.leap === '1'; });
     pick(document.getElementById('rkDPD'), 'data-d', t => { RK_DP.d = +t.dataset.d; });
     document.getElementById('rkDPCancel').onclick = rkDPClose;
-    document.getElementById('rkDPToday').onclick = () => { const n = new Date();
+    document.getElementById('rkDPToday').onclick = () => {
+      if (RK_CAL === 'BZ'){ rkDPBZPrefillToday(); return; }
+      const n = new Date();
       rkDPApply(n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0')); };
-    document.getElementById('rkDPOk').onclick = () => rkDPApply(rkDPISO());
+    document.getElementById('rkDPOk').onclick = () => {
+      if (RK_CAL === 'BZ'){ rkDPBZResolve(); return; }
+      rkDPApply(rkDPISO()); };
     document.addEventListener('click', e => {
       const b = e.target.closest('.rk-seg button[data-cal]');
       if (b) rkSetCal(b.dataset.cal);
@@ -3759,6 +3939,7 @@ function rkPickDate(id, title){
   const u = rkLunarOf(p[0], p[1], p[2]);
   RK_DP.id = id; RK_DP.y = RK_CAL === 'L' ? u.ly : p[0]; RK_DP.m = RK_CAL === 'L' ? u.lm : p[1];
   RK_DP.d = RK_CAL === 'L' ? u.ld : p[2]; RK_DP.leap = RK_CAL === 'L' ? !!u.leap : false;
+  rkDPBZInit();
   rkDPNorm();
   document.getElementById('rkDPTitle').textContent = title || '选择日期';
   dp.hidden = false;
@@ -5591,7 +5772,7 @@ function rkRenderInputs(){
     <div class="row" style="gap:6px;">
       <label class="inline" style="min-width:74px;">历法输入</label>
       <span class="rk-seg" id="rk_cal_seg">
-        <button type="button" data-cal="G"${RK_CAL !== 'L' ? ' class="on"' : ''}>公历</button><button type="button" data-cal="L"${RK_CAL === 'L' ? ' class="on"' : ''}>农历</button></span>
+        <button type="button" data-cal="G"${RK_CAL !== 'L' && RK_CAL !== 'BZ' ? ' class="on"' : ''}>公历</button><button type="button" data-cal="L"${RK_CAL === 'L' ? ' class="on"' : ''}>农历</button><button type="button" data-cal="BZ"${RK_CAL === 'BZ' ? ' class="on"' : ''}>四柱</button></span>
       <span class="rk-src rk-nosm">按此历法显示并选取全部日期框（择日范围、生辰等）</span></div>
     <div class="row"><label class="inline" style="min-width:74px;">农历核对</label>
       <span class="rk-src" id="rk_range_lu" style="color:var(--blue);"></span></div>`);
@@ -6092,7 +6273,7 @@ function rkInit(){
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 
-const APP_VER = 'v130 · 2026-10-13';
+const APP_VER = 'v135 · 2026-10-17';
 ['verTagCompass', 'verTagModules', 'verTagRike'].forEach(id => {
   const e = document.getElementById(id);
   if (e) e.textContent = '版本 ' + APP_VER;
